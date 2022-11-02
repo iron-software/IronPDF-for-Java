@@ -9,10 +9,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Replace credentials
         run: |
-          sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' src/test/resources/config.properties
+          sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf/src/test/resources/config.properties
       - name: Replace version with release tag
         run: |
-          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' pom.xml
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' IronPdf/pom.xml
       - name: Install Linux packages
         run: |
           sudo apt update
@@ -34,7 +34,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish to Maven Central Repository
-        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file IronPdf/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
