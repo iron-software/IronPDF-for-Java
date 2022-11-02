@@ -1,0 +1,109 @@
+﻿syntax = "proto3";
+package IronPdfEngine.Proto;
+
+import "Annotation.proto";
+import "Attachment.proto";
+import "BackgroundForeground.proto";
+import "Basic.proto";
+import "Bookmarks.proto";
+import "Form.proto";
+import "HeaderFooter.proto";
+import "HtmlStamp.proto";
+import "Image.proto";
+import "Metadata.proto";
+import "Page.proto";
+import "PdfDocument.proto";
+import "Render.proto";
+import "Security.proto";
+import "Signature.proto";
+import "Text.proto";
+import "Compress.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+service IronPdfService {
+  // Startup
+  rpc Handshake(HandshakeRequest) returns (HandshakeResponse){}
+
+  // Renderer
+  rpc Render_FromStringSnippet(stream RenderPdfDocumentFromStringSnippetRequestStream) returns (PdfDocumentResult){}
+  rpc Render_FromHtmlFile(RenderPdfDocumentFromHtmlFileRequest) returns (PdfDocumentResult){}
+  rpc Render_FromUri(RenderPdfDocumentFromUriRequest) returns (PdfDocumentResult){}
+
+  //Imaging
+  rpc PdfDocument_Image_ImageToPdf(stream ImageToPdfRequestStream) returns (PdfDocumentResult){}
+  rpc PdfDocument_Image_DrawBitmap(stream DrawBitmapRequestStream) returns (EmptyResult){}
+  rpc PdfDocument_Image_ExtractAllRawImages(ExtractAllRawImagesRequest) returns (stream ImagesResultStream){}
+  rpc PdfDocument_Image_PdfToImages(PdfToImagesRequest)returns(stream ImagesResultStream){}
+
+  //PdfDocument
+  rpc PdfDocument_Dispose(PdfDocument) returns (EmptyResult){}
+  rpc PdfDocument_GetBinaryData(PdfDocument)  returns (stream BytesResultStream){}
+  rpc PdfDocument_FromBytes(stream PdfDocumentConstructorStream)returns (PdfDocumentResult){}
+
+  //Page
+  rpc PdfDocument_Page_RemovePages(RemovePagesRequest) returns (EmptyResult){}
+  rpc PdfDocument_Page_Merge(PdfDocumentMergeRequest) returns (PdfDocumentResult){}
+  rpc PdfDocument_Page_InsertPdf(PdfDocumentInsertRequest)returns (EmptyResult){}
+  rpc PdfDocument_Page_GetPages(GetPagesRequest) returns(GetPagesResult){}
+  rpc PdfDocument_Page_CopyPages(CopyPagesRequest) returns(PdfDocumentResult){}
+  rpc PdfDocument_Page_RotatePages(RotatePagesRequest) returns(EmptyResult){}
+
+  //Metadata
+  rpc PdfDocument_Metadata_GetMetadata(GetMetadataRequest) returns (MetadataFieldResult){}
+  rpc PdfDocument_Metadata_SetMetadata(SetMetadataRequest) returns (EmptyResult){}
+  rpc PdfDocument_Metadata_RemoveMetadata(RemoveMetadataRequest) returns (EmptyResult){}
+
+  //Annotation
+  rpc PdfDocument_Annotation_AddTextAnnotation(AddTextAnnotationRequest) returns (EmptyResult){}
+  rpc PdfDocument_Annotation_GetAnnotationCountRequest(GetAnnotationCountRequest) returns (IntResult){}
+
+  //Bookmark
+  rpc PdfDocument_Bookmark_GetBookmarks(GetBookmarksRequest) returns (GetBookmarksResult){}
+  rpc PdfDocument_Bookmark_InsertBookmark(InsertBookmarkRequest) returns (EmptyResult){}
+
+  //StampHtml
+  rpc PdfDocument_Stamp_ApplyStamp(stream ApplyStampRequestStream) returns(EmptyResult){}
+
+  //Form
+  rpc PdfDocument_Form_GetForm(GetFormRequest) returns(GetFormResult){}
+  rpc PdfDocument_Form_RenameField(RenameFieldRequest) returns(EmptyResult){}
+  rpc PdfDocument_Form_SetFieldValue(SetFromFieldValueRequest) returns(EmptyResult){}
+  rpc PdfDocument_Form_SetFieldFont(SetFromFieldFontRequest) returns(EmptyResult){}
+  rpc PdfDocument_Form_FlattenForm(FlattenFormRequest) returns (EmptyResult){}
+
+  //Attachment
+  rpc PdfDocument_Attachment_GetPdfAttachmentCollection(GetPdfAttachmentCollectionRequest) returns(GetPdfAttachmentCollectionResult){}
+  rpc PdfDocument_Attachment_GetPdfAttachmentData(GetPdfAttachmentDataRequest) returns(stream GetPdfAttachmentDataResultStream){}
+  rpc PdfDocument_Attachment_AddPdfAttachment(stream AddPdfAttachmentRequestStream) returns(EmptyResult){}
+  rpc PdfDocument_Attachment_RemovePdfAttachment(RemovePdfAttachmentRequest) returns(EmptyResult){}
+
+  //Background Foreground
+  rpc PdfDocument_BackgroundForeground_AddBackgroundForeground(AddBackgroundForegroundRequest) returns(EmptyResult){}
+
+  //Signature
+  rpc PdfDocument_Signature_SignPdf(stream SignPdfRequestStream) returns (EmptyResult){}
+  rpc PdfDocument_Signature_GetVerifiedSignature(GetVerifiedSignatureRequest) returns (VerifySignatureResult){}
+
+  //Text
+  rpc PdfDocument_Text_ExtractAllText(ExtractAllTextRequest)returns(StringResult){}
+  rpc PdfDocument_Text_ReplaceText(ReplaceTextRequest)returns(EmptyResult){}
+
+  //Security
+  rpc PdfDocument_Security_RemovePasswordsAndEncryption(RemovePasswordsAndEncryptionRequest) returns (EmptyResult){}
+  rpc PdfDocument_Security_SetPdfSecuritySettings(SetPdfSecuritySettingsRequest) returns (EmptyResult){}
+  rpc PdfDocument_Security_GetPdfSecuritySettings(GetPdfSecuritySettingsRequest) returns (GetPdfSecuritySettingsResult){}
+
+  //HeaderFooter
+  rpc PdfDocument_HeaderFooter_AddTextHeaderFooter(AddTextHeaderFooterRequest) returns (EmptyResult){}
+  rpc PdfDocument_HeaderFooter_AddHtmlHeaderFooter(stream AddHtmlHeaderFooterRequestStream) returns (EmptyResult){}
+
+  //Compress
+  rpc PdfDocument_Compress_CompressImages(CompressImagesRequest) returns (EmptyResult){}
+
+}
+
+
+
+      

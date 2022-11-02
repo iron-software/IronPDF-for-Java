@@ -1,0 +1,49 @@
+syntax = "proto3";
+package IronPdfEngine.Proto;
+import "Basic.proto";
+import "PdfDocument.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfSecuritySettings{
+  optional bool allow_user_annotations = 1;
+  optional bool allow_user_copy_paste_content = 2;
+  optional bool allow_user_copy_paste_content_for_accessibility = 3;
+  optional PdfEditSecurity allow_user_edits = 4;
+  optional bool allow_user_form_data = 5;
+  optional PdfPrintSecurity allow_user_printing = 6;
+  optional string owner_password = 7;
+  optional string user_password = 8;
+}
+
+message RemovePasswordsAndEncryptionRequest{
+  PdfDocument document = 1;
+}
+
+message SetPdfSecuritySettingsRequest{
+  PdfDocument document = 1;
+  PdfSecuritySettings security_settings = 2;
+
+}
+
+message GetPdfSecuritySettingsRequest{
+  PdfDocument document = 1;
+}
+
+message GetPdfSecuritySettingsResult{
+  oneof result_or_exception{
+    PdfSecuritySettings security_settings = 1;
+    RemoteException exception = 2;
+  }
+}
+
+message PdfEditSecurity{
+  int32 enum_value = 1;
+}
+
+message PdfPrintSecurity{
+  int32 enum_value = 1;
+}
+
+

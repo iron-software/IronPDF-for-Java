@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+package IronPdfEngine.Proto;
+import "Basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfDocument {
+  string document_id = 1;
+}
+
+message PdfDocumentResult {
+  oneof result_or_exception {
+    PdfDocument result = 1;
+    RemoteException exception = 2;
+  }
+}
+
+message PdfDocumentConstructorStream {
+  oneof request {
+    Info info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+  message Info{
+    optional string user_password = 1;
+    optional string owner_password = 2;
+  }
+}

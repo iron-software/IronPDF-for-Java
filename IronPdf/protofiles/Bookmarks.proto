@@ -1,0 +1,44 @@
+syntax = "proto3";
+package IronPdfEngine.Proto;
+import "PdfDocument.proto";
+import "Basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message BookmarkDestinations{
+  int32 enum_value = 1;
+}
+
+message Bookmark{
+  optional BookmarkDestinations destination_type = 1;
+  optional string next_bookmark_text = 2;
+  optional string parent_bookmark_text = 3;
+  int32 page_index = 4;
+  optional string previous_bookmark_text = 5;
+  string text = 6;
+}
+
+message  BookmarkCollection{
+  repeated Bookmark bookmarks = 1;
+}
+
+message InsertBookmarkRequest{
+  PdfDocument document = 1;
+  int32 page_index = 2;
+  string text = 3;
+  optional string parent_text = 4;
+  optional string previous_text = 5;
+}
+
+message GetBookmarksRequest{
+  PdfDocument document = 1;
+}
+
+message GetBookmarksResult{
+  oneof result_or_exception {
+    BookmarkCollection result = 1;
+    RemoteException exception = 2;
+  }
+}
+
