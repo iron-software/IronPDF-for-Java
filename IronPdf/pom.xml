@@ -224,12 +224,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <repository>
-            <id>IronPdf</id>
-            <url>https://pkgs.dev.azure.com/ironcoders/IronPDF/_packaging/IronPdf/maven/v1</url>
-        </repository>
-    </distributionManagement>
 
     <modelVersion>4.0.0</modelVersion>
     <properties>
