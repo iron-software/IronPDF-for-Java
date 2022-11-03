@@ -84,7 +84,8 @@ service IronPdfService {
 
   //Signature
   rpc PdfDocument_Signature_SignPdf(stream SignPdfRequestStream) returns (EmptyResult){}
-  rpc PdfDocument_Signature_GetVerifiedSignature(GetVerifiedSignatureRequest) returns (VerifySignatureResult){}
+  rpc PdfDocument_Signature_GetVerifiedSignature(GetVerifiedSignatureRequest) returns (GetVerifySignatureResult){}
+  rpc PdfDocument_Signature_VerifiedSignatures(VerifyPdfSignaturesRequest) returns (BooleanResult);
 
   //Text
   rpc PdfDocument_Text_ExtractAllText(ExtractAllTextRequest)returns(StringResult){}

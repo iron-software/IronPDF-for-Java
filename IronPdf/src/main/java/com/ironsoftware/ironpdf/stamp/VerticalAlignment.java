@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.stamp;
 
 /**
- * The vertical alignment relative to the page.
+ * Vertical layout alignment relative to the PDF page.
  */
 public enum VerticalAlignment {
     TOP,

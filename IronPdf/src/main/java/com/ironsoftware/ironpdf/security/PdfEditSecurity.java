@@ -3,7 +3,7 @@ package com.ironsoftware.ironpdf.security;
 /**
  * Enumeration defining levels of PDF user access rights to edit a PDF.  Edit rights may also be
  * limited by the User's PDF document client software. <p>See
- * {@link PdfSecuritySettings#setAllowUserEdits(PdfEditSecurity)}}</p>
+ * {@link SecurityOptions#setAllowUserEdits(PdfEditSecurity)}}</p>
  */
 public enum PdfEditSecurity {
     /**

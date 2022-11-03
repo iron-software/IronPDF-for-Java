@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.stamp;
 
 /**
- * The horizontal alignment relative to the page.
+ * Horizontal layout alignment relative to the PDF page.
  */
 public enum HorizontalAlignment {
     LEFT,

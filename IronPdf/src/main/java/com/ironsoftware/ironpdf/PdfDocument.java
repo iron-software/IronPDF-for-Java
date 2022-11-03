@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf;
 
 import com.ironsoftware.ironpdf.annotation.AnnotationManager;
+import com.ironsoftware.ironpdf.attachment.AttachmentManager;
 import com.ironsoftware.ironpdf.backgroundforeground.BackgroundForegroundOptions;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;
 import com.ironsoftware.ironpdf.edit.PageSelection;
@@ -11,16 +12,18 @@ import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import com.ironsoftware.ironpdf.image.DrawImageOptions;
 import com.ironsoftware.ironpdf.image.ImageBehavior;
 import com.ironsoftware.ironpdf.image.ToImageOptions;
+import com.ironsoftware.ironpdf.internal.staticapi.*;
 import com.ironsoftware.ironpdf.metadata.MetadataManager;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.page.PageRotation;
+import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
-import com.ironsoftware.ironpdf.security.PdfSecuritySettings;
+import com.ironsoftware.ironpdf.render.PaperSize;
+import com.ironsoftware.ironpdf.security.SecurityManager;
 import com.ironsoftware.ironpdf.stamp.HorizontalAlignment;
 import com.ironsoftware.ironpdf.stamp.HtmlStamper;
 import com.ironsoftware.ironpdf.stamp.Stamper;
 import com.ironsoftware.ironpdf.stamp.VerticalAlignment;
-import com.ironsoftware.ironpdf.staticapi.*;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
@@ -39,6 +42,10 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a PDF document. Allows: loading, editing, manipulating, merging, signing printing and saving PDFs.
+ */
+
 public class PdfDocument implements Printable {
 
     private final InternalPdfDocument internalPdfDocument;
@@ -47,7 +54,9 @@ public class PdfDocument implements Printable {
     private final BookmarkManager bookmarkManager;
     private final MetadataManager metadataManager;
     private final AnnotationManager annotationManager;
-    private FormManager formManager;
+    private final FormManager formManager;
+    private final AttachmentManager attachmentManager;
+    private final SecurityManager securityManager;
 
     private PdfDocument(InternalPdfDocument static_pdfDocument) {
         internalPdfDocument = static_pdfDocument;
@@ -55,6 +64,8 @@ public class PdfDocument implements Printable {
         metadataManager = new MetadataManager(this.internalPdfDocument);
         annotationManager = new AnnotationManager(this.internalPdfDocument);
         formManager = new FormManager(this.internalPdfDocument);
+        attachmentManager = new AttachmentManager(this.internalPdfDocument);
+        securityManager = new SecurityManager(this.internalPdfDocument);
     }
 
     /**
@@ -62,6 +73,7 @@ public class PdfDocument implements Printable {
      *
      * @param pdfFilePath The PDF file path.
      * @param password    Optional user password if the PDF document is encrypted.
+     * @throws IOException if an I/O error occurs reading from the stream
      */
     public PdfDocument(Path pdfFilePath, String password) throws IOException {
         this(pdfFilePath, password, "");
@@ -73,15 +85,13 @@ public class PdfDocument implements Printable {
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
      * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..).
+     *                      modifying restrictions etc..)
+     * @throws IOException if an I/O error occurs reading from the stream
      */
     public PdfDocument(Path pdfFilePath, String password, String ownerPassword) throws IOException {
         this(Files.readAllBytes(pdfFilePath), password, ownerPassword);
     }
 
-    //endregion
-
-    //region Attachment
 
     /**
      * Opens an existing PDF document for editing.
@@ -89,18 +99,13 @@ public class PdfDocument implements Printable {
      * @param pdfData       The PDF file data as byte array.
      * @param password      Optional user password if the PDF document is encrypted.
      * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..).
+     *                      modifying restrictions etc..)
      */
-    public PdfDocument(byte[] pdfData, String password, String ownerPassword) throws IOException {
-        internalPdfDocument = com.ironsoftware.ironpdf.staticapi.PdfDocument_Api.FromBytes(pdfData,
-                password, ownerPassword);
-        bookmarkManager = new BookmarkManager(this.internalPdfDocument);
-        metadataManager = new MetadataManager(this.internalPdfDocument);
-        annotationManager = new AnnotationManager(this.internalPdfDocument);
+    public PdfDocument(byte[] pdfData, String password, String ownerPassword) {
+        this(PdfDocument_Api.fromBytes(pdfData,
+                password, ownerPassword));
     }
-    //endregion
 
-    // region BackgroundForeground
 
     /**
      * Opens an existing PDF document for editing.
@@ -117,7 +122,7 @@ public class PdfDocument implements Printable {
      * @param pdfData  The PDF file data as byte array.
      * @param password Optional user password if the PDF document is encrypted.
      */
-    public PdfDocument(byte[] pdfData, String password) throws IOException {
+    public PdfDocument(byte[] pdfData, String password) {
         this(pdfData, password, "");
     }
 
@@ -126,40 +131,14 @@ public class PdfDocument implements Printable {
      *
      * @param pdfData The PDF file data as byte array.
      */
-    public PdfDocument(byte[] pdfData) throws IOException {
+    public PdfDocument(byte[] pdfData) {
         this(pdfData, "", "");
     }
 
-    /**
-     * Static method that joins (concatenates) 2 PDF documents together into one PDF document. If the
-     * PDF contains form fields the form field in the resulting PDF's name will be appended with
-     * '_{index}' e.g. 'Name' will be 'Name_0'
-     *
-     * @param A A PDF
-     * @param B A Seconds PDF
-     * @return A new, merged {@link PdfDocument}
-     */
-    public static PdfDocument Merge(PdfDocument A, PdfDocument B) throws IOException {
-        return Merge(Arrays.asList(A, B));
-    }
 
     //endregion
 
-    //region Bookmark
-
-    /**
-     * Static method that joins (concatenates) multiple PDF documents together into one compiled PDF
-     * document. If the PDF contains form fields the form field in the resulting PDF's name will be
-     * appended with '_{index}' e.g. 'Name' will be 'Name_0'
-     *
-     * @param Documents A IEnumerable of PdfDocument.  To merge existing PDF files you may use the
-     *                  PdfDocument.FromFile static method in conjunction with Merge.
-     * @return A new, merged {@link PdfDocument}
-     */
-    public static PdfDocument Merge(List<PdfDocument> Documents) throws IOException {
-        return new PdfDocument(Page_Api.MergePage(
-                Documents.stream().map(x -> x.internalPdfDocument).collect(Collectors.toList())));
-    }
+    // region StaticFactory
 
     /**
      * Opens an existing PDF document for editing.
@@ -167,14 +146,12 @@ public class PdfDocument implements Printable {
      * @param pdfFilePath The PDF file path.
      * @param password    Optional user password if the PDF document is encrypted.
      * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
      */
-    public static PdfDocument FromFile(Path pdfFilePath, String password) throws IOException {
-        return FromFile(pdfFilePath, password, "");
+    public static PdfDocument fromFile(Path pdfFilePath, String password) throws IOException {
+        return fromFile(pdfFilePath, password, "");
     }
 
-    //endregion
-
-    //region Page
 
     /**
      * Opens an existing PDF document for editing.
@@ -182,10 +159,11 @@ public class PdfDocument implements Printable {
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
      * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..).
+     *                      modifying restrictions etc..)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
      */
-    public static PdfDocument FromFile(Path pdfFilePath, String password, String ownerPassword)
+    public static PdfDocument fromFile(Path pdfFilePath, String password, String ownerPassword)
             throws IOException {
         return new PdfDocument(pdfFilePath, password, ownerPassword);
     }
@@ -195,321 +173,396 @@ public class PdfDocument implements Printable {
      *
      * @param pdfFilePath The PDF file path.
      * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
      */
-    public static PdfDocument FromFile(Path pdfFilePath) throws IOException {
-        return FromFile(pdfFilePath, "", "");
+    public static PdfDocument fromFile(Path pdfFilePath) throws IOException {
+        return fromFile(pdfFilePath, "", "");
     }
 
+
     /**
-     * Converts a single image file to an identical PDF document of matching dimensions. The default
-     * PaperSize is A4. You can set it via ImageToPdfConverter.PaperSize. Note:
-     * Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.
+     * Converts a single image file to an identical PDF document of matching dimensions.
+     * <p>The default PaperSize is A4.</p>
+     * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
      *
      * @param imagesPath A list of file path of the image file.
      * @return Returns a {@link PdfDocument} document which can then be edited, saved or
      * served over the web.
      */
-    public static PdfDocument FromImage(List<Path> imagesPath) throws IOException {
+    public static PdfDocument fromImage(List<Path> imagesPath) {
 
-        return FromImage(imagesPath, ImageBehavior.CENTERED_ON_PAGE);
+        return fromImage(imagesPath, ImageBehavior.CENTERED_ON_PAGE);
     }
 
     /**
-     * Converts a single image file to an identical PDF document of matching dimensions. The default
-     * PaperSize is A4. You can set it via ImageToPdfConverter.PaperSize. Note:
-     * Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.
+     * Converts a single image file to an identical PDF document of matching dimensions.
+     * <p>The default PaperSize is A4. You can set it via ImageToPdfConverter.PaperSize.</p>
+     * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
+     *
+     * @param imagesPath A list of file path of the image file.
+     * @param paperSize  A target paper size. Default is A4.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
+     * served over the web.
+     */
+    public static PdfDocument fromImage(List<Path> imagesPath, PaperSize paperSize) {
+
+        return fromImage(imagesPath, ImageBehavior.CENTERED_ON_PAGE, paperSize);
+    }
+
+    /**
+     * Converts a single image file to an identical PDF document of matching dimensions.
+     * <p>The default PaperSize is A4.</p>
+     * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
      *
      * @param imagesPath    A list of file path of the image file.
      * @param imageBehavior Describes how image should be placed on the PDF page
      * @return Returns a {@link PdfDocument} document which can then be edited, saved or
      * served over the web.
      */
-    public static PdfDocument FromImage(List<Path> imagesPath, ImageBehavior imageBehavior)
-            throws IOException {
-
-        return new PdfDocument(Image_Api.ImageToPdf(imagesPath.stream().map(x -> {
-            try {
-                return Files.readAllBytes(x);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()).iterator(), imageBehavior));
+    public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior) {
+        return fromImage(imagesPath, imageBehavior, (ChromePdfRenderOptions) null);
     }
 
     /**
-     * Converts a single image file to an identical PDF document of matching dimensions. The default
-     * PaperSize is A4. You can set it via ImageToPdfConverter.PaperSize. Note:
-     * Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.
+     * Converts a single image file to an identical PDF document of matching dimensions.
+     * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
      *
      * @param imagesPath    A list of file path of the image file.
-     * @param imageBehavior Describes how image should be placed on the PDF page
-     * @param renderOptions Rendering options
+     * @param imageBehavior Describes how image should be placed on the PDF page.
+     * @param paperSize     A target paper size. Default is A4.
      * @return Returns a {@link PdfDocument} document which can then be edited, saved or
      * served over the web.
      */
-    public static PdfDocument FromImage(List<Path> imagesPath, ImageBehavior imageBehavior,
-                                        ChromePdfRenderOptions renderOptions) throws IOException {
+    public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior, PaperSize paperSize) {
+        ChromePdfRenderOptions renderOption = new ChromePdfRenderOptions();
+        renderOption.setPaperSize(paperSize);
+        return fromImage(imagesPath, imageBehavior, renderOption);
+    }
 
-        return new PdfDocument(Image_Api.ImageToPdf(imagesPath.stream().map(x -> {
+
+    /**
+     * Converts a single image file to an identical PDF document of matching dimensions.
+     * <p>The default PaperSize is A4. You can set it via {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}.</p>
+     * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
+     *
+     * @param imagesPath    A list of file path of the image file.
+     * @param imageBehavior Describes how image should be placed on the PDF page.
+     * @param renderOptions Rendering options.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
+     * served over the web.
+     */
+    public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior,
+                                        ChromePdfRenderOptions renderOptions) {
+        return new PdfDocument(Image_Api.imageToPdf(imagesPath.stream().map(x -> {
             try {
                 return Files.readAllBytes(x);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList()).iterator(), imageBehavior));
+        }).collect(Collectors.toList()), imageBehavior, renderOptions));
     }
 
-    /**
-     * Collection of attachments name contained within the pdf document
-     */
-    public final java.util.Iterator<String> getAttachments() throws IOException {
-        return com.ironsoftware.ironpdf.staticapi.Attachment_Api.GetPdfAttachmentCollection(
-                this.internalPdfDocument);
-    }
+
+    //endregion
+
+    //region Managers
 
     /**
-     * Adds a background to each page of this PDF. The background is copied from a first page in
-     * another PDF document.
-     *
-     * @param backgroundPdf The background PDF document.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * Gets the BookmarkManager for this PDF document. BookmarkManager allows reading, removing and editing of bookmarks from the PDF outline.
+     * * <p>See: {@link BookmarkManager}.</p>
      */
-    public final PdfDocument AddBackgroundPdf(PdfDocument backgroundPdf) throws IOException {
-        return AddBackgroundPdf(backgroundPdf, new BackgroundForegroundOptions());
-    }
-
-    /**
-     * Adds a background to selected page(s) of this PDF. The background is copied from a selected
-     * page in another PDF document.
-     *
-     * @param backgroundPdf The background PDF document.
-     * @param options        The BackgroundForegroundOption.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
-     */
-    public final PdfDocument AddBackgroundPdf(PdfDocument backgroundPdf,
-                                              BackgroundForegroundOptions options) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.BackgroundForeground_Api.AddBackground(
-                this.internalPdfDocument,
-                backgroundPdf.internalPdfDocument,
-                options.getPageSelection().getPageList(),
-                options.getBackgroundForegroundPdfPageIndex());
-        return this;
-    }
-
-    /**
-     * Adds a foreground to each page of this PDF. The foreground is copied from a first page of
-     * another PDF document.
-     *
-     * @param foregroundPdf The foreground PDF document.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
-     */
-    public final PdfDocument AddForegroundPdf(PdfDocument foregroundPdf) throws IOException {
-        return AddForegroundPdf(foregroundPdf, new BackgroundForegroundOptions());
-    }
-
-    /**
-     * Adds a foreground to selected page(s) of this PDF. The foreground is copied from a selected
-     * page in another PDF document.
-     *
-     * @param foregroundPdf The foreground PDF document.
-     * @param options        The BackgroundForegroundOption.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
-     */
-    public final PdfDocument AddForegroundPdf(PdfDocument foregroundPdf,
-                                              BackgroundForegroundOptions options) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.BackgroundForeground_Api.AddForeground(
-                this.internalPdfDocument,
-                foregroundPdf.internalPdfDocument,
-                options.getPageSelection().getPageList(),
-                options.getBackgroundForegroundPdfPageIndex());
-        return this;
-    }
-
-    /**
-     * Gets bookmark manager for this PDF document.
-     */
-    public BookmarkManager getBookmarkManager() {
+    public BookmarkManager getBookmark() {
         return bookmarkManager;
     }
 
     /**
-     * Creates a new PDF by copying a page from this PdfDocument.
+     * Gets the metadata manager for this PDF document. MetadataManager allows metadata such as Author etc. to be read and set.
+     *
+     * <p>See: {@link MetadataManager}.
+     */
+    public MetadataManager getMetadata() {
+        return metadataManager;
+    }
+
+    /**
+     * Gets the annotation manager for this PDF document.  AnnotationManager allows annotation objects to be edited.
+     * <p>See: {@link AnnotationManager}.
+     */
+    public AnnotationManager getAnnotation() {
+        return annotationManager;
+    }
+
+    /**
+     * Gets the form manager for this PDF document. FormManager allows AcroForm fields to be read and set.
+     * <p>See: {@link FormManager}.
+     */
+    public FormManager getForm() {
+        return formManager;
+    }
+
+    /**
+     * Gets the attachment manager for this PDF document. AttachmentManager allows attachment objects to be edited.
+     * <p>See: {@link AttachmentManager}.
+     */
+    public AttachmentManager getAttachment() {
+        return attachmentManager;
+    }
+
+    public SecurityManager getSecurity() {
+        return securityManager;
+    }
+
+    //endregion
+
+    //region PageOperations
+
+    /**
+     * Static method that joins (concatenates) 2 PDF documents together into one PDF document.
+     * <p>If the second PDF contains form fields, the resulting PDF's form fields  will be appended with an origin index number.  e.g. 'Name' from the first PDF will become 'Name_0' </p>
+     *
+     * @param A A PDF
+     * @param B A Seconds PDF
+     * @return A new, merged {@link PdfDocument}
+     */
+    public static PdfDocument merge(PdfDocument A, PdfDocument B) {
+        return merge(Arrays.asList(A, B));
+    }
+
+    /**
+     * Static method that joins (concatenates) 2 PDF documents together into one PDF document.
+     * <p>If the second PDF contains form fields, the resulting PDF's form fields  will be appended with an origin index number.  e.g. 'Name' from the first PDF will become 'Name_0' </p>
+     *
+     * @param Documents A List of PdfDocument.  To merge existing PDF files you may use the
+     *                  PdfDocument.FromFile static method in conjunction with Merge.
+     * @return A new, merged {@link PdfDocument}
+     */
+    public static PdfDocument merge(List<PdfDocument> Documents) {
+        return new PdfDocument(Page_Api.mergePage(
+                Documents.stream().map(x -> x.internalPdfDocument).collect(Collectors.toList())));
+    }
+
+    /**
+     * Creates a new PDF by copying a page from this PdfDocument into a new blank document.
      *
      * @param PageIndex Index of the page.  Note: Page 1 has index 0...
      * @return A new {@link PdfDocument}
      */
-    public final PdfDocument CopyPage(int PageIndex) throws IOException {
-        return CopyPages(new ArrayList<>(Collections.singletonList(PageIndex)));
+    public final PdfDocument copyPage(int PageIndex) {
+        return copyPages(new ArrayList<>(Collections.singletonList(PageIndex)));
     }
 
     /**
-     * Creates a new PDF by copying a range of pages from this PdfDocument.
+     * Creates a new PDF by copying a page from this PdfDocument into a new blank document.
      *
      * @param PageIndexes An IEnumerable of page indexes to copy into the new PDF.
      * @return A new {@link PdfDocument}
      */
-    public final PdfDocument CopyPages(java.lang.Iterable<Integer> PageIndexes) throws IOException {
+    public final PdfDocument copyPages(java.lang.Iterable<Integer> PageIndexes) {
         return new PdfDocument(
-                com.ironsoftware.ironpdf.staticapi.Page_Api.CopyPage(internalPdfDocument, PageIndexes));
+                Page_Api.copyPage(internalPdfDocument, PageIndexes));
     }
 
     /**
-     * Creates a new PDF by copying a range of pages from this {@link PdfDocument}.
+     * Creates a new PDF by copying a range of pages from this {@link PdfDocument} into a new blank document.
      *
      * @param StartIndex The index of the first PDF page to copy. Note: Page 1 has index 0
      * @param EndIndex   The index of the last PDF page to copy.
      * @return A new {@link PdfDocument}
      */
-    public final PdfDocument CopyPages(int StartIndex, int EndIndex) throws IOException {
+    public final PdfDocument copyPages(int StartIndex, int EndIndex) {
         ArrayList<Integer> pageIndexes = new ArrayList<>();
         for (int i = StartIndex; i <= EndIndex; i++) {
             pageIndexes.add(i);
         }
 
-        return CopyPages(pageIndexes);
+        return copyPages(pageIndexes);
     }
 
-    //endregion
-
-    //region HeaderFooter
-
-    //region TextHeaderFooter
-
     /**
-     * Appends another PDF to the end of the current {@link PdfDocument} If AnotherPdfFile contains
-     * form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be
-     * 'Name_'
+     * Appends another PDF to the end of the current {@link PdfDocument}. <p>If AnotherPdfFile contains
+     * form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will become  'Name_'</p>
      *
      * @param AnotherPdfFile PdfDocument to append.
      * @return A new {@link PdfDocument}
      */
-    public final PdfDocument AppendPdf(PdfDocument AnotherPdfFile) throws IOException {
-        Page_Api.AppendPdf(this.internalPdfDocument, AnotherPdfFile.internalPdfDocument);
+    public final PdfDocument appendPdf(PdfDocument AnotherPdfFile) {
+        Page_Api.appendPdf(this.internalPdfDocument, AnotherPdfFile.internalPdfDocument);
         return this;
     }
 
     /**
-     * Inserts another PDF into the current PdfDocument, starting at a given Page Index. If
-     * AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting
-     * PDF. e.g. 'Name' will be 'Name_'
+     * Inserts another PDF into the current PdfDocument, starting at a given Page Index.
+     * <p> If AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be 'Name_' </p>
      *
      * @param AnotherPdfFile Another PdfDocument...
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument InsertPdf(PdfDocument AnotherPdfFile) throws IOException {
-        return InsertPdf(AnotherPdfFile, 0);
+    public final PdfDocument insertPdf(PdfDocument AnotherPdfFile) {
+        return insertPdf(AnotherPdfFile, 0);
     }
 
     /**
-     * Inserts another PDF into the current PdfDocument, starting at a given Page Index. If
-     * AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting
-     * PDF. e.g. 'Name' will be 'Name_'
+     * Inserts another PDF into the current PdfDocument, starting at a given Page Index.
+     * <p> If AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be 'Name_' </p>
      *
      * @param AnotherPdfFile Another PdfDocument.
      * @param AtIndex        Index at which to insert the new content.  Note: Page 1 has index 0...
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument InsertPdf(PdfDocument AnotherPdfFile, int AtIndex) throws IOException {
-        Page_Api.InsertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, AtIndex);
+    public final PdfDocument insertPdf(PdfDocument AnotherPdfFile, int AtIndex) {
+        Page_Api.insertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, AtIndex);
         return this;
     }
 
     /**
-     * Adds another PDF to the beginning of the current PdfDocument If AnotherPdfFile contains form
-     * fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be
-     * 'Name_'
+     * Adds another PDF to the beginning of the current PdfDocument.
+     * <p> If AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be 'Name_' </p>
      *
      * @param AnotherPdfFile PdfDocument to prepend.
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument PrependPdf(PdfDocument AnotherPdfFile) throws IOException {
-        Page_Api.InsertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, 0);
+    public final PdfDocument prependPdf(PdfDocument AnotherPdfFile) {
+        Page_Api.insertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, 0);
         return this;
     }
-
-    //endregion
-
-    //region HtmlHeaderFooter
 
     /**
      * Removes a range of pages from the PDF
      *
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
+     * @param pageSelection The selected page index(es). Default is all pages.
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument RemovePages(PageSelection pageSelection) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Page_Api.RemovePage(internalPdfDocument,
-                pageSelection.getPageList());
+    public final PdfDocument removePages(PageSelection pageSelection) {
+        Page_Api.removePage(internalPdfDocument,
+                pageSelection.getPageList(internalPdfDocument));
         return this;
     }
 
     /**
-     * Gets list of all pages information.
+     * Gets a list of information about pages in this PDF as a List of {@link PageInfo}.
      *
-     * @return list of all pages information.
+     * @return List<PageInfo> a list of information about the PDF’s pages.
      */
-    public final List<PageInfo> GetPagesInfo() throws IOException {
-        return com.ironsoftware.ironpdf.staticapi.Page_Api.GetPagesInfo(internalPdfDocument);
+    public final List<PageInfo> getPagesInfo() {
+        return Page_Api.getPagesInfo(internalPdfDocument);
     }
 
     /**
-     * Gets list of all pages information.
+     * Gets a Map of information a selection of  pages in this PDF as a List of {@link PageInfo}.
      *
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
+     * @param pageSelection Selected page indexes. Default is all pages.
      * @return a map of page index and page information.
      */
-    public final Map<Integer, PageInfo> GetPagesInfo(PageSelection pageSelection) throws IOException {
-        List<PageInfo> pagesInfos = com.ironsoftware.ironpdf.staticapi.Page_Api.GetPagesInfo(
+    public final Map<Integer, PageInfo> getPagesInfo(PageSelection pageSelection) {
+        List<PageInfo> pagesInfo = Page_Api.getPagesInfo(
                 internalPdfDocument);
-        return pageSelection.getPageList().stream().collect(Collectors.toMap(x -> x, pagesInfos::get));
+        return pageSelection.getPageList(internalPdfDocument).stream().collect(Collectors.toMap(x -> x, pagesInfo::get));
     }
 
     /**
      * Rotates all pages of the PdfDocument by a specified number of degrees.
      *
-     * @param rotation Degrees of rotation
+     * @param rotation Degrees of rotation. May be 0,90,180 or 270
      */
-    public final void RotateAllPages(PageRotation rotation) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Page_Api.RotatePage(internalPdfDocument, rotation);
+    public final void rotateAllPages(PageRotation rotation) {
+        Page_Api.rotatePage(internalPdfDocument, rotation);
     }
 
-    //endregion
-
-    //endregion
-
-    //region Image
-
     /**
-     * Rotates one page of the PdfDocument by a specified number of degrees.
+     * Rotates a selection page of the PdfDocument by a specified number of degrees.
      *
-     * @param pageRotation      Degrees of rotation
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
+     * @param pageRotation  Degrees of rotation. May be 0,90,180 or 270
+     * @param pageSelection Selected page indexes. Default is all pages.
      */
-    public final void RotatePage(PageRotation pageRotation, PageSelection pageSelection)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Page_Api.RotatePage(internalPdfDocument, pageRotation,
-                pageSelection.getPageList());
+    public final void rotatePage(PageRotation pageRotation, PageSelection pageSelection) {
+        Page_Api.rotatePage(internalPdfDocument, pageRotation,
+                pageSelection.getPageList(internalPdfDocument));
+    }
+    //endregion
+
+    // region BackgroundForeground
+
+    /**
+     * Adds a background to each page of this PDF. The background is copied from a first page in the
+     * backgroundPdf document.
+     *
+     * @param backgroundPdf The background PDF document.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf) {
+        return addBackgroundPdf(backgroundPdf, new BackgroundForegroundOptions());
     }
 
     /**
-     * Renders TEXT page headers to an existing PDF File
+     * Adds a background to selected page(s) of this PDF. The background is copied from a selected
+     * page in the backgroundPdf document.
+     *
+     * @param backgroundPdf The background PDF document.
+     * @param options       The BackgroundForegroundOptions.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf,
+                                              BackgroundForegroundOptions options) {
+        BackgroundForeground_Api.addBackground(
+                this.internalPdfDocument,
+                backgroundPdf.internalPdfDocument,
+                options.getPageSelection().getPageList(internalPdfDocument),
+                options.getBackgroundForegroundPdfPageIndex());
+        return this;
+    }
+
+    /**
+     * Adds a foreground to each page of this PDF. The foreground is copied from a first page of
+     * the foregroundPdf document.
+     *
+     * @param foregroundPdf The foreground PDF document.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf) {
+        return addForegroundPdf(foregroundPdf, new BackgroundForegroundOptions());
+    }
+
+    /**
+     * Adds a foreground to selected page(s) of this PDF. The foreground is copied from a selected
+     * page in the foregroundPdf document.
+     *
+     * @param foregroundPdf The foreground PDF document.
+     * @param options       The BackgroundForegroundOption.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf,
+                                              BackgroundForegroundOptions options) {
+        BackgroundForeground_Api.addForeground(
+                this.internalPdfDocument,
+                foregroundPdf.internalPdfDocument,
+                options.getPageSelection().getPageList(internalPdfDocument),
+                options.getBackgroundForegroundPdfPageIndex());
+        return this;
+    }
+
+    //endregion
+
+    //region HeadersAndFooters
+
+    /**
+     * Renders TEXT page headers onto an existing PDF File
      *
      * @param header A new instance of IronPdf.TextHeaderFooter that defines the header content and
      *               layout.
      */
-    public PdfDocument AddTextHeader(TextHeaderFooter header) throws IOException {
+    public PdfDocument addTextHeader(TextHeaderFooter header) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddTextHeader(internalPdfDocument, header,
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -517,17 +570,34 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders TEXT page headers to an existing PDF File
+     * Renders TEXT page headers onto an existing PDF File
      *
-     * @param header             A new instance of IronPdf.TextHeaderFooter that defines the header
-     *                           content and layout.
+     * @param header        A new instance of IronPdf.TextHeaderFooter that defines the header content and
+     *                      layout.
+     * @param pageSelection Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addTextHeader(TextHeaderFooter header, PageSelection pageSelection) {
+        HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getPdfTitle());
+        return this;
+    }
+
+    /**
+     * Renders TEXT page headers onto an existing PDF File
+     *
+     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header
+     *                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      */
-    public PdfDocument AddTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddTextHeader(internalPdfDocument, header,
+    public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -535,16 +605,34 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders TEXT page footers to an existing PDF File
+     * Renders TEXT page headers onto an existing PDF File
+     *
+     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header
+     *                            content and layout.
+     * @param headerFooterOptions HeaderFooterOption.
+     * @param pageSelection       Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getPdfTitle());
+        return this;
+    }
+
+    /**
+     * Renders TEXT page footers onto an existing PDF File
      *
      * @param footer A new instance of IronPdf.TextHeaderFooter that defines the footer content and
      *               layout.
      */
-    public PdfDocument AddTextFooter(TextHeaderFooter footer) throws IOException {
+    public PdfDocument addTextFooter(TextHeaderFooter footer) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddTextFooter(internalPdfDocument, footer,
+        HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -552,17 +640,34 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders TEXT page footer to an existing PDF File
+     * Renders TEXT page footers onto an existing PDF File
      *
-     * @param footer             A new instance of IronPdf.TextHeaderFooter that defines the footer
-     *                           content and layout.
+     * @param footer        A new instance of IronPdf.TextHeaderFooter that defines the footer content and
+     *                      layout.
+     * @param pageSelection Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addTextFooter(TextHeaderFooter footer, PageSelection pageSelection) {
+        HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
+        HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getPdfTitle());
+        return this;
+    }
+
+    /**
+     * Renders TEXT page footer onto an existing PDF File
+     *
+     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer
+     *                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      */
-    public PdfDocument AddTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddTextHeader(internalPdfDocument, footer,
+    public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -570,16 +675,34 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders HTML page headers to an existing PDF File
+     * Renders TEXT page footer onto an existing PDF File
+     *
+     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer
+     *                            content and layout.
+     * @param headerFooterOptions HeaderFooterOption.
+     * @param pageSelection       Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
+        HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getPdfTitle());
+        return this;
+    }
+
+    /**
+     * Renders HTML page headers onto an existing PDF File
      *
      * @param header A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
      *               layout.
      */
-    public PdfDocument AddHtmlHeader(HtmlHeaderFooter header) throws IOException {
+    public PdfDocument addHtmlHeader(HtmlHeaderFooter header) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddHtmlHeader(internalPdfDocument, header,
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -588,17 +711,35 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders HTML page headers to an existing PDF File
+     * Renders HTML page headers onto an existing PDF File
      *
-     * @param header             A new instance of IronPdf.HtmlHeaderFooter that defines the header
-     *                           content and layout.
+     * @param header        A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
+     *                      layout.
+     * @param pageSelection Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addHtmlHeader(HtmlHeaderFooter header, PageSelection pageSelection) {
+        HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
+                headerFooterOptions.getHtmlTitle());
+        return this;
+    }
+
+    /**
+     * Renders HTML page headers onto an existing PDF File
+     *
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header
+     *                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      */
-    public PdfDocument AddHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddHtmlHeader(internalPdfDocument, header,
+    public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -606,22 +747,37 @@ public class PdfDocument implements Printable {
         return this;
     }
 
-    //endregion
+    /**
+     * Renders HTML page headers onto an existing PDF File
+     *
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header
+     *                            content and layout.
+     * @param headerFooterOptions HeaderFooterOption.
+     * @param pageSelection       Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
+                headerFooterOptions.getHtmlTitle());
+        return this;
+    }
 
-    //region CompressImages
 
     /**
-     * Renders HTML page footers to an existing PDF File
+     * Renders HTML page footers onto an existing PDF File
      *
      * @param footer A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and
      *               layout.
-     * @throws IOException When IronPdfEngine is down.
      */
-    public PdfDocument AddHtmlFooter(HtmlHeaderFooter footer) throws IOException {
+    public PdfDocument addHtmlFooter(HtmlHeaderFooter footer) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddHtmlFooter(internalPdfDocument, footer,
+        HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -630,17 +786,54 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders HTML page footer to an existing PDF File
+     * Renders HTML page footers onto an existing PDF File
      *
-     * @param footer             A new instance of IronPdf.HtmlHeaderFooter that defines the footer
-     *                           content and layout.
+     * @param footer        A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and
+     *                      layout.
+     * @param pageSelection Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, PageSelection pageSelection) {
+        HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
+        HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
+                headerFooterOptions.getHtmlTitle());
+        return this;
+    }
+
+    /**
+     * Renders HTML page footer onto an existing PDF File
+     *
+     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer
+     *                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      */
-    public PdfDocument AddHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.HeaderFooter_Api.AddHtmlHeader(internalPdfDocument, footer,
+    public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                headerFooterOptions.getPageIndexesToAddHeaderFootersTo(),
+                PageSelection.allPages().getPageList(internalPdfDocument),
+                headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
+                headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
+                headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
+                headerFooterOptions.getHtmlTitle());
+        return this;
+    }
+
+    /**
+     * Renders HTML page footer onto an existing PDF File
+     *
+     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer
+     *                            content and layout.
+     * @param headerFooterOptions HeaderFooterOption.
+     * @param pageSelection       Selected page indexes. Default is all pages.
+     */
+    public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
+        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
+                headerFooterOptions.getFirstPageNumber(),
+                pageSelection.getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -649,28 +842,28 @@ public class PdfDocument implements Printable {
     }
     //endregion
 
-    //region ExtractAllBitmaps
+    //region Imaging
 
     /**
-     * Draws a bitmap image to the PDF document
+     * Draws an image onto the PDF document
      *
-     * @param bitmapFilePath The bitmap image file path.
+     * @param imagePath The image file path.
      */
-    public final void DrawImage(Path bitmapFilePath, DrawImageOptions option) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Image_Api.DrawBitmap(internalPdfDocument,
-                Files.readAllBytes(bitmapFilePath), option.getPageSelection().getPageList(), option.getX(),
+    public final void drawImage(Path imagePath, DrawImageOptions option) throws IOException {
+        Image_Api.drawImage(internalPdfDocument,
+                Files.readAllBytes(imagePath), option.getPageSelection().getPageList(internalPdfDocument), option.getX(),
                 option.getY(),
                 option.getWidth(), option.getHeight());
     }
 
     /**
-     * Draws a bitmap image to the PDF document
+     * Draws an image onto the PDF document
      *
-     * @param bitmapBytes image byte array
+     * @param imageBytes image byte array
      */
-    public final void DrawImage(byte[] bitmapBytes, DrawImageOptions option) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Image_Api.DrawBitmap(internalPdfDocument,
-                bitmapBytes, option.getPageSelection().getPageList(), option.getX(), option.getY(),
+    public final void drawImage(byte[] imageBytes, DrawImageOptions option) {
+        Image_Api.drawImage(internalPdfDocument,
+                imageBytes, option.getPageSelection().getPageList(internalPdfDocument), option.getX(), option.getY(),
                 option.getWidth(), option.getHeight());
     }
 
@@ -679,8 +872,8 @@ public class PdfDocument implements Printable {
      *
      * @return An array of BufferedImage objects.
      */
-    public final List<BufferedImage> ToBufferedImage() throws IOException {
-        return ToBufferedImage(new ToImageOptions());
+    public final List<BufferedImage> toBufferedImage() throws IOException {
+        return toBufferedImage(new ToImageOptions());
     }
 
     /**
@@ -689,9 +882,9 @@ public class PdfDocument implements Printable {
      * @param options The {@link ToImageOptions}
      * @return An array of BufferedImage objects.
      */
-    public final List<BufferedImage> ToBufferedImage(ToImageOptions options) throws IOException {
-        return com.ironsoftware.ironpdf.staticapi.Image_Api.PdfToImage(internalPdfDocument,
-                        options.getPageSelection().getPageList(),
+    public final List<BufferedImage> toBufferedImage(ToImageOptions options) throws IOException {
+        return Image_Api.pdfToImage(internalPdfDocument,
+                        options.getPageSelection().getPageList(internalPdfDocument),
                         options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight()).stream()
                 .map(bytes -> {
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
@@ -703,44 +896,41 @@ public class PdfDocument implements Printable {
                 }).collect(Collectors.toList());
     }
 
-    //endregion
-
-    //region FromFile
 
     /**
      * Renders the pages of the PDF as PNG (Portable Network Graphic) files and saves them to disk.
-     * <p>Specific image dimensions and page numbers may be given as optional parameters</p>
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
-     * for the page numbers</p>
+     * for the page numbers.</p>
      *
      * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
      *                        E.g.  C:\images\pdf_pages_*.png
-     * @param options          The {@link ToImageOptions}
+     * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
-    public final List<String> ToPngImages(String fileNamePattern, ToImageOptions options)
+    public final List<String> toPngImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
-        return ToImage(fileNamePattern, "png", options);
+        return toImage(fileNamePattern, "png", options);
     }
 
     /**
-     * Renders the pages of the PDF as specific image files type and saves them to disk. <p>Specific
-     * image dimensions and page numbers may be given as optional parameters</p> <p>FileNamePattern
-     * should normally contain an asterisk (*) character which will be substituted for the page
-     * numbers</p>
+     * Renders the pages of the PDF as specific image files type and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
      *
      * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
      *                        E.g.  C:\images\pdf_page_*.jpg
      * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
      *                        "gif", "tiff"
-     * @param options          The {@link ToImageOptions}
+     * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
-    public List<String> ToImage(String fileNamePattern, String imageFileType, ToImageOptions options)
+    public List<String> toImage(String fileNamePattern, String imageFileType, ToImageOptions options)
             throws IOException {
 
-        List<byte[]> dataList = com.ironsoftware.ironpdf.staticapi.Image_Api.PdfToImage(
-                internalPdfDocument, options.getPageSelection().getPageList(),
+        List<byte[]> dataList = Image_Api.pdfToImage(
+                internalPdfDocument, options.getPageSelection().getPageList(internalPdfDocument),
                 options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight());
 
         List<String> paths = new ArrayList<>();
@@ -785,58 +975,56 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Renders the pages of the PDF as JPEG files and saves them to disk. <p>Specific image dimensions
-     * and page numbers may be given as optional parameters</p> <p>FileNamePattern should normally
-     * contain an asterisk (*) character which will be substituted for the page numbers</p>
+     * Renders the pages of the PDF as JPEG image files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
      *
      * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
      *                        E.g.  C:\images\pdf_page_*.jpg
-     * @param options          The {@link ToImageOptions}
+     * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
-    public final List<String> ToJpegImages(String fileNamePattern, ToImageOptions options)
+    public final List<String> toJpegImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
-        return ToImage(fileNamePattern, "jpg", options);
+        return toImage(fileNamePattern, "jpg", options);
     }
 
-    //endregion
-
-    //region FromImage
 
     /**
-     * Compress existing images using JPG encoding and the specified settings
+     * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality setting.
      *
      * @param quality Quality (1 - 100) to use during compression
      */
-    public final void CompressImages(int quality) throws IOException {
-        CompressImages(quality, false);
+    public final void compressImages(int quality) {
+        compressImages(quality, false);
     }
 
     /**
-     * Compress existing images using JPG encoding and the specified settings
+     * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality settings.
      *
      * @param quality            Quality (1 - 100) to use during compression
      * @param scaleToVisibleSize Scale down the image resolution according to its visible size in the
      *                           PDF document; may cause distortion with some image configurations.
      *                           Default is false.
      */
-    public final void CompressImages(int quality, boolean scaleToVisibleSize) throws IOException {
+    public final void compressImages(int quality, boolean scaleToVisibleSize) {
         if (quality < 1 || quality > 100) {
             throw new IndexOutOfBoundsException(String.format(
                     "Invalid quality specifier (%1$s) when compressing images. Quality must be between 1 and 100.",
                     quality));
         }
-        com.ironsoftware.ironpdf.staticapi.Compress_Api.CompressImages(internalPdfDocument, quality,
+        Compress_Api.compressImages(internalPdfDocument, quality,
                 scaleToVisibleSize);
     }
 
     /**
-     * Finds all embedded Images from within the PDF and returns as list of image bytes
+     * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
-     * @return IEnumerable of Image.  The extracted images as System.Drawing Objects
+     * @return List<BufferedImage>:  The extracted images as {@link BufferedImage} objects.
      */
-    public final List<BufferedImage> ExtractAllImages() throws IOException {
-        return ExtractAllRawImages().stream().map(bytes -> {
+    public final List<BufferedImage> extractAllImages() throws IOException {
+        return extractAllRawImages().stream().map(bytes -> {
             InputStream is = new ByteArrayInputStream(bytes);
             BufferedImage newBi;
             try {
@@ -848,32 +1036,29 @@ public class PdfDocument implements Printable {
         }).collect(Collectors.toList());
     }
 
-    //endregion
-
-    //region Save
 
     /**
-     * Finds all embedded Images from within the PDF and returns as list of image bytes
+     * Finds all embedded Images from within the PDF and returns as a list of image bytes
      *
-     * @return IEnumerable of Image bytes.  The extracted images as System.Drawing Objects
+     * @return List<byte [ ]>:  The extracted images as byte arrays.
      */
-    public final List<byte[]> ExtractAllRawImages() throws IOException {
-        if (com.ironsoftware.ironpdf.staticapi.Page_Api.GetPagesInfo(internalPdfDocument).size()
+    public final List<byte[]> extractAllRawImages() throws IOException {
+        if (Page_Api.getPagesInfo(internalPdfDocument).size()
                 == 0) {
             return new ArrayList<>();
         }
-        return com.ironsoftware.ironpdf.staticapi.Image_Api.ExtractAllImages(internalPdfDocument);
+        return Image_Api.extractAllImages(internalPdfDocument);
     }
 
     /**
-     * Finds all embedded Images from within the PDF and returns as list of image bytes
+     * Finds all embedded Images from within the PDF and returns as a list of image bytes
      *
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
-     * @return IEnumerable of Image bytes.  The extracted images as System.Drawing Objects
+     * @param pageSelection The selected page index(es). Default is all pages.
+     * @return List<BufferedImage>:  The extracted images as {@link BufferedImage} objects.
      */
-    public final List<BufferedImage> ExtractAllImagesFromPages(PageSelection pageSelection)
+    public final List<BufferedImage> extractAllImagesFromPages(PageSelection pageSelection)
             throws IOException {
-        return ExtractAllRawImagesFromPages(pageSelection).stream().map(bytes -> {
+        return extractAllRawImagesFromPages(pageSelection).stream().map(bytes -> {
             InputStream is = new ByteArrayInputStream(bytes);
             BufferedImage newBi;
             try {
@@ -884,176 +1069,69 @@ public class PdfDocument implements Printable {
             return newBi;
         }).collect(Collectors.toList());
     }
-    //endregion
 
-    //region Security
 
     /**
-     * Finds all embedded Images from within the PDF and returns then as System.Drawing.Image objects
+     * Finds all embedded Images from within the PDF and returns them as raw bytes.
      *
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
-     * @return IEnumerable of Image.  The extracted images as System.Drawing Objects
+     * @param pageSelection The selected page index(es). Default is all pages.
+     * @return List<byte [ ]>:   The extracted images as byte arrays.
      */
-    public final List<byte[]> ExtractAllRawImagesFromPages(PageSelection pageSelection)
+    public final List<byte[]> extractAllRawImagesFromPages(PageSelection pageSelection)
             throws IOException {
-        if (com.ironsoftware.ironpdf.staticapi.Page_Api.GetPagesInfo(internalPdfDocument).size()
+        if (Page_Api.getPagesInfo(internalPdfDocument).size()
                 == 0) {
             return new ArrayList<>();
         }
-        return com.ironsoftware.ironpdf.staticapi.Image_Api.ExtractAllImages(internalPdfDocument,
-                pageSelection.getPageList());
+        return Image_Api.extractAllImages(internalPdfDocument,
+                pageSelection.getPageList(internalPdfDocument));
     }
 
+    //endregion
+
+    //region IO
+
     /**
-     * Saves the PdfDocument to a file. <p>Supports site relative paths staring with "~/" in .Net
-     * Framework Web 4+ Applications</p>
+     * Saves this PdfDocument to a file.
      *
      * @param FilePath File Path
      * @return This PdfDocument for fluid code notation.
      */
-    public final PdfDocument SaveAs(Path FilePath) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.PdfDocument_Api.SaveAs(internalPdfDocument,
+    public final PdfDocument saveAs(Path FilePath) throws IOException {
+        PdfDocument_Api.saveAs(internalPdfDocument,
                 FilePath.toAbsolutePath().toString());
         return this;
     }
 
     /**
-     * Gets the binary data for the full PDF file as a byte array.
-     */
-    public final byte[] getBinaryData() throws IOException {
-        return PdfDocument_Api.GetBytes(internalPdfDocument);
-    }
-
-    /**
-     * Gets the owner password and enables 128-bit encryption of PDF content. An owner password is one
-     * used to enable and disable all other security settings. <p>OwnerPassword must be set to a non-empty
-     * string value for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
-     * AllowUserPrinting, AllowUserEdits to be restricted.
-     */
-    public final String getOwnerPassword() throws IOException {
-        return Security_Api.GetPdfSecuritySettings(internalPdfDocument).getOwnerPassword();
-    }
-
-    /**
-     * Sets the owner password and enables 128-bit encryption of PDF content. An owner password is one
-     * used to * enable and disable all other security settings. <p>OwnerPassword must be set to a non-empty
-     * string value * for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
-     * AllowUserPrinting, AllowUserEdits to be * restricted.
-     */
-    public final void setOwnerPassword(String value) throws IOException {
-        Security_Api.GetPdfSecuritySettings(internalPdfDocument).setOwnerPassword(value);
-    }
-
-    /**
-     * Gets a Password used to protect and encrypt the PDF File. Setting a password will cause IronPDF
-     * to automatically protect the PDF file content using strong 128-bit encryption. Setting the
-     * password to null will remove any existing password.
-     */
-    public final String getPassword() throws IOException {
-        return Security_Api.GetPdfSecuritySettings(internalPdfDocument).getOwnerPassword();
-    }
-
-    /**
-     * Sets a Password used to protect and encrypt the PDF File. Setting a password will cause IronPDF
-     * to automatically protect the PDF file content using strong 128-bit encryption. Setting the
-     * password to null will remove any existing password.
-     */
-    public final void setPassword(String value) throws IOException {
-        Security_Api.GetPdfSecuritySettings(internalPdfDocument).setOwnerPassword(value);
-    }
-
-    /**
-     * Removes all user and owner password security for a PDF document.  Also disables content
-     * encryption.
-     * <p>Content is encrypted at 128 bit. Copy and paste of content is disallowed. Annotations and
-     * form
-     * editing are disabled.</p>
-     */
-    public final void RemovePasswordsAndEncryption() throws IOException {
-        Security_Api.RemovePasswordsAndEncryption(internalPdfDocument);
-    }
-    //endregion
-
-    //region Metadata
-
-    /**
-     * Makes this PDF document read only such that: <p>Content is encrypted at 128 bit. Copy and paste
-     * of content is disallowed. Annotations and form editing are disabled.</p>
+     * Returns the binary data for the full PDF file.
      *
-     * @param ownerPassword The owner password for the PDF.  A string for owner password is required
-     *                      to enable PDF encryption and all document security options.
+     * @return byte[] : This PdfDocument expressed as a byte array.
      */
-    public void MakePdfDocumentReadOnly(String ownerPassword) throws IOException {
-        Security_Api.MakePdfDocumentReadOnly(internalPdfDocument, ownerPassword);
+    public final byte[] getBinaryData() {
+        return PdfDocument_Api.getBytes(internalPdfDocument);
     }
 
-    /**
-     * Sets advanced security settings for the PDF. <p>Allows the developer to control user access
-     * passwords, encryption, and also who may edit, print and copy content from the PDF document</p>
-     *
-     * @param pdfSecuritySettings Advanced security settings for this PDF as an instance of {@link PdfSecuritySettings}
-     */
-    public void SetPdfSecuritySettings(com.ironsoftware.ironpdf.security.PdfSecuritySettings pdfSecuritySettings) throws IOException {
-        Security_Api.SetPdfSecuritySettings(internalPdfDocument, pdfSecuritySettings);
-    }
-
-    //endregion
-
-    //region Annotation
-
-    /**
-     * Gets advanced security settings for the PDF. <p>Allows the developer to control user access
-     * passwords, encryption, and also who may edit, print and copy content from the PDF document</p>
-     */
-    public com.ironsoftware.ironpdf.security.PdfSecuritySettings GetPdfSecuritySettings()
-            throws IOException {
-        return Security_Api.GetPdfSecuritySettings(internalPdfDocument);
-    }
-
-    /**
-     * Gets metadata manager for this PDF document.
-     */
-    public MetadataManager getMetadataManager() {
-        return metadataManager;
-    }
-
-    //endregion
-
-    //region Form
-
-    /**
-     * Gets metadata manager for this PDF document.
-     */
-    public AnnotationManager getAnnotationManager() {
-        return annotationManager;
-    }
-
-    /**
-     * Gets form manager for this PDF document.
-     */
-    public FormManager getFormManager() {
-        return formManager;
-    }
     //endregion
 
     //region Print
 
     /**
-     * Prints this PDF by sending it to the computer's printer. <p>For advanced real-world printing
-     * options please implement your own java.awt.print code. This class {@link PdfDocument}
-     * implements java.awt.print.Printable.
+     * Prints this PDF by sending it to the computer's real world printer(s).
+     * <p>For advanced real-world printing options please implement your own java.awt.print code.
+     * <p>This class {@link PdfDocument}implements java.awt.print.Printable.</p>
      */
-    public void Print() throws PrinterException, IOException {
-        com.ironsoftware.ironpdf.staticapi.Print_Api.Print(internalPdfDocument, true);
+    public void print() throws PrinterException {
+        Print_Api.print(internalPdfDocument, true);
     }
 
     /**
-     * Prints this PDF by sending it to the computer's printer. <p>For advanced real-world printing
-     * options please implement your own java.awt.print code. This class {@link PdfDocument}
-     * implements java.awt.print.Printable.
+     * Prints this PDF by sending it to the computer's real world printer(s).
+     * <p>For advanced real-world printing options please implement your own java.awt.print code.
+     * <p>This class {@link PdfDocument}implements java.awt.print.Printable.</p>
      */
-    public void PrintWithoutDialog() throws PrinterException, IOException {
-        com.ironsoftware.ironpdf.staticapi.Print_Api.Print(internalPdfDocument, false);
+    public void printWithoutDialog() throws PrinterException {
+        Print_Api.print(internalPdfDocument, false);
     }
 
     @Override
@@ -1064,12 +1142,11 @@ public class PdfDocument implements Printable {
 
     //endregion
 
-    //region Stamp
+    //region Edit
 
     /**
-     * Adds Watermark to PDF, Please use {@link #ApplyStamp(Stamper)} for more control. <p>For
-     * more information and a code example please visit: https:
-     * //ironpdf.com/tutorials/csharp-edit-pdf-complete-tutorial/#add-a-watermark-to-a-pdf</p>
+     * Adds a watermark to this PDF.
+     * <p>Please use {@link #applyStamp(Stamper)} for more control.</p>
      *
      * @param html              The HTML fragment which will be stamped onto your PDF.
      * @param opacity           Watermark transparent value. 0 is invisible, 100 if fully opaque.
@@ -1077,15 +1154,14 @@ public class PdfDocument implements Printable {
      * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument ApplyWatermark(String html, int opacity,
-                                            VerticalAlignment verticalAlignment) throws IOException {
-        return ApplyWatermark(html, opacity, verticalAlignment, HorizontalAlignment.CENTER);
+    public final PdfDocument applyWatermark(String html, int opacity,
+                                            VerticalAlignment verticalAlignment) {
+        return applyWatermark(html, opacity, verticalAlignment, HorizontalAlignment.CENTER);
     }
 
     /**
-     * Adds Watermark to PDF, Please use {@link #ApplyStamp(Stamper)} for more control. <p>For
-     * more information and a code example please visit: https:
-     * //ironpdf.com/tutorials/csharp-edit-pdf-complete-tutorial/#add-a-watermark-to-a-pdf</p>
+     * Adds a watermark to this PDF.
+     * <p>Please use {@link #applyStamp(Stamper)} for more control.</p>
      *
      * @param html                The HTML fragment which will be stamped onto your PDF.
      * @param opacity             Watermark transparent value. 0 is invisible, 100 if fully opaque.
@@ -1094,107 +1170,320 @@ public class PdfDocument implements Printable {
      * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument ApplyWatermark(String html, int opacity,
-                                            VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment)
-            throws IOException {
+    public final PdfDocument applyWatermark(String html, int opacity,
+                                            VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment) {
         HtmlStamper stamper = new HtmlStamper(html);
         stamper.setVerticalAlignment(verticalAlignment);
         stamper.setHorizontalAlignment(horizontalAlignment);
         stamper.setOpacity(opacity);
-        ApplyStamp(stamper);
+        applyStamp(stamper);
         return this;
     }
 
     /**
-     * Edits the PDF by applying the  {@link Stamper}'s rendered to every page.
-     *
-     * @param stamper The  {@link Stamper} object that has the HTML to be stamped onto the PDF.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
-     */
-    public final PdfDocument ApplyStamp(Stamper stamper) throws IOException {
-        ApplyStamp(stamper, PageSelection.AllPages());
-        return this;
-    }
-
-    /**
-     * Edits the PDF by applying the  {@link Stamper}'s rendered to only selected page(s).
-     *
-     * @param stamper       The {@link Stamper} object that has the HTML to be stamped onto the PDF.
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
-     * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
-     */
-    public final PdfDocument ApplyStamp(Stamper stamper, PageSelection pageSelection)
-            throws IOException {
-        Stamp_Api.ApplyStamp(internalPdfDocument, stamper, pageSelection.getPageList());
-        return this;
-    }
-
-    /**
-     * Adds Watermark to PDF, Please use {@link #ApplyStamp(Stamper)} for more control. <p>For
-     * more information and a code example please visit: https:
-     * //ironpdf.com/tutorials/csharp-edit-pdf-complete-tutorial/#add-a-watermark-to-a-pdf</p>
+     * Adds Watermark to PDF, Please use {@link #applyStamp(Stamper)} for more control.
      *
      * @param html    The HTML fragment which will be stamped onto your PDF.
      * @param opacity Watermark transparent value. 0 is invisible, 100 if fully opaque.
      * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument ApplyWatermark(String html, int opacity) throws IOException {
-        return ApplyWatermark(html, opacity, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
+    public final PdfDocument applyWatermark(String html, int opacity) {
+        return applyWatermark(html, opacity, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
     }
 
     /**
-     * Adds Watermark to PDF, Please use {@link #ApplyStamp(Stamper)} for more control. <p>For
-     * more information and a code example please visit: https:
-     * //ironpdf.com/tutorials/csharp-edit-pdf-complete-tutorial/#add-a-watermark-to-a-pdf</p>
+     * Adds Watermark to PDF, Please use {@link #applyStamp(Stamper)} for more control.
      *
      * @param html The HTML fragment which will be stamped onto your PDF.
      * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument ApplyWatermark(String html) throws IOException {
-        return ApplyWatermark(html, 50, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
+    public final PdfDocument applyWatermark(String html) {
+        return applyWatermark(html, 50, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
     }
+
+
+    /**
+     * Edits the PDF by applying the  {@link Stamper}'s rendered to every page.
+     *
+     * @param stamper The  {@link Stamper} object that has the content to be stamped onto the PDF.
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument applyStamp(Stamper stamper) {
+        applyStamp(stamper, PageSelection.allPages());
+        return this;
+    }
+
+    /**
+     * Edits the PDF by applying the  {@link Stamper}'s rendered to  only selected page(s).
+     *
+     * @param stamper       The  {@link Stamper} object that has the content to be stamped onto the PDF.
+     * @param pageSelection The selected page index(es). Default is all pages,
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+
+    public final PdfDocument applyStamp(Stamper stamper, PageSelection pageSelection) {
+        Stamp_Api.applyStamp(internalPdfDocument, stamper, pageSelection.getPageList(internalPdfDocument));
+        return this;
+    }
+
 
     //endregion
 
     //region Text
 
     /**
-     * Extracts the written text content from the PDF and returns it as a string. <p>Pages are
-     * separated by 4 consecutive Environment.NewLines</p>
+     * Extracts the written text content from the PDF and returns it as a string.
      *
      * @return All text in the PDF as a string.
+     * <p>Pages are separated by 4 consecutive line breaks</p>
      */
-    public final String ExtractAllText() throws IOException {
-        return com.ironsoftware.ironpdf.staticapi.Text_Api.ExtractAllText(internalPdfDocument);
+    public final String extractAllText() {
+        return Text_Api.extractAllText(internalPdfDocument);
     }
 
     /**
      * Extracts the text content from one page of the PDF and returns it as a string.
      *
-     * @param pageSelection A selected page index(es). Default is PageSelection.AllPages().
+     * @param pageSelection The selected page index(es). Default is all pages.
      * @return The text extracted from the PDF page as a string.
      */
-    public final String ExtractTextFromPage(PageSelection pageSelection) throws IOException {
-        return com.ironsoftware.ironpdf.staticapi.Text_Api.ExtractAllText(internalPdfDocument,
-                pageSelection.getPageList());
+    public final String extractTextFromPage(PageSelection pageSelection) {
+        return Text_Api.extractAllText(internalPdfDocument,
+                pageSelection.getPageList(internalPdfDocument));
     }
 
     /**
-     * Replace the specified old text with new text on a given page
+     * Replace the specified old text with new text on a given page.
      *
      * @param pageIndex Page index to search for old text to replace
      * @param oldText   Old text to remove
      * @param newText   New text to add
      */
-    public final void ReplaceTextOnPage(int pageIndex, String oldText, String newText)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Text_Api.ReplaceTextOnPage(internalPdfDocument, pageIndex,
+    public final void replaceTextOnPage(int pageIndex, String oldText, String newText) {
+        Text_Api.replaceTextOnPage(internalPdfDocument, pageIndex,
                 oldText, newText);
     }
 
+    //endregion
+
+    //region Render
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath Path to a Html to be rendered as a PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, null, null);
+    }
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath     Path to a Html to be rendered as a PDF.
+     * @param renderOptions    Rendering options
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  ChromePdfRenderOptions renderOptions,
+                                                  ChromeHttpLoginCredentials loginCredentials) throws IOException {
+        return new PdfDocument(Render_Api.renderHtmlAsPdf(htmlFilePath, renderOptions, loginCredentials));
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html             The Html to be rendered as a PDF.
+     * @param renderOptions    Rendering options
+     * @param loginCredentials Http login credentials
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
+     *                         URL context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              ChromePdfRenderOptions renderOptions,
+                                              ChromeHttpLoginCredentials loginCredentials,
+                                              String baseUrl) {
+        return new PdfDocument(Render_Api.renderHtmlAsPdf(html, renderOptions, loginCredentials, baseUrl));
+    }
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath     Path to a Html to be rendered as a PDF.
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  ChromeHttpLoginCredentials loginCredentials
+    ) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, null, loginCredentials);
+    }
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath  Path to a Html to be rendered as a PDF.
+     * @param renderOptions Rendering options
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  ChromePdfRenderOptions renderOptions
+    ) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, renderOptions, null);
+    }
+
+    /**
+     * Creates a PDF file from a URL or local file path and returns it as a
+     * {@link PdfDocument}.
+     *
+     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a
+     *            PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderUrlAsPdf(String url) {
+        return renderUrlAsPdf(url, null, null);
+    }
+
+    /**
+     * Creates a PDF file from a URL or local file path and returns it as a
+     * {@link PdfDocument}.
+     *
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
+     *                         rendered as a PDF.
+     * @param renderOptions    Rendering options
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderUrlAsPdf(String url,
+                                             ChromePdfRenderOptions renderOptions,
+                                             ChromeHttpLoginCredentials loginCredentials) {
+        return new PdfDocument(Render_Api.renderUrlAsPdf(url, renderOptions, loginCredentials));
+    }
+
+    /**
+     * Creates a PDF file from a URL or local file path and returns it as a
+     * {@link PdfDocument}.
+     *
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
+     *                         rendered as a PDF.
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderUrlAsPdf(String url,
+                                             ChromeHttpLoginCredentials loginCredentials) {
+        return renderUrlAsPdf(url, null, loginCredentials);
+    }
+
+    /**
+     * Creates a PDF file from a URL or local file path and returns it as a
+     * {@link PdfDocument}.
+     *
+     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be
+     *                      rendered as a PDF.
+     * @param renderOptions Rendering options
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderUrlAsPdf(String url,
+                                             ChromePdfRenderOptions renderOptions) {
+        return renderUrlAsPdf(url, renderOptions, null);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html The Html to be rendered as a PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html) {
+        return renderHtmlAsPdf(html, null, null, null);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html             The Html to be rendered as a PDF.
+     * @param loginCredentials Http login credentials
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
+     *                         URL context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              String baseUrl,
+                                              ChromeHttpLoginCredentials loginCredentials) {
+        return renderHtmlAsPdf(html, null, loginCredentials, baseUrl);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html          The Html to be rendered as a PDF.
+     * @param renderOptions Rendering options
+     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL
+     *                      context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              String baseUrl,
+                                              ChromePdfRenderOptions renderOptions) {
+        return renderHtmlAsPdf(html, renderOptions, null, baseUrl);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html             The Html to be rendered as a PDF.
+     * @param renderOptions    Rendering options
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              ChromePdfRenderOptions renderOptions,
+                                              ChromeHttpLoginCredentials loginCredentials) {
+        return renderHtmlAsPdf(html, renderOptions, loginCredentials, null);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html    The Html to be rendered as a PDF.
+     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL
+     *                context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              String baseUrl) {
+        return renderHtmlAsPdf(html, null, null, baseUrl);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html             The Html to be rendered as a PDF.
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              ChromeHttpLoginCredentials loginCredentials) {
+        return renderHtmlAsPdf(html, null, loginCredentials, null);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html          The Html to be rendered as a PDF.
+     * @param renderOptions Rendering options
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              ChromePdfRenderOptions renderOptions) {
+        return renderHtmlAsPdf(html, renderOptions, null, null);
+    }
     //endregion
 }

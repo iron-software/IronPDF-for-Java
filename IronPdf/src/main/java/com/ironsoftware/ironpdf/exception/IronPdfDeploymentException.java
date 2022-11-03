@@ -1,9 +1,9 @@
 package com.ironsoftware.ironpdf.exception;
 
-import com.ironsoftware.ironpdf.staticapi.Exception_RemoteException;
+import com.ironsoftware.ironpdf.internal.staticapi.Exception_RemoteException;
 
 /**
- * Represents errors that occur during IronPDF Asset deployment.
+ * Represents errors that occur during IronPDF binary asset deployment.
  */
 public final class IronPdfDeploymentException extends Exception_RemoteException {
 
@@ -12,7 +12,7 @@ public final class IronPdfDeploymentException extends Exception_RemoteException 
     }
 
     public IronPdfDeploymentException(Exception_RemoteException ex) {
-        super(ex.getMessage(), ex.StackTraceString, ex.getExceptionType());
+        super(ex.getMessage(), ex.stackTraceString, ex.getExceptionType());
     }
 
 }

@@ -2,60 +2,74 @@ package com.ironsoftware.ironpdf.edit;
 
 /**
  * A length value with {@link MeasurementUnit}
+ * <p> Allows use and interchange of units such as inches, mm, pt, percentages, pixels and points when editing a PDF.</p>
  */
 public class Length {
 
-    private double Value;
-    private MeasurementUnit Unit = MeasurementUnit.values()[0];
+    private double value;
+    private MeasurementUnit unit = MeasurementUnit.values()[0];
 
+    /**
+     * Instantiates a new Length. Default MeasurementUnit is {@link MeasurementUnit#PERCENTAGE}
+     *
+     * @param value the value
+     */
     public Length(double value) {
         this(value, MeasurementUnit.PERCENTAGE);
     }
 
+    /**
+     * Instantiates a new Length. A length value with {@link MeasurementUnit}.
+     *
+     * @param value the value
+     * @param unit  the unit
+     */
     public Length(double value, MeasurementUnit unit) {
         setValue(value);
         setUnit(unit);
     }
 
     /**
-     * Default length as 0%
+     * Gets default length : 0%
      */
     public Length() {
         this(0, MeasurementUnit.PERCENTAGE);
     }
 
-    public static double ToPt(Length length) {
-        switch (length.getUnit()) {
-            case INCH:
-                return length.getValue() * 72;
-            case MILLIMETER:
-                return length.getValue() * 2.8346456693;
-            case CENTIMETER:
-                return length.getValue() * 28.346456693;
-            case PERCENTAGE:
-                return length.getValue() * 0.72;
-            case PIXEL:
-                return length.getValue() * 0.75;
-            case POINTS:
-                return length.getValue();
-            default:
-                throw new IndexOutOfBoundsException();
-        }
-    }
 
+    /**
+     * Gets unit. {@link MeasurementUnit}
+     *
+     * @return the unit
+     */
     public final MeasurementUnit getUnit() {
-        return Unit;
+        return unit;
     }
 
+    /**
+     * Sets unit. {@link MeasurementUnit}
+     *
+     * @param value the value
+     */
     public final void setUnit(MeasurementUnit value) {
-        Unit = value;
+        unit = value;
     }
 
+    /**
+     * Gets value.
+     *
+     * @return the value
+     */
     public final double getValue() {
-        return Value;
+        return value;
     }
 
+    /**
+     * Sets value.
+     *
+     * @param value the value
+     */
     public final void setValue(double value) {
-        Value = value;
+        this.value = value;
     }
 }

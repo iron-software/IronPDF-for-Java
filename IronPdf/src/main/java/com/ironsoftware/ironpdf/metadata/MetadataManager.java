@@ -1,150 +1,157 @@
 package com.ironsoftware.ironpdf.metadata;
 
-import com.ironsoftware.ironpdf.staticapi.InternalPdfDocument;
-import com.ironsoftware.ironpdf.staticapi.Metadata_Api;
+import com.ironsoftware.ironpdf.PdfDocument;
+import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
+import com.ironsoftware.ironpdf.internal.staticapi.Metadata_Api;
 
-import java.io.IOException;
-
-
+/**
+ * Class used to read and edit MetaData in a {@link com.ironsoftware.ironpdf.PdfDocument}.
+ * <p> See: {@link com.ironsoftware.ironpdf.PdfDocument#getMetadata()} </p>
+ */
 public class MetadataManager {
 
     private final InternalPdfDocument static_pdfDocument;
 
 
-    public MetadataManager(InternalPdfDocument staticPdfDocument) {
-        this.static_pdfDocument = staticPdfDocument;
+    /**
+     * Please get MetadataManager by {@link PdfDocument#getMetadata()} instead.
+     *
+     * @param internalPdfDocument the internal pdf document
+     */
+    public MetadataManager(InternalPdfDocument internalPdfDocument) {
+        this.static_pdfDocument = internalPdfDocument;
     }
 
     /**
      * Gets the Author of the document.
      */
-    public String GetAuthor() throws IOException {
-        return GetAnyMetadata("Author");
+    public String getAuthor() {
+        return getAnyMetadata("Author");
     }
 
     /**
      * Gets any metadata value of the document form given key.
      */
-    public String GetAnyMetadata(String key) throws IOException {
-        return Metadata_Api.GetMetadata(static_pdfDocument, key);
+    public String getAnyMetadata(String key) {
+        return Metadata_Api.getMetadata(static_pdfDocument, key);
     }
 
     /**
      * Sets the Author of the document.
      */
-    public void SetAuthor(String value) throws IOException {
-        SetAnyMetadata("Author", value);
+    public void setAuthor(String value) {
+        setAnyMetadata("Author", value);
     }
 
     /**
      * Sets any metadata value of the document form given key.
      */
-    public void SetAnyMetadata(String key, String value) throws IOException {
-        Metadata_Api.SetMetadata(static_pdfDocument, key, value);
+    public void setAnyMetadata(String key, String value) {
+        Metadata_Api.setMetadata(static_pdfDocument, key, value);
     }
 
     /**
      * Gets the PDF file creation DateTime.
      */
-    public String GetCreationDate() throws IOException {
-        return GetAnyMetadata("CreationDate");
+    public String getCreationDate() {
+        return getAnyMetadata("CreationDate");
     }
 
     /**
      * Sets the PDF file creation DateTime.
      */
-    public void SetCreationDate(String value) throws IOException {
-        SetAnyMetadata("CreationDate", value);
+    public void setCreationDate(String value) {
+        setAnyMetadata("CreationDate", value);
     }
 
     /**
      * Gets the PDF file last-modified DateTime.
      */
-    public String GetModifiedDate() throws IOException {
-        return GetAnyMetadata("ModDate");
+    public String setModifiedDate() {
+        return getAnyMetadata("ModDate");
     }
 
     /**
      * Sets the PDF file last-modified DateTime.
      */
-    public void SetModifiedDate(String value) throws IOException {
-        SetAnyMetadata("ModDate", value);
+    public void setModifiedDate(String value) {
+        setAnyMetadata("ModDate", value);
     }
 
     /**
      * Gets the Creator of the document.
      */
-    public String GetCreator() throws IOException {
-        return GetAnyMetadata("Creator");
+    public String getCreator() {
+        return getAnyMetadata("Creator");
     }
 
     /**
      * Sets the Creator of the document.
      */
-    public void SetCreator(String value) throws IOException {
-        SetAnyMetadata("Creator", value);
+    public void setCreator(String value) {
+        setAnyMetadata("Creator", value);
     }
 
     /**
      * Gets Keywords of the document.  This helps search indexes and operating systems correctly index
      * the PDF.
      */
-    public String GetKeywords() throws IOException {
-        return GetAnyMetadata("Keywords");
+    public String getKeywords() {
+        return getAnyMetadata("Keywords");
     }
 
     /**
      * Sets Keywords of the document.  This helps search indexes and operating systems correctly index
      * the PDF.
      */
-    public void SetKeywords(String value) throws IOException {
-        SetAnyMetadata("Keywords", value);
+    public void setKeywords(String value) {
+        setAnyMetadata("Keywords", value);
     }
 
     /**
      * Gets the Producer of the document.
      */
-    public String GetProducer() throws IOException {
-        return GetAnyMetadata("Producer");
+    public String getProducer() {
+        return getAnyMetadata("Producer");
     }
 
     /**
      * Sets the Producer of the document.
      */
-    public void SetProducer(String value) throws IOException {
-        SetAnyMetadata("Producer", value);
+    public void setProducer(String value) {
+        setAnyMetadata("Producer", value);
     }
 
     /**
      * Gets Subject of the document.  This helps search indexes and operating systems correctly index
      * the PDF, and may appear in PDF viewer software.
      */
-    public String GetSubject() throws IOException {
-        return GetAnyMetadata("Subject");
+    public String getSubject() {
+        return getAnyMetadata("Subject");
     }
 
     /**
      * Sets the Subject of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
      */
-    public void SetSubject(String value) throws IOException {
-        SetAnyMetadata("Subject", value);
+    public void setSubject(String value) {
+        setAnyMetadata("Subject", value);
     }
 
     /**
      * Gets the Title of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
      */
-    public String GetTitle() throws IOException {
-        return GetAnyMetadata("Title");
+    public String getTitle() {
+        return getAnyMetadata("Title");
     }
 
     /**
      * Sets the Title of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
      */
-    public void SetTitle(String value) throws IOException {
-        SetAnyMetadata("Title", value);
+    public void setTitle(String value) {
+        setAnyMetadata("Title", value);
     }
 
     /**
@@ -152,8 +159,8 @@ public class MetadataManager {
      *
      * @param key The name of the property.
      */
-    public void RemoveMetadata(String key) throws IOException {
-        Metadata_Api.RemoveMetadata(static_pdfDocument, key);
+    public void removeMetadata(String key) {
+        Metadata_Api.removeMetadata(static_pdfDocument, key);
     }
 
 }

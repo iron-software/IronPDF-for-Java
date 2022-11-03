@@ -2,7 +2,7 @@ package com.ironsoftware.ironpdf.security;
 
 /**
  * Enumeration defining levels of PDF user access rights to print a PDF. <p>See
- * {@link PdfSecuritySettings#setAllowUserPrinting(PdfPrintSecurity)} </p>
+ * {@link SecurityOptions#setAllowUserPrinting(PdfPrintSecurity)} </p>
  */
 public enum PdfPrintSecurity {
     /**

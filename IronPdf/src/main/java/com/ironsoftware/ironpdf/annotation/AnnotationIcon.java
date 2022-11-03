@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.annotation;
 
 /**
- * Icons used to interact with (open/close) the annotation with the PDF page.
+ * Icons used to interact (open/close) with a PDF annotation on a page.
  */
 public enum AnnotationIcon {
     /**

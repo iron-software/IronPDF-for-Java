@@ -1,25 +1,26 @@
 package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.staticapi.Setting_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Setting_Api;
 
-public class License {
+/** Allows developers to apply license keys for of IronPDF for Java
+*/
+public final class License {
 
     /**
-     * Gets current license key. Removes watermarks. Get Licensed at
-     * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>
-     * for licensing options.
+     * Gets your current license key. Removes PDF watermarks. 
+     * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from 
+     * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>.</p>
      */
     public static String getLicenseKey() {
-        return Setting_Api.LicenseKey;
+        return Setting_Api.licenseKey;
     }
 
     /**
-     * Sets license key. Need to set before performing any IronPdf operation. Removes watermarks. Get
-     * Licensed at
-     * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>
-     * for licensing options.
+     * Sets your license key. You will need to add a valid license key to perform any IronPdf operations beyond basic testing.<br/>Adding a valid license key removes PDF watermarks and allows advanced functionality. 
+     * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from 
+     * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>.</p>
      */
     public static void setLicenseKey(String licenseKey) {
-        Setting_Api.LicenseKey = licenseKey;
+        Setting_Api.licenseKey = licenseKey;
     }
 }

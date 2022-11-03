@@ -2,7 +2,7 @@ package com.ironsoftware.ironpdf.render;
 
 import com.ironsoftware.ironpdf.headerfooter.HtmlHeaderFooter;
 import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
-import com.ironsoftware.ironpdf.staticapi.Render_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Render_Api;
 
 /**
  * Html To PDF output options for {@link Render_Api}. Specify options such as Paper-Size, DPI,
@@ -13,7 +13,7 @@ public class ChromePdfRenderOptions implements Cloneable {
     /**
      * Turns all Html forms elements into editable PDF forms.
      */
-    private boolean CreatePdfFormsFromHtml = true;
+    private boolean createPdfFormsFromHtml = true;
     /**
      * Enables Media="screen" CSS Styles  and StyleSheets <p>Note: By setting AllowScreenCss=false,
      * IronPdf renders PDFs from HTML using CSS for media="print" as if printing a web page in a
@@ -24,98 +24,98 @@ public class ChromePdfRenderOptions implements Cloneable {
      * Allows a custom CSS style-sheet  to be applied to Html before rendering.  Maybe a local file
      * path,  or remote url.
      */
-    private String CustomCssUrl = "";
-    private double CustomPaperHeight = 297;
-    private double CustomPaperWidth = 210;
+    private String customCssUrl = "";
+    private double customPaperHeight = 297;
+    private double customPaperWidth = 210;
     /**
      * Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
-     * from Ajax / Angular Applications. <p>Also see {@link #RenderDelay}</p>
+     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
      */
-    private boolean EnableJavaScript = true;
+    private boolean enableJavaScript = true;
     /**
      * First page number to be used in PDF Headers and Footers.
      * <p>
-     * {@link #TextHeader} {@link #HtmlHeader} {@link #TextFooter} {@link #HtmlFooter}
+     * {@link #textHeader} {@link #htmlHeader} {@link #textFooter} {@link #htmlFooter}
      */
-    private int FirstPageNumber = 1;
+    private int firstPageNumber = 1;
     /**
      * Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
      * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
      */
-    private boolean FitToPaperWidth = true;
+    private boolean fitToPaperWidth = true;
     /**
      * Outputs a black-and-white PDF
      */
-    private boolean GrayScale = false;
+    private boolean grayScale = false;
     /**
      * Sets the header content for every PDF page as Html.  Supports 'mail-merge'.
      */
-    private HtmlHeaderFooter HtmlFooter = new HtmlHeaderFooter();
+    private HtmlHeaderFooter htmlHeader = new HtmlHeaderFooter();
     /**
      * Sets the footer content for every PDF page as Html.  Supports 'mail-merge'.
      */
-    private HtmlHeaderFooter HtmlHeader = new HtmlHeaderFooter();
+    private HtmlHeaderFooter htmlFooter = new HtmlHeaderFooter();
     /**
      * The input character encoding as a string;
      */
-    private String InputEncoding = "utf-8"; //Now  Disable this function for JAVA
+    private String inputEncoding = "utf-8"; //Now  Disable this function for JAVA
     /**
      * Bottom Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
      * applications.
      */
-    private double MarginBottom = 25;
+    private double marginBottom = 25;
     /**
      * Left Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
      * applications.
      */
-    private double MarginLeft = 25;
+    private double marginLeft = 25;
     /**
      * Right Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
      * applications.
      */
-    private double MarginRight = 25;
+    private double marginRight = 25;
     /**
      * Top Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
      * applications.
      */
-    private double MarginTop = 25;
+    private double marginTop = 25;
     /**
      * The PDF paper orientation. E.g. Portrait or Landscape.
      */
-    private com.ironsoftware.ironpdf.render.PaperOrientation PaperOrientation = com.ironsoftware.ironpdf.render.PaperOrientation.PORTRAIT;
+    private com.ironsoftware.ironpdf.render.PaperOrientation paperOrientation = com.ironsoftware.ironpdf.render.PaperOrientation.PORTRAIT;
     /**
-     * Set an output paper size for PDF pages.  System.Drawing.Printing.PaperKind. <p>Use
-     * SetCustomPaperSize(int width, int height) for custom sizes.</p>
+     * Set an output paper size for PDF pages. <p>Use
+     * {@link #setCustomPaperSizeInMillimeters(double, double)}, {@link #setCustomPaperSizeInPixelsOrPoints(double, double)}, etc... for custom sizes.</p>
      */
-    private com.ironsoftware.ironpdf.render.PaperSize PaperSize = com.ironsoftware.ironpdf.render.PaperSize.A4;
+    private com.ironsoftware.ironpdf.render.PaperSize paperSize = com.ironsoftware.ironpdf.render.PaperSize.A4;
     /**
      * Prints background-colors and images from Html.
      */
-    private boolean PrintHtmlBackgrounds = true;
+    private boolean printHtmlBackgrounds = true;
     /**
      * Milliseconds to wait after Html is rendered before printing.  This can use useful when
      * considering the rendering of JavaScript, Ajax or animations.
      */
-    private int RenderDelay = 0;
+    private int renderDelay = 0;
     /**
-     * Sets the header content for every PDF page as text.  Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks..
+     * Sets the header content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
      */
-    private TextHeaderFooter TextFooter = new TextHeaderFooter();
+    private TextHeaderFooter textHeader = new TextHeaderFooter();
     /**
-     * Sets the footer content for every PDF page as text.  Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks..
+     * Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
      */
-    private TextHeaderFooter TextHeader = new TextHeaderFooter();
+    private TextHeaderFooter textFooter = new TextHeaderFooter();
     /**
      * Render timeout in seconds
      */
-    private int Timeout = 60;
+    private int timeout = 60;
     /**
      * PDF Document Name and Title meta-data.  Not required.  Useful for mail-merge and file naming
      */
 
-    private String Title;
+    private String title;
     /**
      * Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
      * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
@@ -124,7 +124,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
      * width) will render responsive versions of many websites.</p>
      */
-    private int ViewPortHeight = 1280;
+    private int viewPortHeight = 1280;
     /**
      * Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
      * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
@@ -133,201 +133,470 @@ public class ChromePdfRenderOptions implements Cloneable {
      * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
      * width) will render responsive versions of many website</p>
      */
-    private int ViewPortWidth = 1024;
+    private int viewPortWidth = 1024;
     /**
-     * The zoom level in %.  Enlarges the rendering size of Html documents.
+     * The zoom level in %. Enlarges the rendering size of Html documents.
      */
-    private int Zoom = 100;
+    private int zoom = 100;
 
-    public boolean getCreatePdfFormsFromHtml() {
-        return CreatePdfFormsFromHtml;
+    /**
+     * Is create pdf forms from html. Turns all Html forms elements into editable PDF forms.
+     *
+     * @return the boolean
+     */
+    public boolean isCreatePdfFormsFromHtml() {
+        return createPdfFormsFromHtml;
     }
 
+    /**
+     * Sets create pdf forms from html. Turns all Html forms elements into editable PDF forms.
+     *
+     * @param value the value
+     */
     public void setCreatePdfFormsFromHtml(boolean value) {
-        CreatePdfFormsFromHtml = value;
+        createPdfFormsFromHtml = value;
     }
 
+    /**
+     * Gets css media type. Enables Media="screen" CSS Styles  and StyleSheets <p>Note: By setting AllowScreenCss=false,
+     * IronPdf renders PDFs from HTML using CSS for media="print" as if printing a web page in a
+     * browser print dialog.</p>
+     *
+     * @return the css media type
+     */
     public com.ironsoftware.ironpdf.render.CssMediaType getCssMediaType() {
         return CssMediaType;
     }
 
+    /**
+     * Sets css media type. Enables Media="screen" CSS Styles  and StyleSheets <p>Note: By setting AllowScreenCss=false,
+     * IronPdf renders PDFs from HTML using CSS for media="print" as if printing a web page in a
+     * browser print dialog.</p>
+     *
+     * @param value the value
+     */
     public void setCssMediaType(com.ironsoftware.ironpdf.render.CssMediaType value) {
         CssMediaType = value;
     }
 
+    /**
+     * Gets custom css url. Allows a custom CSS style-sheet  to be applied to Html before rendering.  Maybe a local file
+     * path,  or remote url.
+     *
+     * @return the custom css url
+     */
     public String getCustomCssUrl() {
-        return CustomCssUrl;
+        return customCssUrl;
     }
 
+    /**
+     * Sets custom css url. Allows a custom CSS style-sheet  to be applied to Html before rendering.  Maybe a local file
+     * path,  or remote url.
+     *
+     * @param value the value
+     */
     public void setCustomCssUrl(String value) {
-        CustomCssUrl = value;
+        customCssUrl = value;
     }
 
+    /**
+     * Gets custom paper height.
+     *
+     * @return the custom paper height
+     */
     public double getCustomPaperHeight() {
-        return CustomPaperHeight;
+        return customPaperHeight;
     }
 
+    /**
+     * Sets custom paper height (mm).
+     *
+     * @param value the value
+     */
     public void setCustomPaperHeight(double value) {
-        CustomPaperHeight = value;
+        customPaperHeight = value;
     }
 
+    /**
+     * Gets custom paper width (mm).
+     *
+     * @return the custom paper width
+     */
     public double getCustomPaperWidth() {
-        return CustomPaperWidth;
+        return customPaperWidth;
     }
 
+    /**
+     * Sets custom paper width (mm).
+     *
+     * @param value the value
+     */
     public void setCustomPaperWidth(double value) {
-        CustomPaperWidth = value;
+        customPaperWidth = value;
     }
 
-    public boolean getEnableJavaScript() {
-        return EnableJavaScript;
+    /**
+     * Is enable JavaScript. Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
+     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
+     *
+     * @return the boolean
+     */
+    public boolean isEnableJavaScript() {
+        return enableJavaScript;
     }
 
+    /**
+     * Sets enable JavaScript. Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
+     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
+     *
+     * @param value the value
+     */
     public void setEnableJavaScript(boolean value) {
-        EnableJavaScript = value;
+        enableJavaScript = value;
     }
 
+    /**
+     * Gets first page number. First page number to be used in PDF Headers and Footers.
+     * <p>
+     * {@link #setTextHeader} {@link #setHtmlHeader} {@link #setTextFooter} {@link #setHtmlFooter}
+     *
+     * @return the first page number
+     */
     public int getFirstPageNumber() {
-        return FirstPageNumber;
+        return firstPageNumber;
     }
 
+    /**
+     * Sets first page number. First page number to be used in PDF Headers and Footers.
+     * <p>
+     * {@link #setTextHeader} {@link #setHtmlHeader} {@link #setTextFooter} {@link #setHtmlFooter}
+     *
+     * @param value the value
+     */
     public void setFirstPageNumber(int value) {
-        FirstPageNumber = value;
+        firstPageNumber = value;
     }
 
-    public boolean getFitToPaperWidth() {
-        return FitToPaperWidth;
+    /**
+     * Is fit to paper width. Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
+     * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
+     *
+     * @return the boolean
+     */
+    public boolean isFitToPaperWidth() {
+        return fitToPaperWidth;
     }
 
+    /**
+     * Sets fit to paper width. Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
+     * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
+     *
+     * @param value the value
+     */
     public void setFitToPaperWidth(boolean value) {
-        FitToPaperWidth = value;
+        fitToPaperWidth = value;
     }
 
-    public boolean getGrayScale() {
-        return GrayScale;
+    /**
+     * Is gray scale boolean. Outputs a black-and-white PDF.
+     *
+     * @return the boolean
+     */
+    public boolean isGrayScale() {
+        return grayScale;
     }
 
+    /**
+     * Sets gray scale. Outputs a black-and-white PDF.
+     *
+     * @param value the value
+     */
     public void setGrayScale(boolean value) {
-        GrayScale = value;
+        grayScale = value;
     }
 
+    /**
+     * Gets input character encoding as a string;
+     *
+     * @return the input encoding
+     */
     public String getInputEncoding() {
-        return InputEncoding;
+        return inputEncoding;
     }
 
-    void setInputEncoding(String value) {
-        InputEncoding = value;
-    }
+    //Disable setInputEncoding in JAVA
 
+    /**
+     * Gets margin bottom. Bottom Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @return the margin bottom
+     */
     public double getMarginBottom() {
-        return MarginBottom;
+        return marginBottom;
     }
 
+    /**
+     * Sets margin bottom. Bottom Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @param value the value
+     */
     public void setMarginBottom(double value) {
-        MarginBottom = value;
+        marginBottom = value;
     }
 
+    /**
+     * Gets margin left. Left Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @return the margin left
+     */
     public double getMarginLeft() {
-        return MarginLeft;
+        return marginLeft;
     }
 
+    /**
+     * Sets margin left. Left Pdf "paper" margin in millimeters. Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @param value the value
+     */
     public void setMarginLeft(double value) {
-        MarginLeft = value;
+        marginLeft = value;
     }
 
+    /**
+     * Gets margin right. Right Pdf "paper" margin in millimeters. Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @return the margin right
+     */
     public double getMarginRight() {
-        return MarginRight;
+        return marginRight;
     }
 
+    /**
+     * Sets margin right. Right Pdf "paper" margin in millimeters. Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @param value the value
+     */
     public void setMarginRight(double value) {
-        MarginRight = value;
+        marginRight = value;
     }
 
+    /**
+     * Gets margin top. Top Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @return the margin top
+     */
     public double getMarginTop() {
-        return MarginTop;
+        return marginTop;
     }
 
+    /**
+     * Sets margin top. Top Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
+     * applications.
+     *
+     * @param value the value
+     */
     public void setMarginTop(double value) {
-        MarginTop = value;
+        marginTop = value;
     }
 
+    /**
+     * Gets paper orientation. The PDF paper orientation. E.g. Portrait or Landscape.
+     *
+     * @return the paper orientation
+     */
     public com.ironsoftware.ironpdf.render.PaperOrientation getPaperOrientation() {
-        return PaperOrientation;
+        return paperOrientation;
     }
 
+    /**
+     * Sets paper orientation. The PDF paper orientation. E.g. Portrait or Landscape.
+     *
+     * @param value the value
+     */
     public void setPaperOrientation(com.ironsoftware.ironpdf.render.PaperOrientation value) {
-        PaperOrientation = value;
+        paperOrientation = value;
     }
 
+    /**
+     * Gets paper size. Set an output paper size for PDF pages. <p>Use
+     * {@link #setCustomPaperSizeInMillimeters(double, double)}, {@link #setCustomPaperSizeInPixelsOrPoints(double, double)}, etc... for custom sizes.</p>
+     *
+     * @return the paper size
+     */
     public com.ironsoftware.ironpdf.render.PaperSize getPaperSize() {
-        return PaperSize;
+        return paperSize;
     }
 
+    /**
+     * Sets paper size. Set an output paper size for PDF pages. <p>Use
+     * {@link #setCustomPaperSizeInMillimeters(double, double)}, {@link #setCustomPaperSizeInPixelsOrPoints(double, double)}, etc... for custom sizes.</p>
+     *
+     * @param value the value
+     */
     public void setPaperSize(com.ironsoftware.ironpdf.render.PaperSize value) {
-        PaperSize = value;
+        paperSize = value;
     }
 
-    public boolean getPrintHtmlBackgrounds() {
-        return PrintHtmlBackgrounds;
+    /**
+     * Is print html backgrounds boolean. Prints background-colors and images from Html.
+     *
+     * @return the boolean
+     */
+    public boolean isPrintHtmlBackgrounds() {
+        return printHtmlBackgrounds;
     }
 
+    /**
+     * Sets print html backgrounds. Prints background-colors and images from Html.
+     *
+     * @param value the value
+     */
     public void setPrintHtmlBackgrounds(boolean value) {
-        PrintHtmlBackgrounds = value;
+        printHtmlBackgrounds = value;
     }
 
+    /**
+     * Gets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
+     * considering the rendering of JavaScript, Ajax or animations.
+     *
+     * @return the render delay
+     */
     public int getRenderDelay() {
-        return RenderDelay;
+        return renderDelay;
     }
 
+    /**
+     * Sets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
+     * considering the rendering of JavaScript, Ajax or animations.
+     *
+     * @param value the value
+     */
     public void setRenderDelay(int value) {
-        RenderDelay = value;
+        renderDelay = value;
     }
 
+    /**
+     * Gets timeout. Render timeout in seconds.
+     *
+     * @return the timeout
+     */
     public int getTimeout() {
-        return Timeout;
+        return timeout;
     }
 
+    /**
+     * Sets timeout. Render timeout in seconds.
+     *
+     * @param value the value
+     */
     public void setTimeout(int value) {
-        Timeout = value;
+        timeout = value;
     }
 
+    /**
+     * Gets title. PDF Document Name and Title meta-data.  Not required.  Useful for mail-merge and file naming.
+     *
+     * @return the title
+     */
     public String getTitle() {
-        return Title;
+        return title;
     }
 
+    /**
+     * Sets title. PDF Document Name and Title meta-data.  Not required.  Useful for mail-merge and file naming.
+     *
+     * @param value the value
+     */
     public void setTitle(String value) {
-        Title = value;
+        title = value;
     }
 
+    /**
+     * Gets view port height. Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
+     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
+     * framework websites) because the rendering and order of elements on the screen is dependent on
+     * viewport size.</p> <p>The default viewport is 1280px wide by 1024px high to ensure the desktop
+     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
+     * width) will render responsive versions of many websites.</p>
+     *
+     * @return the view port height
+     */
     public int getViewPortHeight() {
-        return ViewPortHeight;
+        return viewPortHeight;
     }
 
+    /**
+     * Sets view port height. Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
+     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
+     * framework websites) because the rendering and order of elements on the screen is dependent on
+     * viewport size.</p> <p>The default viewport is 1280px wide by 1024px high to ensure the desktop
+     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
+     * width) will render responsive versions of many websites.</p>
+     *
+     * @param value the value
+     */
     public void setViewPortHeight(int value) {
-        ViewPortHeight = value;
+        viewPortHeight = value;
     }
 
+    /**
+     * Gets view port width. Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
+     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
+     * framework websites) because the rendering and order of elements on the screen is dependent on
+     * viewport size.</p><p>The default viewport is 1280px wide by 1024px high to ensure the desktop
+     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
+     * width) will render responsive versions of many website</p>
+     *
+     * @return the view port width
+     */
     public int getViewPortWidth() {
-        return ViewPortWidth;
+        return viewPortWidth;
     }
 
+    /**
+     * Sets view port width. Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
+     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
+     * framework websites) because the rendering and order of elements on the screen is dependent on
+     * viewport size.</p><p>The default viewport is 1280px wide by 1024px high to ensure the desktop
+     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
+     * width) will render responsive versions of many website</p>
+     *
+     * @param value the value
+     */
     public void setViewPortWidth(int value) {
-        ViewPortWidth = value;
+        viewPortWidth = value;
     }
 
+    /**
+     * Gets zoom. The zoom level in %. Enlarges the rendering size of Html documents.
+     *
+     * @return the zoom
+     */
     public int getZoom() {
-        return Zoom;
+        return zoom;
     }
 
+    /**
+     * Sets zoom. The zoom level in %. Enlarges the rendering size of Html documents.
+     *
+     * @param value the value
+     */
     public void setZoom(int value) {
-        Zoom = value;
+        zoom = value;
     }
 
     /**
      * Supports {@link Cloneable}.  Creates a deep copy of this class instance.
      *
-     * @return A deep clone of this instance.  Use explicit casting to convert object back to the
-     * intended type.
+     * @return A deep clone of this instance.  Use explicit casting to convert object back to the intended type.
+     * @throws CloneNotSupportedException the clone not supported exception
      */
     public Object Clone() throws CloneNotSupportedException {
         ChromePdfRenderOptions output = (ChromePdfRenderOptions) clone();
@@ -343,36 +612,81 @@ public class ChromePdfRenderOptions implements Cloneable {
         return output;
     }
 
-    public TextHeaderFooter getTextFooter() {
-        return TextFooter;
-    }
-
-    public void setTextFooter(TextHeaderFooter value) {
-        TextFooter = value;
-    }
-
+    /**
+     * Gets text header. The header content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
+     *
+     * @return the text header
+     */
     public TextHeaderFooter getTextHeader() {
-        return TextHeader;
+        return textHeader;
     }
 
+    /**
+     * Sets text header. The header content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
+     *
+     * @param value the value
+     */
     public void setTextHeader(TextHeaderFooter value) {
-        TextHeader = value;
+        textHeader = value;
     }
 
-    public HtmlHeaderFooter getHtmlFooter() {
-        return HtmlFooter;
+    /**
+     * Gets text footer. Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
+     *
+     * @return the text footer
+     */
+    public TextHeaderFooter getTextFooter() {
+        return textFooter;
     }
 
-    public void setHtmlFooter(HtmlHeaderFooter value) {
-        HtmlFooter = value;
+    /**
+     * Sets text footer. Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
+     * turns urls into hyperlinks.
+     *
+     * @param value the value
+     */
+    public void setTextFooter(TextHeaderFooter value) {
+        textFooter = value;
     }
 
+
+    /**
+     * Gets html header. The header content for every PDF page as Html.  Supports 'mail-merge'.
+     *
+     * @return the html header
+     */
     public HtmlHeaderFooter getHtmlHeader() {
-        return HtmlHeader;
+        return htmlHeader;
     }
 
+    /**
+     * Sets html header. The header content for every PDF page as Html.  Supports 'mail-merge'.
+     *
+     * @param value the value
+     */
     public void setHtmlHeader(HtmlHeaderFooter value) {
-        HtmlHeader = value;
+        htmlHeader = value;
+    }
+
+    /**
+     * Gets html footer. The footer content for every PDF page as Html.  Supports 'mail-merge'.
+     *
+     * @return the html footer
+     */
+    public HtmlHeaderFooter getHtmlFooter() {
+        return htmlFooter;
+    }
+
+    /**
+     * Sets html footer. The footer content for every PDF page as Html.  Supports 'mail-merge'.
+     *
+     * @param value the value
+     */
+    public void setHtmlFooter(HtmlHeaderFooter value) {
+        htmlFooter = value;
     }
 
     /**
@@ -381,7 +695,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * @param width  Custom paper width in cm.
      * @param height Custom paper height in cm.
      */
-    public void SetCustomPaperSizeInCentimeters(double width, double height) {
+    public void setCustomPaperSizeInCentimeters(double width, double height) {
         setCustomPaperWidth(width * 10.0);
         setCustomPaperHeight(height * 10.0);
         setPaperSize(com.ironsoftware.ironpdf.render.PaperSize.Custom);
@@ -393,7 +707,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * @param width  Custom paper width in millimeters.
      * @param height Custom paper height in millimeters.
      */
-    public void SetCustomPaperSizeInMillimeters(double width, double height) {
+    public void setCustomPaperSizeInMillimeters(double width, double height) {
         setCustomPaperWidth(width);
         setCustomPaperHeight(height);
         setPaperSize(com.ironsoftware.ironpdf.render.PaperSize.Custom);
@@ -405,9 +719,8 @@ public class ChromePdfRenderOptions implements Cloneable {
      * @param width  Custom paper width in pixels/points.
      * @param height Custom paper height in pixels/points..
      */
-
-    public void SetCustomPaperSizeInPixelsOrPoints(double width, double height) {
-        SetCustomPaperSizeInPixelsOrPoints(width, height, 96);
+    public void setCustomPaperSizeInPixelsOrPoints(double width, double height) {
+        setCustomPaperSizeInPixelsOrPoints(width, height, 96);
     }
 
     /**
@@ -415,11 +728,9 @@ public class ChromePdfRenderOptions implements Cloneable {
      *
      * @param width  Custom paper width in pixels/points.
      * @param height Custom paper height in pixels/points.
-     * @param DPI    Intended print resolution of the PDF.  To be clear PDFs have no fixed DPI/PPI
-     *               value for rendering. 72 and 96 are common onscreen values.  300 is a common value
-     *               used in commercial printing.
+     * @param DPI    Intended print resolution of the PDF.  To be clear PDFs have no fixed DPI/PPI               value for rendering. 72 and 96 are common onscreen values.  300 is a common value               used in commercial printing.
      */
-    public void SetCustomPaperSizeInPixelsOrPoints(double width, double height, int DPI) {
+    public void setCustomPaperSizeInPixelsOrPoints(double width, double height, int DPI) {
         SetCustomPaperSizeInInches(width / DPI, height / DPI);
     }
 

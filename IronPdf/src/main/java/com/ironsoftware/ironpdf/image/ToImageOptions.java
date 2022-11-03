@@ -2,6 +2,10 @@ package com.ironsoftware.ironpdf.image;
 
 import com.ironsoftware.ironpdf.edit.PageSelection;
 
+/**
+ * Defines options when rasterizing (converting) an PDf to image objects and files.
+ * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument#toImage(String, String, ToImageOptions)} and {@link com.ironsoftware.ironpdf.PdfDocument#toBufferedImage(ToImageOptions options)}
+ */
 public class ToImageOptions {
 
     /**
@@ -19,38 +23,81 @@ public class ToImageOptions {
     /**
      * PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
      */
-    private PageSelection pageSelection = PageSelection.AllPages();
+    private PageSelection pageSelection = PageSelection.allPages();
 
+    /**
+     * Gets dpi. The desired resolution of the output Images. Default is 96dpi.
+     *
+     * @return the dpi
+     */
     public int getDpi() {
         return dpi;
     }
 
+    /**
+     * Sets dpi. The desired resolution of the output Images. Default is 96dpi.
+     *
+     * @param dpi the dpi
+     */
     public void setDpi(int dpi) {
         this.dpi = dpi;
     }
 
+    /**
+     * Gets image max height. The target maximum height of the output images. Default is null.
+     *
+     * @return the image max height
+     */
     public Integer getImageMaxHeight() {
         return imageMaxHeight;
     }
 
+    /**
+     * Sets image max height. The target maximum height of the output images. Default is null.
+     *
+     * @param imageMaxHeight the image max height
+     */
     public void setImageMaxHeight(Integer imageMaxHeight) {
         this.imageMaxHeight = imageMaxHeight;
     }
 
+    /**
+     * Gets image max width. The target maximum width of the output images. Default is null.
+     *
+     * @return the image max width
+     */
     public Integer getImageMaxWidth() {
         return imageMaxWidth;
     }
 
+    /**
+     * Sets image max width. The target maximum width of the output images. Default is null.
+     *
+     * @param imageMaxWidth the image max width
+     */
     public void setImageMaxWidth(Integer imageMaxWidth) {
         this.imageMaxWidth = imageMaxWidth;
     }
 
+    /**
+     * Gets page selection. PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
+     *
+     * @return the page selection
+     */
     public PageSelection getPageSelection() {
         return pageSelection;
     }
 
+    /**
+     * Sets page selection. PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
+     *
+     * @param pageIndexes the page indexes
+     */
     public void setPageSelection(PageSelection pageIndexes) {
         pageSelection = pageIndexes;
     }
 
 }
+
+
+

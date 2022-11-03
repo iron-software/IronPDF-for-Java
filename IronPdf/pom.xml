@@ -112,7 +112,7 @@
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
-                        ${project.basedir}/../../protofiles
+                        ./protofiles
                     </protoSourceRoot>
                     <protocArtifact>com.google.protobuf:protoc:3.21.1:exe:${os.detected.classifier}
                     </protocArtifact>

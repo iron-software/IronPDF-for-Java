@@ -8,92 +8,149 @@ public class FormField {
     /**
      * Index of annotation associated with this form field
      */
-    private final int AnnotationIndex;
+    private final int annotationIndex;
     /**
      * Gets the ID name of this field.
      */
-    private final String Name;
+    private final String name;
     /**
      * Gets the value of the editable PDF field.
      */
-    private final String Value;
+    private final String value;
     /**
      * Form field width
      */
-    private final double Width;
+    private final double width;
     /**
      * Form field height
      */
-    private final double Height;
+    private final double height;
     /**
      * Form field x position
      */
-    private final double X;
+    private final double x;
     /**
      * Form field y position
      */
-    private final double Y;
+    private final double y;
     /**
      * Page index which contains this form field
      */
-    private final int PageIndex;
+    private final int pageIndex;
     /**
      * Gets or sets the permissions for users to fill-in current form field.
      */
-    private final boolean ReadOnly;
-    private final FormFieldTypes Type;
+    private final boolean readOnly;
 
+    /**
+     * Form field types
+     */
+    private final FormFieldTypes type;
+
+    /**
+     (INTERNAL) Please Get ComboBoxField from {@link FormFieldsSet#getUnknownFields()} from {@link FormManager#getFields()}
+     */
     public FormField(int annotationIndex, String name, int pageIndex, FormFieldTypes type, double x,
                      double y, double width, double height, String value, boolean readOnly) {
-        this.AnnotationIndex = annotationIndex;
-        this.Name = name;
-        this.PageIndex = pageIndex;
-        this.Type = type;
-        this.X = x;
-        this.Y = y;
-        this.Width = width;
-        this.Height = height;
-        this.Value = value;
-        this.ReadOnly = readOnly;
+        this.annotationIndex = annotationIndex;
+        this.name = name;
+        this.pageIndex = pageIndex;
+        this.type = type;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.value = value;
+        this.readOnly = readOnly;
     }
 
+    /**
+     * Gets annotation index. Index of annotation associated with this form field
+     *
+     * @return the annotation index
+     */
     public final int getAnnotationIndex() {
-        return AnnotationIndex;
+        return annotationIndex;
     }
 
+    /**
+     * Gets the ID name of this field.
+     *
+     * @return the name
+     */
     public final String getName() {
-        return Name;
+        return name;
     }
 
+    /**
+     * Gets page index. Page index which contains this form field
+     *
+     * @return the page index
+     */
     public final int getPageIndex() {
-        return PageIndex;
+        return pageIndex;
     }
 
-    public final boolean getReadOnly() {
-        return ReadOnly;
+    /**
+     * Is read only boolean. The permissions for users to fill-in current form field.
+     *
+     * @return the boolean
+     */
+    public final boolean isReadOnly() {
+        return readOnly;
     }
 
+    /**
+     * Gets form field types.
+     *
+     * @return the type
+     */
     public final FormFieldTypes getType() {
-        return Type;
+        return type;
     }
 
+    /**
+     * Gets the value of the editable PDF field.
+     *
+     * @return the value
+     */
     public final String getValue() {
-        return Value;
+        return value;
     }
 
+    /**
+     * Gets form field width.
+     *
+     * @return the width
+     */
     public final double getWidth() {
-        return Width;
+        return width;
     }
 
+    /**
+     * Gets form field height.
+     *
+     * @return the height
+     */
     public final double getHeight() {
-        return Height;
+        return height;
     }
 
+    /**
+     * Gets form field x position.
+     *
+     * @return the x
+     */
     public final double getX() {
-        return X;
+        return x;
     }
 
+    /**
+     * Gets form field y position.
+     *
+     * @return the y
+     */
     public final double getY() {
-        return Y;
+        return y;
     }
 }

@@ -11,15 +11,15 @@ message SignPdfRequestStream{
   oneof request{
     Info info = 1;
     bytes certificate_file_bytes_chunk = 2;
+    bytes signature_image_chunk = 3;
   }
   message Info{
     PdfDocument document = 1;
     string password = 2;
     optional google.protobuf.Timestamp signature_date = 3;
-    optional bytes signature_image_chunk = 4;
-    optional string signing_contact = 5;
-    optional string signing_location = 6;
-    optional string signing_reason = 7;
+    optional string signing_contact = 4;
+    optional string signing_location = 5;
+    optional string signing_reason = 6;
   }
 }
 
@@ -27,7 +27,7 @@ message GetVerifiedSignatureRequest{
   PdfDocument document = 1;
 }
 
-message VerifySignatureResult{
+message GetVerifySignatureResult{
   oneof result_or_exception{
     VerifiedSignatureCollection verified_signatures = 1;
     RemoteException exception = 2;
@@ -45,4 +45,8 @@ message VerifiedSignature{
   string signing_location = 4;
   google.protobuf.Timestamp signing_date = 5;
   bool is_valid = 6;
+}
+
+message VerifyPdfSignaturesRequest{
+  PdfDocument document = 1;
 }

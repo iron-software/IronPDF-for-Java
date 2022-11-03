@@ -33,6 +33,13 @@ message EmptyResult{
   }
 }
 
+message BooleanResult{
+  oneof result_or_exception {
+    bool result = 1;
+    RemoteException exception = 2;
+  }
+}
+
 message BytesResultStream{
   oneof result_or_exception {
     bytes result_chunk = 1;

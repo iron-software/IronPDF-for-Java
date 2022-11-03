@@ -1,47 +1,57 @@
 package com.ironsoftware.ironpdf.form;
 
+import com.ironsoftware.ironpdf.PdfDocument;
+import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.font.FontTypes;
-import com.ironsoftware.ironpdf.staticapi.InternalPdfDocument;
+import com.ironsoftware.ironpdf.internal.staticapi.Form_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Class used to read and write data to AcroForms in a {@link com.ironsoftware.ironpdf.PdfDocument}.
+ * <p> See: {@link com.ironsoftware.ironpdf.PdfDocument#getForm()} </p>
+ */
 public class FormManager {
 
     private final InternalPdfDocument internalPdfDocument;
 
+    /**
+     * Please get FormManager by {@link PdfDocument#getForm()} instead.
+     *
+     * @param internalPdfDocument the internal pdf document
+     */
     public FormManager(InternalPdfDocument internalPdfDocument) {
         this.internalPdfDocument = internalPdfDocument;
     }
 
     /**
-     * Flattens a document (make the fields non-editable).
+     * Flattens a document (make all form fields non-editable).
      */
-    public final void Flatten() throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Form_Api.FlattenPdfFrom(internalPdfDocument);
+    public final void flatten() {
+        Form_Api.flattenPdfFrom(internalPdfDocument);
     }
 
     /**
-     * Flattens a document (make the fields non-editable).
+     * Flattens a document (make  all form fields non-editable).
      *
-     * @param Pages Optional page indices to flatten (defaults to all pages)
+     * @param pageSelection Selected page indexes. Default is all pages.
      */
-    public final void Flatten(java.lang.Iterable<Integer> Pages) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Form_Api.FlattenPdfFrom(internalPdfDocument, Pages);
+    public final void flatten(PageSelection pageSelection) {
+        Form_Api.flattenPdfFrom(internalPdfDocument, pageSelection.getPageList(internalPdfDocument));
     }
 
     /**
      * Get a collection of the user-editable form fields within a PDF document
      */
-    public FormFieldsSet GetFields() throws IOException {
+    public FormFieldsSet getFields() {
 
         List<CheckBoxField> checkBoxFields = new ArrayList<>();
         List<TextField> textFields = new ArrayList<>();
         List<ComboBoxField> comboBoxFields = new ArrayList<>();
         List<FormField> unknownFields = new ArrayList<>();
-        for (FormField anyField : com.ironsoftware.ironpdf.staticapi.Form_Api.GetFields(
+        for (FormField anyField : Form_Api.getFields(
                 internalPdfDocument)) {
             if (anyField instanceof CheckBoxField) {
                 checkBoxFields.add((CheckBoxField) anyField);
@@ -63,19 +73,19 @@ public class FormManager {
      * @param newFieldName     New partial field name Please use a fully qualified field name for
      *                         CurrentFieldName, and a partial field name for NewFieldName
      */
-    public void RenameField(String currentFieldName, String newFieldName) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Form_Api.RenameField(internalPdfDocument, currentFieldName,
+    public void renameField(String currentFieldName, String newFieldName) {
+        Form_Api.renameField(internalPdfDocument, currentFieldName,
                 newFieldName);
     }
 
     /**
-     * Set the value of a {@link FormField}
+     * Set the string value of a {@link FormField}
      *
      * @param fieldName Fully qualified field name
      * @param value     New value
      */
-    public void SetFieldValue(String fieldName, String value) throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Form_Api.SetFieldValue(internalPdfDocument, fieldName,
+    public void setFieldValue(String fieldName, String value) {
+        Form_Api.setFieldValue(internalPdfDocument, fieldName,
                 value);
     }
 
@@ -86,9 +96,8 @@ public class FormManager {
      * @param font          New font
      * @param fontSize      New font size
      */
-    public void SetTextFieldFont(String textFieldName, FontTypes font, int fontSize)
-            throws IOException {
-        com.ironsoftware.ironpdf.staticapi.Form_Api.SetTextFieldFont(internalPdfDocument, textFieldName,
+    public void setTextFieldFont(String textFieldName, FontTypes font, int fontSize) {
+        Form_Api.setTextFieldFont(internalPdfDocument, textFieldName,
                 font, fontSize);
     }
 

@@ -1,11 +1,10 @@
 package com.ironsoftware.ironpdf.exception;
 
-import com.ironsoftware.ironpdf.staticapi.Exception_RemoteException;
+import com.ironsoftware.ironpdf.internal.staticapi.Exception_RemoteException;
 
 /**
- * Represents errors that occur during IronPDF execution due to the library not being appropriately
- * licensed.
- * <p>https: //ironpdf.com/licensing/</p>
+ * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from 
+ * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>.</p>
  */
 public final class IronPdfLicensingException extends IronPdfProductException {
 
@@ -14,7 +13,7 @@ public final class IronPdfLicensingException extends IronPdfProductException {
     }
 
     public IronPdfLicensingException(Exception_RemoteException ex) {
-        super(ex.getMessage(), ex.StackTraceString, ex.getExceptionType());
+        super(ex.getMessage(), ex.stackTraceString, ex.getExceptionType());
 
     }
 

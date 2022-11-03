@@ -7,9 +7,8 @@ import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
  * <p>When using HtmlHeaderFooter it is important to set {@link #htmlFragment}</p>
  * <p>Merge meta-data into your html using any of these placeholder strings: {page} {total-pages}
  * {url} {date} {time} {html-title} {pdf-title}</p>
- * <p>
- * {@link ChromePdfRenderOptions#setHtmlHeader(HtmlHeaderFooter)}
- * {@link ChromePdfRenderOptions#setHtmlFooter(HtmlHeaderFooter)}
+ * <p>See:{@link ChromePdfRenderOptions#setHtmlHeader(HtmlHeaderFooter)} &amp; {@link ChromePdfRenderOptions#setHtmlFooter(HtmlHeaderFooter)}</p>
+ * <p>See:{@link com.ironsoftware.ironpdf.PdfDocument#addHtmlHeader(HtmlHeaderFooter)}  &amp; {@link com.ironsoftware.ironpdf.PdfDocument#addHtmlFooter(HtmlHeaderFooter)}  </p></p>
  */
 public class HtmlHeaderFooter implements Cloneable {
 
@@ -22,6 +21,8 @@ public class HtmlHeaderFooter implements Cloneable {
     /**
      * Maximum Height of the Html Header / Footer in millimeters.  This value must be set sufficiently
      * high to display the full html header / footer content.
+     *
+     * @return the max height
      */
     public Integer getMaxHeight() {
         return maxHeight;
@@ -30,6 +31,8 @@ public class HtmlHeaderFooter implements Cloneable {
     /**
      * Maximum Height of the Html Header / Footer in millimeters.  This value must be set sufficiently
      * high to display the full html header / footer content.
+     *
+     * @param value the value
      */
     public void setMaxHeight(Integer value) {
         maxHeight = value;
@@ -38,14 +41,18 @@ public class HtmlHeaderFooter implements Cloneable {
     /**
      * A horizontal line divider between the header / footer and the page content on every page of the
      * PDF document.
+     *
+     * @return the boolean
      */
-    public boolean getDrawDividerLine() {
+    public boolean isDrawDividerLine() {
         return drawDividerLine;
     }
 
     /**
      * Adds a horizontal line divider between the header / footer and the page content on every page
      * of the PDF document.
+     *
+     * @param value the value
      */
     public void setDrawDividerLine(boolean value) {
         drawDividerLine = value;
@@ -57,6 +64,8 @@ public class HtmlHeaderFooter implements Cloneable {
      * that points to a directory should end with a slash.</p> <p>Base URL accepts file paths as well
      * as URLS. If no BaseUrl is given, the HtmlHeaderFooter BaseUrl will be inherited from the main
      * HTML document where possible.</p>
+     *
+     * @return the base url
      */
     public String getBaseUrl() {
         return baseUrl;
@@ -68,6 +77,8 @@ public class HtmlHeaderFooter implements Cloneable {
      * that points to a directory should end with a slash.</p> <p>Base URL accepts file paths as well
      * as URLS. If no BaseUrl is given, the HtmlHeaderFooter BaseUrl will be inherited from the main
      * HTML document where possible.</p>
+     *
+     * @param value the value
      */
     public void setBaseUrl(String value) {
         baseUrl = value;
@@ -82,6 +93,8 @@ public class HtmlHeaderFooter implements Cloneable {
      * <p>HtmlFragment is a stand alone HTML document which does not inherit styles or settings from
      * your
      * main HTML content unless {@link #loadStylesAndCSSFromMainHtmlDocument} is set true</p>
+     *
+     * @return the html fragment
      */
     public String getHtmlFragment() {
         return htmlFragment;
@@ -96,6 +109,8 @@ public class HtmlHeaderFooter implements Cloneable {
      * <p>HtmlFragment is a stand alone HTML document which does not inherit styles or settings from
      * your
      * main HTML content unless {@link #loadStylesAndCSSFromMainHtmlDocument} is set true</p>
+     *
+     * @param value the value
      */
     public void setHtmlFragment(String value) {
         htmlFragment = value;
@@ -113,8 +128,10 @@ public class HtmlHeaderFooter implements Cloneable {
      * HtmlFileToPdf conversions only.</p> <p>It is often preferable to load style sheets explicitly
      * into your HTML Headers and Footers as STYLE and LINK tags within the {@link #htmlFragment} for
      * granular control</p>
+     *
+     * @return the boolean
      */
-    public boolean getLoadStylesAndCSSFromMainHtmlDocument() {
+    public boolean isLoadStylesAndCSSFromMainHtmlDocument() {
         return loadStylesAndCSSFromMainHtmlDocument;
     }
 
@@ -130,6 +147,8 @@ public class HtmlHeaderFooter implements Cloneable {
      * HtmlFileToPdf conversions only.</p> <p>It is often preferable to load style sheets explicitly
      * into your HTML Headers and Footers as STYLE and LINK tags within the {@link #htmlFragment} for
      * granular control</p>
+     *
+     * @param value the value
      */
     public void setLoadStylesAndCSSFromMainHtmlDocument(boolean value) {
         loadStylesAndCSSFromMainHtmlDocument = value;
@@ -138,17 +157,25 @@ public class HtmlHeaderFooter implements Cloneable {
     /**
      * Supports {@link Cloneable}.  Creates a deep copy of this class instance.
      *
-     * @return A deep clone of this instance.  Use explicit casting to convert object back to the
-     * intended type.
+     * @return A deep clone of this instance.  Use explicit casting to convert object back to the intended type.
+     * @throws CloneNotSupportedException the clone not supported exception
      */
     public Object Clone() throws CloneNotSupportedException {
         return this.clone();
     }
 
+    /**
+     * Instantiates a new Html header footer.
+     */
     public HtmlHeaderFooter(){
 
     }
 
+    /**
+     * Instantiates a new Html header footer.
+     *
+     * @param htmlFragment the html fragment
+     */
     public HtmlHeaderFooter(String htmlFragment){
         this.htmlFragment = htmlFragment;
     }

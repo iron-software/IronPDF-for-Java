@@ -1,55 +1,52 @@
 package com.ironsoftware.ironpdf.image;
 
+import java.util.List;
+
 /**
- * E
+ * Defines layout behavior relative to the page size when creating a PDF from images.
+ * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument#fromImage(List, ImageBehavior)}</p>
  */
 public enum ImageBehavior {
     /**
-     * Image should be placed on center of the page
+     * Image will be placed on center of the page
      */
     CENTERED_ON_PAGE,
 
     /**
-     * Image should fit to the page
+     * Image will fit to the defined page size whilst maintaining aspect ratio.
      */
     FIT_TO_PAGE,
 
     /**
-     * Image should fit to the page and keep aspect ratio
+     * Image will fit to the page and keep aspect ratio
      */
     FIT_TO_PAGE_AND_MAINTAIN_ASPECT_RATIO,
 
-    /**
-     * Page should fit to the image
+     /**
+     * Page will be scaled to exactly match the original image dimensions.
      */
     CROP_PAGE,
 
     /**
-     * Image should be placed to the left top corner of the page
+     * Image will be placed to the left top corner of the page
      */
     TOP_LEFT_CORNER_OF_PAGE,
 
     /**
-     * Image should be placed to the left bottom corner of the page
+     * Image will be placed to the left bottom corner of the page
      */
     BOTTOM_LEFT_CORNER_OF_PAGE,
 
     /**
-     * Image should be placed to the right top corner of the page
+     * Image will be placed to the right top corner of the page
      */
     TOP_RIGHT_CORNER_OF_PAGE,
 
     /**
-     * Image should be placed to the right bottom corner of the page
+     * Image will be placed to the right bottom corner of the page
      */
-    BOTTOM_RIGHT_CORNER_OF_PAGE;
-
-
-    public static ImageBehavior forValue(int value) {
-        return values()[value];
-    }
-
-    public int getValue() {
-        return this.ordinal();
-    }
+    BOTTOM_RIGHT_CORNER_OF_PAGE
 }
+
+
+

@@ -1,6 +1,6 @@
 package com.ironsoftware.ironpdf.exception;
 
-import com.ironsoftware.ironpdf.staticapi.Exception_RemoteException;
+import com.ironsoftware.ironpdf.internal.staticapi.Exception_RemoteException;
 
 /**
  * Represents errors that occur when invalid variables are passed to IronPDF.
@@ -12,7 +12,7 @@ public final class IronPdfInputException extends Exception_RemoteException {
     }
 
     public IronPdfInputException(Exception_RemoteException ex) {
-        super(ex.getMessage(), ex.StackTraceString, ex.getExceptionType());
+        super(ex.getMessage(), ex.stackTraceString, ex.getExceptionType());
     }
 
 }

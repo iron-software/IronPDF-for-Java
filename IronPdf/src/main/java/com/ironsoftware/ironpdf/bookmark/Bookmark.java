@@ -1,65 +1,102 @@
 package com.ironsoftware.ironpdf.bookmark;
 
-import java.io.IOException;
+import javax.annotation.Nullable;
 
 /**
- * Represents a PDF bookmark as seen in the sidebar of PDF reader software to help user's navigate.
+ * Represents a PDF bookmark as seen in the sidebar of PDF reader software to help users navigate.
+ * <p>Bookmarks are arranged and navigated in a parent/child node hierarchy, similar to an HTML DOM.</p>
  */
 public class Bookmark {
 
     /**
-     * Next bookmark at the current level, if any
+     * The text of next bookmark at the current level, if any. Null if it is last bookmark.
      */
-    private final String NextBookmarkText;
+    private final String nextBookmarkText;
     /**
-     * Bookmark which contains this bookmark
+     * The text of parent bookmark which contains this bookmark. Null if it is root bookmark.
      */
-    private final String ParentBookmarkText;
+    private final String parentBookmarkText;
     /**
      * The zero based page number that the bookmark links to.
      */
-    private final int PageIndex;
+    private final int pageIndex;
     /**
-     * Previous bookmark at the current level, if any
+     * Previous bookmark at the current level, if any. Null if it is first bookmark.
      */
-    private final String PreviousBookmarkText;
+    private final String previousBookmarkText;
     /**
      * Type of destination represented by the bookmark
      */
-    private final BookmarkDestinations DestinationType;
+    private final BookmarkDestinations destinationType;
     /**
      * The display text of the bookmark
      */
-    private String Text;
+    private String text;
     private BookmarkManager bookmarkManager;
 
-    public Bookmark(String text, int pageIndex, String parentBookmarkText,
+
+    /**
+     * Instantiates a new Bookmark.
+     *
+     * @param text                 the display text of the bookmark
+     * @param pageIndex            the zero based page number that the bookmark links to.
+     * @param parentBookmarkText   the text of parent bookmark which contains this bookmark. Null if it is root bookmark.
+     * @param destinationType      the type of destination represented by the bookmark
+     * @param nextBookmarkText     the text of next bookmark at the current level, if any. Null if it is last bookmark.
+     * @param previousBookmarkText the previous bookmark at the current level, if any. Null if it is first bookmark.
+     */
+    public Bookmark(@javax.annotation.Nonnull String text, int pageIndex, @Nullable String parentBookmarkText,
                     BookmarkDestinations destinationType,
-                    String nextBookmarkText, String previousBookmarkText) {
+                    @Nullable String nextBookmarkText, @Nullable String previousBookmarkText) {
         this.setText(text);
-        this.PageIndex = pageIndex;
-        this.ParentBookmarkText = parentBookmarkText;
-        this.NextBookmarkText = nextBookmarkText;
-        this.PreviousBookmarkText = previousBookmarkText;
-        this.DestinationType = destinationType;
+        this.pageIndex = pageIndex;
+        this.parentBookmarkText = parentBookmarkText;
+        this.nextBookmarkText = nextBookmarkText;
+        this.previousBookmarkText = previousBookmarkText;
+        this.destinationType = destinationType;
     }
 
+    /**
+     * Gets destination type. Type of destination represented by the bookmark.
+     *
+     * @return the destination type
+     */
     public final BookmarkDestinations getDestinationType() {
-        return DestinationType;
+        return destinationType;
     }
 
+    /**
+     * Gets next bookmark text. The text of next bookmark at the current level, if any. Null if it is last bookmark.
+     *
+     * @return the next bookmark text
+     */
     public final String getNextBookmarkText() {
-        return NextBookmarkText;
+        return nextBookmarkText;
     }
 
+    /**
+     * Gets page index. The zero based page number that the bookmark links to.
+     *
+     * @return the page index
+     */
     public final int getPageIndex() {
-        return PageIndex;
+        return pageIndex;
     }
 
+    /**
+     * Gets bookmark manager. {@link BookmarkManager}
+     *
+     * @return the bookmark manager
+     */
     public final BookmarkManager getBookmarkManager() {
         return bookmarkManager;
     }
 
+    /**
+     * Sets bookmark manager.
+     *
+     * @param value the BookmarkManager
+     */
     void setBookmarkManager(BookmarkManager value) {
         bookmarkManager = value;
     }
@@ -67,61 +104,81 @@ public class Bookmark {
     /**
      * Add a new bookmark after this bookmark
      *
-     * @param text      The display text for the link.
-     * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text      the display text of the bookmark
+     * @param pageIndex the zero based page number that the bookmark links to.
      */
-    public final void AddNextBookmark(String text, int pageIndex) throws IOException {
+    public final void addNextBookmark(String text, int pageIndex) {
         if (bookmarkManager == null) {
             throw new RuntimeException(
                     "not found a BookmarkManager, Please get this Bookmark object from PdfDocument.getBookmarkManager()");
         }
-        bookmarkManager.InsertBookmark(text, pageIndex, this.getParentBookmarkText(), this.getText());
+        bookmarkManager.insertBookmark(text, pageIndex, this.getParentBookmarkText(), this.getText());
     }
 
 //region API
 
+    /**
+     * Gets parent bookmark text. The text of parent bookmark which contains this bookmark. Null if it is root bookmark.
+     *
+     * @return the parent bookmark text
+     */
     public final String getParentBookmarkText() {
-        return ParentBookmarkText;
+        return parentBookmarkText;
     }
 
+    /**
+     * Gets text. The display text of the bookmark.
+     *
+     * @return the text
+     */
     public final String getText() {
-        return Text;
+        return text;
     }
 
+    /**
+     * Sets text. The display text of the bookmark
+     *
+     * @param value the value
+     */
     public final void setText(String value) {
-        Text = value;
+        text = value;
     }
 
     /**
      * Add a new bookmark before this bookmark
      *
-     * @param text      The display text for the link.
-     * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text      the display text of the bookmark
+     * @param pageIndex the zero based page number that the bookmark links to.
      */
-    public final void AddPreviousBookmark(String text, int pageIndex) throws IOException {
+    public final void AddPreviousBookmark(String text, int pageIndex) {
         if (bookmarkManager == null) {
             throw new RuntimeException(
                     "not found a BookmarkManager, Please get this Bookmark object from PdfDocument.getBookmarkManager()");
         }
-        bookmarkManager.InsertBookmark(text, pageIndex, this.getParentBookmarkText(),
+        bookmarkManager.insertBookmark(text, pageIndex, this.getParentBookmarkText(),
                 this.getPreviousBookmarkText());
     }
 
+    /**
+     * Gets previous bookmark text. Previous bookmark at the current level, if any. Null if it is first bookmark.
+     *
+     * @return the previous bookmark text.
+     */
     public final String getPreviousBookmarkText() {
-        return PreviousBookmarkText;
+        return previousBookmarkText;
     }
 
     /**
-     * Add a new bookmark as a first child of this bookmark. To add a bookmark as a second child,
-     * please navigate to the childBookmark object and call AddNextBookmark.
+     * Add a new bookmark as a first child of this bookmark.
+     * <p>To add a bookmark as a second child, please navigate to the childBookmark object and call AddNextBookmark.</p>
      *
-     * @param text      The display text for the link.
-     * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text      the display text of the bookmark
+     * @param pageIndex the zero based page number that the bookmark links to.
      * @return a new child bookmark
      */
     public final com.ironsoftware.ironpdf.bookmark.Bookmark AddChildBookmark(String text,
-                                                                             int pageIndex) throws IOException {
-        return bookmarkManager.AddChildBookmark(text, pageIndex, this.getText());
+                                                                             int pageIndex) {
+        return bookmarkManager.addChildBookmark(text, pageIndex, this.getText());
     }
 
     //endregion

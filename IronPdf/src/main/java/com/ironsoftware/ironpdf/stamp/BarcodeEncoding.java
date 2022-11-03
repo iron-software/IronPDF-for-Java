@@ -3,8 +3,7 @@ package com.ironsoftware.ironpdf.stamp;
 /**
  * Barcode Encoding Types. Please check the supported characters for each encoding type as some do
  * not support all symbols.
- * <p>Setting a {@link com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding} when rendering
- * Barcodes chooses the type and design of barcode to be generated.</p>
+ * <p>See: {@link BarcodeStamper}</p>
  */
 public enum BarcodeEncoding {
 
