@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.ironsoftware</groupId>
             <artifactId>ironpdf</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>please-replace-version</version>
         </dependency>
         <dependency>
             <groupId>io.github.iron-software</groupId>
