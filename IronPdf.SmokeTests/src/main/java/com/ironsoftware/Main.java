@@ -1,6 +1,7 @@
 package com.ironsoftware;
 
 import com.ironsoftware.ironpdf.PdfDocument;
+import com.ironsoftware.ironpdf.Settings;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import com.ironsoftware.ironpdf.render.PaperSize;
@@ -16,6 +17,8 @@ public class Main {
 
         ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
         tempVar.setPaperSize(PaperSize.A4);
+
+        Settings.setDebug(true);
 
         try {
             PdfDocument doc = PdfDocument.renderUrlAsPdf("https://google.com", tempVar);
