@@ -39,7 +39,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: Maven Tests
+        name: Windows Tests
         path: IronPdf.SmokeTests/target/surefire-reports/*.xml
         reporter: java-junit
         fail-on-error: true
@@ -80,7 +80,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: Maven Tests
+        name: Ubuntu-18.04 Tests
         path: IronPdf.SmokeTests/target/surefire-reports/*.xml
         reporter: java-junit
         fail-on-error: true
