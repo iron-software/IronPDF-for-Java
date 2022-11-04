@@ -57,7 +57,7 @@ jobs:
         sed -i 's/please-replace-version/${{ github.event.inputs.ironpdf_version }}/g' IronPdf.SmokeTests/pom.xml
     - name: Install Linux packages
       run: |
-        sudo apt update
+        sudo apt-get update -y
         sudo apt-get install -y fontconfig libturbojpeg libx11-6 libxext6 libxrender1 libglib2.0-dev libnss3 atk1.0 qt-at-spi libatk-bridge2.0-dev libx11-xcb-dev libxcb-dri3-dev libxcomposite-dev libxdamage1 libdrm-dev libxrandr2 libgbm-dev libasound2-dev libpango1.0-dev
         sudo apt-get install -y software-properties-common fonts-noto fonts-ancient-scripts gsfonts
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -74,7 +74,7 @@ jobs:
       run: mvn --batch-mode -DskipTests package --file IronPdf.SmokeTests/pom.xml
       
     - name: Test
-      run: mvn --batch-mode -Dmaven.test.failure.ignore=true test --file IronPdf.SmokeTests/pom.xml
+      run: mvn --batch-mode '-Dmaven.test.failure.ignore=true' test --file IronPdf.SmokeTests/pom.xml
       
     - name: Report
       uses: dorny/test-reporter@v1
