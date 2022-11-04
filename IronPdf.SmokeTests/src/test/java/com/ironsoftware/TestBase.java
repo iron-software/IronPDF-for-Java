@@ -1,6 +1,7 @@
 package com.ironsoftware;
 
 import com.ironsoftware.ironpdf.License;
+import com.ironsoftware.ironpdf.Settings;
 import org.junit.jupiter.api.Assertions;
 
 import javax.imageio.ImageIO;
@@ -16,6 +17,8 @@ import java.util.Iterator;
 public class TestBase {
 
     public TestBase() {
+        Settings.setDebug(true);
+        Settings.setIronPdfEngineFolder(Paths.get("TestOutput/"));
         License.setLicenseKey(new ConfigManager().getProperty("LicenseKey"));
     }
 

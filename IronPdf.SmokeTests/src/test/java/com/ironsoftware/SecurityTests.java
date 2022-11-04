@@ -3,6 +3,7 @@ package com.ironsoftware;
 import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.security.PdfEditSecurity;
 import com.ironsoftware.ironpdf.security.PdfPrintSecurity;
+import com.ironsoftware.ironpdf.security.SecurityManager;
 import com.ironsoftware.ironpdf.security.SecurityOptions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
