@@ -30,7 +30,7 @@ jobs:
       run: mvn --batch-mode -DskipTests package --file IronPdf.SmokeTests/pom.xml
       
     - name: Test
-      run: mvn --batch-mode -Dmaven.test.failure.ignore=true test --file IronPdf.SmokeTests/pom.xml
+      run: mvn --batch-mode '-Dmaven.test.failure.ignore=true' test --file IronPdf.SmokeTests/pom.xml
       
     - name: Report
       uses: dorny/test-reporter@v1
