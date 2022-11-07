@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -29,6 +31,8 @@ final class Access {
     private static boolean tryAgain = true;
     private static BufferedReader stdInput;
     private static BufferedReader stdError;
+
+    private static  CountDownLatch serverReady;
 
     static synchronized RpcClient ensureConnection() {
         if (client != null) {
@@ -167,13 +171,13 @@ final class Access {
                 if (!Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey)) {
                     cmdList.add(String.format("license_key=%1$s", Setting_Api.licenseKey));
                 }
-
+                serverReady = new CountDownLatch(1);
                 ProcessBuilder pb = new ProcessBuilder(cmdList);
 
                 logger.info("Start IronPdfEngine");
 
                 Process proc = pb.start();
-                catchServerErrors(proc);
+                catchServerMessage(proc);
 
                 //This addShutdownHook will run when ...
                 // * When all of JVM threads have completed execution
@@ -190,7 +194,9 @@ final class Access {
                 }));
 
                 //wait for IronPdfEngine finish initialize
-                Thread.sleep(1000);
+                //not throw timeout exception because we will try to connect IronPdfEngine on first method called.
+                boolean ignored = serverReady.await(10, TimeUnit.SECONDS);
+
                 ironPdfProcess = proc;
 
             } else {
@@ -218,15 +224,18 @@ final class Access {
         }
     }
 
-    private static void catchServerErrors(Process proc) {
+    private static void catchServerMessage(Process proc) {
 
         stdInput = new BufferedReader(new
                 InputStreamReader(proc.getInputStream()));
 
         Thread threadInput = new Thread(() -> {
-            engineLogger.info("[IronPdfEngine] Start");
+            engineLogger.info("listening IronPdfEngine");
             // Read the output from the command
             stdInput.lines().forEach(line -> {
+                if(line.trim().equalsIgnoreCase("IronPdfEngine is up")){
+                    serverReady.countDown();
+                }
                 if (Setting_Api.enableDebug)
                     engineLogger.info("[IronPdfEngine]" + line);
             });

@@ -151,6 +151,6 @@ public final class Setting_Api {
         return Paths.get(getIronPdfEngineFolderName(), getIronPdfEngineFileName());
     }
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10283";
+    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10292";
 
 }
