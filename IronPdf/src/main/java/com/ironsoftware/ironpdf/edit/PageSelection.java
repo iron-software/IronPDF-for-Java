@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Page_Api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,7 +16,7 @@ import java.util.stream.IntStream;
  */
 public class PageSelection {
 
-    private List<Integer> pagesList = null;
+    private List<Integer> pagesList = new ArrayList<>();
 
     /**
      * Every page of the PDF.
@@ -83,7 +84,7 @@ public class PageSelection {
         }).collect(Collectors.toList());
     }
 
-    public void setPageList(List<Integer> marginLeftMm) {
-        pagesList = Lists.newArrayList(marginLeftMm);
+    public void setPageList(List<Integer> pageList) {
+        pagesList = Lists.newArrayList(pageList);
     }
 }

@@ -25,6 +25,8 @@ public final class Signature_Api {
         client.stub.pdfDocumentSignatureGetVerifiedSignature(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
 
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
         if (resultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdf.");
         }
@@ -79,11 +81,13 @@ public final class Signature_Api {
             requestStream.onNext(msg.build());
         }
 
-        for (Iterator<byte[]> it = Utils_Util.chunk(signature.getSignatureImage()); it.hasNext(); ) {
-            byte[] bytes = it.next();
-            SignPdfRequestStream.Builder msg = SignPdfRequestStream.newBuilder();
-            msg.setSignatureImageChunk(ByteString.copyFrom(bytes));
-            requestStream.onNext(msg.build());
+        if(signature.getSignatureImage() != null){
+            for (Iterator<byte[]> it = Utils_Util.chunk(signature.getSignatureImage()); it.hasNext(); ) {
+                byte[] bytes = it.next();
+                SignPdfRequestStream.Builder msg = SignPdfRequestStream.newBuilder();
+                msg.setSignatureImageChunk(ByteString.copyFrom(bytes));
+                requestStream.onNext(msg.build());
+            }
         }
 
         requestStream.onCompleted();
@@ -104,6 +108,7 @@ public final class Signature_Api {
 
         client.stub.pdfDocumentSignatureVerifiedSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
         if (resultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdf.");

@@ -2,9 +2,12 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 
 import com.google.protobuf.ByteString;
+import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.internal.proto.BytesResultStream;
 import com.ironsoftware.ironpdf.internal.proto.PdfDocumentConstructorStream;
 import com.ironsoftware.ironpdf.internal.proto.PdfDocumentResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public final class PdfDocument_Api {
+    static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
 
     /**
      * Opens an existing PDF document for editing.
@@ -94,7 +98,7 @@ public final class PdfDocument_Api {
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes, String userPassword,
                                                 String ownerPassword) {
         RpcClient client = Access.ensureConnection();
-
+        logger.info("open PDF");
         //for checking that the response stream is finished
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
@@ -171,11 +175,12 @@ public final class PdfDocument_Api {
     }
 
     public static void saveAs(byte[] pdfData, String filePath) throws IOException {
+        logger.info("save PDF to file: " + filePath);
         File file = new File(filePath);
         if (!file.exists()) {
             File parent = file.getParentFile();
             if (parent != null) {
-                boolean ignored = parent.mkdirs();
+                Files.createDirectories(parent.toPath());
             }
         }
         try (FileOutputStream stream = new FileOutputStream(filePath)) {

@@ -1,10 +1,8 @@
 package com.ironsoftware.ironpdf.image;
 
-import com.ironsoftware.ironpdf.edit.PageSelection;
-
 /**
  * Defines options when rasterizing (converting) an PDf to image objects and files.
- * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument#toImage(String, String, ToImageOptions)} and {@link com.ironsoftware.ironpdf.PdfDocument#toBufferedImage(ToImageOptions options)}
+ * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument#toImages(String, String, ToImageOptions)} and {@link com.ironsoftware.ironpdf.PdfDocument#toBufferedImages(ToImageOptions options)}
  */
 public class ToImageOptions {
 
@@ -20,10 +18,6 @@ public class ToImageOptions {
      * The target maximum width of the output images. Default is null.
      */
     private Integer imageMaxWidth = null;
-    /**
-     * PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
-     */
-    private PageSelection pageSelection = PageSelection.allPages();
 
     /**
      * Gets dpi. The desired resolution of the output Images. Default is 96dpi.
@@ -78,25 +72,6 @@ public class ToImageOptions {
     public void setImageMaxWidth(Integer imageMaxWidth) {
         this.imageMaxWidth = imageMaxWidth;
     }
-
-    /**
-     * Gets page selection. PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
-     *
-     * @return the page selection
-     */
-    public PageSelection getPageSelection() {
-        return pageSelection;
-    }
-
-    /**
-     * Sets page selection. PageSelection to which  will be rendered to image. Default is PageSelection.AllPages().
-     *
-     * @param pageIndexes the page indexes
-     */
-    public void setPageSelection(PageSelection pageIndexes) {
-        pageSelection = pageIndexes;
-    }
-
 }
 
 

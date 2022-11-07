@@ -39,10 +39,14 @@ public class ChromePdfRenderOptions implements Cloneable {
      */
     private int firstPageNumber = 1;
     /**
-     * Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
-     * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
+     * Behavior when fitting HTML content to a physical paper size.
+     * Determines {@link #getZoom()} and  {@link #getViewPortWidth()}.
+     * <p>See {@link FitToPaperModes} for a detailed description of each mode.</p>
+     * <p>{@link FitToPaperModes#None} disables automatic fitting behavior.</p>
+     * <p>{@link FitToPaperModes#Automatic} automatically measures and fits HTML content onto each PDF page.</p>
+     * <p>Default value is FitToPaperModes.None.</p>
      */
-    private boolean fitToPaperWidth = true;
+    private FitToPaperModes fitToPaperMode = FitToPaperModes.None;
     /**
      * Outputs a black-and-white PDF
      */
@@ -278,23 +282,23 @@ public class ChromePdfRenderOptions implements Cloneable {
     }
 
     /**
-     * Is fit to paper width. Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
-     * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
+     * Behavior when fitting HTML content to a physical paper size.
+     * Determines {@link #getZoom()} and {@link #getViewPortWidth()}.
      *
      * @return the boolean
      */
-    public boolean isFitToPaperWidth() {
-        return fitToPaperWidth;
+    public FitToPaperModes getFitToPaperMode() {
+        return fitToPaperMode;
     }
 
     /**
-     * Sets fit to paper width. Where possible, shrinks the PDF content to 1 page of paper width. <p>This applies when the PDF
-     * content is too wide for the given PaperSize (given that 1 HTML pixel = 1 DPI).</p>
+     * Behavior when fitting HTML content to a physical paper size.
+     * Determines {@link #setZoom)} and {@link #setViewPortWidth)}.
      *
      * @param value the value
      */
-    public void setFitToPaperWidth(boolean value) {
-        fitToPaperWidth = value;
+    public void setFitToPaperMode(FitToPaperModes value) {
+        fitToPaperMode = value;
     }
 
     /**

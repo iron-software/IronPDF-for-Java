@@ -2,7 +2,6 @@ package com.ironsoftware.ironpdf;
 
 import com.ironsoftware.ironpdf.annotation.AnnotationManager;
 import com.ironsoftware.ironpdf.attachment.AttachmentManager;
-import com.ironsoftware.ironpdf.backgroundforeground.BackgroundForegroundOptions;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;
 import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.form.FormManager;
@@ -20,6 +19,7 @@ import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import com.ironsoftware.ironpdf.render.PaperSize;
 import com.ironsoftware.ironpdf.security.SecurityManager;
+import com.ironsoftware.ironpdf.signature.SignatureManager;
 import com.ironsoftware.ironpdf.stamp.HorizontalAlignment;
 import com.ironsoftware.ironpdf.stamp.HtmlStamper;
 import com.ironsoftware.ironpdf.stamp.Stamper;
@@ -57,6 +57,7 @@ public class PdfDocument implements Printable {
     private final FormManager formManager;
     private final AttachmentManager attachmentManager;
     private final SecurityManager securityManager;
+    private final SignatureManager signatureManager;
 
     private PdfDocument(InternalPdfDocument static_pdfDocument) {
         internalPdfDocument = static_pdfDocument;
@@ -66,6 +67,7 @@ public class PdfDocument implements Printable {
         formManager = new FormManager(this.internalPdfDocument);
         attachmentManager = new AttachmentManager(this.internalPdfDocument);
         securityManager = new SecurityManager(this.internalPdfDocument);
+        signatureManager = new SignatureManager(this.internalPdfDocument);
     }
 
     /**
@@ -312,6 +314,10 @@ public class PdfDocument implements Printable {
         return securityManager;
     }
 
+    public SignatureManager getSignature() {
+        return signatureManager;
+    }
+
     //endregion
 
     //region PageOperations
@@ -445,7 +451,7 @@ public class PdfDocument implements Printable {
     /**
      * Gets a list of information about pages in this PDF as a List of {@link PageInfo}.
      *
-     * @return List<PageInfo> a list of information about the PDF’s pages.
+     * @return A list of information about the PDF’s pages.
      */
     public final List<PageInfo> getPagesInfo() {
         return Page_Api.getPagesInfo(internalPdfDocument);
@@ -495,7 +501,20 @@ public class PdfDocument implements Printable {
      * code style
      */
     public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf) {
-        return addBackgroundPdf(backgroundPdf, new BackgroundForegroundOptions());
+        return this.addBackgroundPdf(backgroundPdf, 0, PageSelection.allPages());
+    }
+
+    /**
+     * Adds a background to each page of this PDF. The background is copied from a selected
+     * page in the backgroundPdf document.
+     *
+     * @param backgroundPdf          The background PDF document.
+     * @param backgroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, int backgroundPdfPageIndex) {
+        return this.addBackgroundPdf(backgroundPdf, backgroundPdfPageIndex, PageSelection.allPages());
     }
 
     /**
@@ -503,17 +522,38 @@ public class PdfDocument implements Printable {
      * page in the backgroundPdf document.
      *
      * @param backgroundPdf The background PDF document.
-     * @param options       The BackgroundForegroundOptions.
+     * @param pageSelection PageSelection to which the background/foreground will be added. Default is
+     *                      PageSelection.AllPages().
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
-    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf,
-                                              BackgroundForegroundOptions options) {
+    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, PageSelection pageSelection) {
         BackgroundForeground_Api.addBackground(
                 this.internalPdfDocument,
                 backgroundPdf.internalPdfDocument,
-                options.getPageSelection().getPageList(internalPdfDocument),
-                options.getBackgroundForegroundPdfPageIndex());
+                pageSelection.getPageList(internalPdfDocument));
+        return this;
+    }
+
+
+    /**
+     * Adds a background to selected page(s) of this PDF. The background is copied from a selected
+     * page in the backgroundPdf document.
+     *
+     * @param backgroundPdf          The background PDF document.
+     * @param backgroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
+     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is
+     *                               PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, int backgroundPdfPageIndex,
+                                              PageSelection pageSelection) {
+        BackgroundForeground_Api.addBackground(
+                this.internalPdfDocument,
+                backgroundPdf.internalPdfDocument,
+                pageSelection.getPageList(internalPdfDocument),
+                backgroundPdfPageIndex);
         return this;
     }
 
@@ -526,7 +566,20 @@ public class PdfDocument implements Printable {
      * code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf) {
-        return addForegroundPdf(foregroundPdf, new BackgroundForegroundOptions());
+        return addForegroundPdf(foregroundPdf, 0, PageSelection.allPages());
+    }
+
+    /**
+     * Adds a foreground to each page of this PDF. The foreground is copied from a selected
+     * page in the foregroundPdf document.
+     *
+     * @param foregroundPdf          The foreground PDF document.
+     * @param foregroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf, int foregroundPdfPageIndex) {
+        return this.addForegroundPdf(foregroundPdf, foregroundPdfPageIndex, PageSelection.allPages());
     }
 
     /**
@@ -534,17 +587,34 @@ public class PdfDocument implements Printable {
      * page in the foregroundPdf document.
      *
      * @param foregroundPdf The foreground PDF document.
-     * @param options       The BackgroundForegroundOption.
+     * @param pageSelection PageSelection to which the background/foreground will be added. Default is
+     *                      PageSelection.AllPages().
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
      * code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf,
-                                              BackgroundForegroundOptions options) {
+                                              PageSelection pageSelection) {
+        return this.addForegroundPdf(foregroundPdf, 0, pageSelection);
+    }
+
+    /**
+     * Adds a foreground to selected page(s) of this PDF. The foreground is copied from a selected
+     * page in the foregroundPdf document.
+     *
+     * @param foregroundPdf          The foreground PDF document.
+     * @param foregroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
+     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is
+     *                               PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
+     * code style
+     */
+    public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf, int foregroundPdfPageIndex,
+                                              PageSelection pageSelection) {
         BackgroundForeground_Api.addForeground(
                 this.internalPdfDocument,
                 foregroundPdf.internalPdfDocument,
-                options.getPageSelection().getPageList(internalPdfDocument),
-                options.getBackgroundForegroundPdfPageIndex());
+                pageSelection.getPageList(internalPdfDocument),
+                foregroundPdfPageIndex);
         return this;
     }
 
@@ -872,8 +942,8 @@ public class PdfDocument implements Printable {
      *
      * @return An array of BufferedImage objects.
      */
-    public final List<BufferedImage> toBufferedImage() throws IOException {
-        return toBufferedImage(new ToImageOptions());
+    public final List<BufferedImage> toBufferedImages() throws IOException {
+        return toBufferedImages(new ToImageOptions());
     }
 
     /**
@@ -882,9 +952,30 @@ public class PdfDocument implements Printable {
      * @param options The {@link ToImageOptions}
      * @return An array of BufferedImage objects.
      */
-    public final List<BufferedImage> toBufferedImage(ToImageOptions options) throws IOException {
+    public final List<BufferedImage> toBufferedImages(ToImageOptions options) throws IOException {
+        return toBufferedImages(options, PageSelection.allPages());
+    }
+
+    /**
+     * Rasterizes (renders) the PDF into BufferedImage objects.  1 BufferedImage for each page.
+     *
+     * @param pageSelection Selected page indexes. Default is all pages.
+     * @return An array of BufferedImage objects.
+     */
+    public final List<BufferedImage> toBufferedImages(PageSelection pageSelection) throws IOException {
+        return toBufferedImages(new ToImageOptions(), pageSelection);
+    }
+
+    /**
+     * Rasterizes (renders) the PDF into BufferedImage objects.  1 BufferedImage for each page.
+     *
+     * @param options       The {@link ToImageOptions}
+     * @param pageSelection Selected page indexes. Default is all pages.
+     * @return An array of BufferedImage objects.
+     */
+    public final List<BufferedImage> toBufferedImages(ToImageOptions options, PageSelection pageSelection) throws IOException {
         return Image_Api.pdfToImage(internalPdfDocument,
-                        options.getPageSelection().getPageList(internalPdfDocument),
+                        pageSelection.getPageList(internalPdfDocument),
                         options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight()).stream()
                 .map(bytes -> {
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
@@ -905,12 +996,77 @@ public class PdfDocument implements Printable {
      *
      * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
      *                        E.g.  C:\images\pdf_pages_*.png
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toPngImages(String fileNamePattern)
+            throws IOException {
+        return this.toPngImages(fileNamePattern, new ToImageOptions(), PageSelection.allPages());
+    }
+
+    /**
+     * Renders the pages of the PDF as PNG (Portable Network Graphic) files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_pages_*.png
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
     public final List<String> toPngImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
-        return toImage(fileNamePattern, "png", options);
+        return this.toPngImages(fileNamePattern, options, PageSelection.allPages());
+    }
+
+    /**
+     * Renders the pages of the PDF as PNG (Portable Network Graphic) files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toPngImages(String fileNamePattern, PageSelection pageSelection)
+            throws IOException {
+        return this.toPngImages(fileNamePattern, new ToImageOptions(), pageSelection);
+    }
+
+    /**
+     * Renders the pages of the PDF as PNG (Portable Network Graphic) files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param options         The {@link ToImageOptions}
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toPngImages(String fileNamePattern, ToImageOptions options, PageSelection pageSelection)
+            throws IOException {
+        return toImages(fileNamePattern, "png", options, pageSelection);
+    }
+
+    /**
+     * Renders the pages of the PDF as specific image files type and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
+     *                        "gif", "tiff"
+     * @return An array of the file paths of the image files created.
+     */
+    public List<String> toImages(String fileNamePattern, String imageFileType)
+            throws IOException {
+        return this.toImages(fileNamePattern, imageFileType, new ToImageOptions());
     }
 
     /**
@@ -926,11 +1082,48 @@ public class PdfDocument implements Printable {
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
-    public List<String> toImage(String fileNamePattern, String imageFileType, ToImageOptions options)
+    public List<String> toImages(String fileNamePattern, String imageFileType, ToImageOptions options)
+            throws IOException {
+        return this.toImages(fileNamePattern, imageFileType, options, PageSelection.allPages());
+    }
+
+    /**
+     * Renders the pages of the PDF as specific image files type and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
+     *                        "gif", "tiff"
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public List<String> toImages(String fileNamePattern, String imageFileType, PageSelection pageSelection)
+            throws IOException {
+        return this.toImages(fileNamePattern, imageFileType, new ToImageOptions(), pageSelection);
+    }
+
+    /**
+     * Renders the pages of the PDF as specific image files type and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
+     *                        "gif", "tiff"
+     * @param options         The {@link ToImageOptions}
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public List<String> toImages(String fileNamePattern, String imageFileType, ToImageOptions options, PageSelection pageSelection)
             throws IOException {
 
         List<byte[]> dataList = Image_Api.pdfToImage(
-                internalPdfDocument, options.getPageSelection().getPageList(internalPdfDocument),
+                internalPdfDocument, pageSelection.getPageList(internalPdfDocument),
                 options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight());
 
         List<String> paths = new ArrayList<>();
@@ -982,14 +1175,61 @@ public class PdfDocument implements Printable {
      *
      * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
      *                        E.g.  C:\images\pdf_page_*.jpg
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toJpegImages(String fileNamePattern)
+            throws IOException {
+        return this.toJpegImages(fileNamePattern, new ToImageOptions());
+    }
+
+    /**
+     * Renders the pages of the PDF as JPEG image files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
      */
     public final List<String> toJpegImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
-        return toImage(fileNamePattern, "jpg", options);
+        return this.toJpegImages(fileNamePattern, options, PageSelection.allPages());
     }
 
+    /**
+     * Renders the pages of the PDF as JPEG image files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toJpegImages(String fileNamePattern, PageSelection pageSelection)
+            throws IOException {
+        return toImages(fileNamePattern, "jpg", new ToImageOptions(), pageSelection);
+    }
+
+    /**
+     * Renders the pages of the PDF as JPEG image files and saves them to disk.
+     * <p>Specific image dimensions and page numbers may be given as optional parameters.</p>
+     * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
+     * for the page numbers.</p>
+     *
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
+     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param options         The {@link ToImageOptions}
+     * @param pageSelection   Selected page indexes. Default is all pages.
+     * @return An array of the file paths of the image files created.
+     */
+    public final List<String> toJpegImages(String fileNamePattern, ToImageOptions options, PageSelection pageSelection)
+            throws IOException {
+        return toImages(fileNamePattern, "jpg", options, pageSelection);
+    }
 
     /**
      * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality setting.
@@ -1021,7 +1261,7 @@ public class PdfDocument implements Printable {
     /**
      * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
-     * @return List<BufferedImage>:  The extracted images as {@link BufferedImage} objects.
+     * @return The extracted images as {@link BufferedImage} objects.
      */
     public final List<BufferedImage> extractAllImages() throws IOException {
         return extractAllRawImages().stream().map(bytes -> {
@@ -1040,7 +1280,7 @@ public class PdfDocument implements Printable {
     /**
      * Finds all embedded Images from within the PDF and returns as a list of image bytes
      *
-     * @return List<byte [ ]>:  The extracted images as byte arrays.
+     * @return The extracted images as byte arrays.
      */
     public final List<byte[]> extractAllRawImages() throws IOException {
         if (Page_Api.getPagesInfo(internalPdfDocument).size()
@@ -1054,7 +1294,7 @@ public class PdfDocument implements Printable {
      * Finds all embedded Images from within the PDF and returns as a list of image bytes
      *
      * @param pageSelection The selected page index(es). Default is all pages.
-     * @return List<BufferedImage>:  The extracted images as {@link BufferedImage} objects.
+     * @return The extracted images as {@link BufferedImage} objects.
      */
     public final List<BufferedImage> extractAllImagesFromPages(PageSelection pageSelection)
             throws IOException {
@@ -1075,7 +1315,7 @@ public class PdfDocument implements Printable {
      * Finds all embedded Images from within the PDF and returns them as raw bytes.
      *
      * @param pageSelection The selected page index(es). Default is all pages.
-     * @return List<byte [ ]>:   The extracted images as byte arrays.
+     * @return The extracted images as byte arrays.
      */
     public final List<byte[]> extractAllRawImagesFromPages(PageSelection pageSelection)
             throws IOException {
@@ -1106,7 +1346,7 @@ public class PdfDocument implements Printable {
     /**
      * Returns the binary data for the full PDF file.
      *
-     * @return byte[] : This PdfDocument expressed as a byte array.
+     * @return This PdfDocument expressed as a byte array.
      */
     public final byte[] getBinaryData() {
         return PdfDocument_Api.getBytes(internalPdfDocument);
@@ -1151,7 +1391,7 @@ public class PdfDocument implements Printable {
      * @param html              The HTML fragment which will be stamped onto your PDF.
      * @param opacity           Watermark transparent value. 0 is invisible, 100 if fully opaque.
      * @param verticalAlignment The vertical alignment of the watermark relative to the page.
-     * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
     public final PdfDocument applyWatermark(String html, int opacity,
@@ -1167,7 +1407,7 @@ public class PdfDocument implements Printable {
      * @param opacity             Watermark transparent value. 0 is invisible, 100 if fully opaque.
      * @param verticalAlignment   The vertical alignment of the watermark relative to the page.
      * @param horizontalAlignment The horizontal alignment of the watermark relative to the page.
-     * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
     public final PdfDocument applyWatermark(String html, int opacity,
@@ -1185,7 +1425,7 @@ public class PdfDocument implements Printable {
      *
      * @param html    The HTML fragment which will be stamped onto your PDF.
      * @param opacity Watermark transparent value. 0 is invisible, 100 if fully opaque.
-     * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
     public final PdfDocument applyWatermark(String html, int opacity) {
@@ -1196,7 +1436,7 @@ public class PdfDocument implements Printable {
      * Adds Watermark to PDF, Please use {@link #applyStamp(Stamper)} for more control.
      *
      * @param html The HTML fragment which will be stamped onto your PDF.
-     * @return Returns this  {@link PdfDocument}, allowing for a 'fluent'  chained in-line
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
      * code style
      */
     public final PdfDocument applyWatermark(String html) {

@@ -79,7 +79,7 @@ public class SecurityOptions {
 
     /**
      * Is allow user annotations boolean. The permissions for users to annotate the PDF document with comments. <p>If
-     * AllowUserAnnotations is set false>, the {@link SecurityOptions#setOwnerPassword(String)}
+     * AllowUserAnnotations is set false, the {@link SecurityOptions#setOwnerPassword(String)}
      * must be set for the security measure to take effect.</p>
      *
      * @return the boolean
@@ -90,7 +90,7 @@ public class SecurityOptions {
 
     /**
      * Sets allow user annotations. The permissions for users to annotate the PDF document with comments. <p>If
-     * AllowUserAnnotations is set false>, the {@link SecurityOptions#setOwnerPassword(String)}
+     * AllowUserAnnotations is set false, the {@link SecurityOptions#setOwnerPassword(String)}
      * must be set for the security measure to take effect.</p>
      *
      * @param value the value

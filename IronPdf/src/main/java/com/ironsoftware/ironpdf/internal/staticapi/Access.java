@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 
 final class Access {
     static final Logger logger = LoggerFactory.getLogger(Access.class);
+    static final Logger engineLogger = LoggerFactory.getLogger("com.ironsoftware.ironpdf.IronPdfEngine");
     static RpcClient client = null;
     static boolean isTryDownloaded = false;
     private static ManagedChannel channel = null;
@@ -68,6 +69,7 @@ final class Access {
                 if (tryAgain) {
                     stopIronPdfEngine();
                     downloadIronPdfEngine();
+                    Setting_Api.subProcessPort = Setting_Api.findFreePort();
                     ensureConnection();
                     tryAgain = false;
                 }
@@ -100,7 +102,9 @@ final class Access {
             logger.info("Delete zip file: " + zipFilePath.toAbsolutePath());
             Files.deleteIfExists(zipFilePath.toAbsolutePath());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to download IronPdfEngine binary: " + e);
+            e.printStackTrace();
+            logger.error("Failed to download IronPdfEngine binary", e);
+            throw new RuntimeException("Failed to download IronPdfEngine binary", e);
         }
     }
 
@@ -111,9 +115,12 @@ final class Access {
                 ZipEntry entry = entries.nextElement();
                 File entryDestination = new File(destDir, entry.getName());
                 if (entry.isDirectory()) {
-                    boolean ignored = entryDestination.mkdirs();
+                        Files.createDirectories(entryDestination.toPath());
+                        setPermission(entryDestination);
                 } else {
-                    boolean ignored = entryDestination.getParentFile().mkdirs();
+                    File parentDir = entryDestination.getParentFile();
+                    Files.createDirectories(parentDir.toPath());
+                    setPermission(parentDir);
                     try (InputStream in = zipFile.getInputStream(entry);
                          OutputStream out = Files.newOutputStream(entryDestination.toPath())) {
                         IOUtils.copy(in, out);
@@ -131,16 +138,24 @@ final class Access {
 
                 try {
                     logger.info("Try Setting IronPdfEngine permission...");
+                    try {
+                        File parentDir = selectedFile.get().getParentFile();
+                        Files.createDirectories(parentDir.toPath());
+                        setPermission(parentDir);
+                    } catch (Exception e) {
+                        logger.warn("Cannot set IronPdfEngine parent folder permission ", e);
+                    }
+
                     Arrays.stream(Objects.requireNonNull(selectedFile.get().getParentFile().listFiles()))
                             .forEach(file -> {
-                                if (file.setExecutable(true)) {
-                                    logger.debug("Set executable of " + file.getName() + " success");
-                                } else {
-                                    logger.debug("Set executable of " + file.getName() + " failed");
+                                try {
+                                    setPermission(file);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                             });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn("Cannot set IronPdfEngine files permission ", e);
                 }
 
                 List<String> cmdList = new ArrayList<>();
@@ -154,8 +169,8 @@ final class Access {
                 }
 
                 ProcessBuilder pb = new ProcessBuilder(cmdList);
-                Process proc = pb.start();
 
+                Process proc = pb.start();
                 catchServerErrors(proc);
 
                 //This addShutdownHook will run when ...
@@ -192,6 +207,8 @@ final class Access {
 
             }
         } catch (Exception e) {
+            logger.error(String.format("Cannot start IronPdfEngine at %1$s.",
+                    Setting_Api.getDefaultIronPdfEnginePath()), e);
             throw new RuntimeException(String.format("Cannot start IronPdfEngine at %1$s.",
                     Setting_Api.getDefaultIronPdfEnginePath()), e);
         }
@@ -203,11 +220,13 @@ final class Access {
                 InputStreamReader(proc.getInputStream()));
 
         Thread threadInput = new Thread(() -> {
+            engineLogger.info("[IronPdfEngine] Start");
             // Read the output from the command
-            if (Setting_Api.enableDebug)
-            {
-                stdInput.lines().forEach(line -> logger.info("[IronPdfEngine]" + line));
-            }
+            stdInput.lines().forEach(line -> {
+                if (Setting_Api.enableDebug)
+                    engineLogger.info("[IronPdfEngine]" + line);
+            });
+
         });
         //Note: Whenever the last non-daemon thread terminates, all the daemon threads will be terminated automatically.
         threadInput.setDaemon(true);
@@ -218,10 +237,10 @@ final class Access {
 
         Thread threadError = new Thread(() -> {
             // Read the error from the command
-            if (Setting_Api.enableDebug)
-            {
-                stdError.lines().forEach(line -> logger.error("[IronPdfEngine][Error]" + line));
-            }
+            stdError.lines().forEach(line -> {
+                if (Setting_Api.enableDebug)
+                    engineLogger.error("[IronPdfEngine][Error]" + line);
+            });
         });
 
         //Note: Whenever the last non-daemon thread terminates, all the daemon threads will be terminated automatically.
@@ -248,5 +267,23 @@ final class Access {
         ironPdfProcess = null;
 
         client = null;
+    }
+
+    private static void setPermission(File file) {
+        try {
+            boolean setExecutablePermissionResult = file.setExecutable(true, false);
+            boolean setWritablePermissionResult = file.setWritable(true, false);
+            boolean setReadablePermissionResult = file.setReadable(true, false);
+            logger.debug(file.getAbsolutePath() + " permission status:" +
+                    System.lineSeparator() +
+                    " Executable:" + setExecutablePermissionResult +
+                    System.lineSeparator() +
+                    " Writable:" + setWritablePermissionResult +
+                    System.lineSeparator() +
+                    " Readable:" + setReadablePermissionResult
+            );
+        } catch (Exception exception) {
+            logger.warn("Set permission failed : " + file.getAbsolutePath(), exception);
+        }
     }
 }

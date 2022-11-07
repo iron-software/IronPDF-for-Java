@@ -23,7 +23,7 @@ public class SecurityManager {
 
     /**
      * Gets the owner password and enables 128-bit encryption of PDF content.
-     * <p>An owner password enables other security settings. <br/>OwnerPassword must be set to a non-empty
+     * <p>An owner password enables other security settings. <br>OwnerPassword must be set to a non-empty
      * string value for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
      * AllowUserPrinting, AllowUserEdits to be restricted.</p>
      */
@@ -33,7 +33,7 @@ public class SecurityManager {
 
     /**
      * Sets the owner password and enables 128-bit encryption of PDF content.
-     * <p>An owner password enables other security settings. <br/>OwnerPassword must be set to a non-empty
+     * <p>An owner password enables other security settings. <br>OwnerPassword must be set to a non-empty
      * string value for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
      * AllowUserPrinting, AllowUserEdits to be restricted.</p>
      */
@@ -69,8 +69,8 @@ public class SecurityManager {
 
     /**
      * Makes this PDF document read only such that:
-     * <p> - Content is encrypted at 128 bit.<br/>
-     * - Copy and paste of content is disallowed. <br/>
+     * <p> - Content is encrypted at 128 bit.<br>
+     * - Copy and paste of content is disallowed. <br>
      * - Annotations and form editing are disabled.</p>
      *
      * @param ownerPassword The owner password for the PDF.  A string for owner password is required

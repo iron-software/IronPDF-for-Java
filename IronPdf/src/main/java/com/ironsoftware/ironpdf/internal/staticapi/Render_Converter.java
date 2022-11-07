@@ -3,6 +3,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
+import com.ironsoftware.ironpdf.render.FitToPaperModes;
 import com.ironsoftware.ironpdf.render.*;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ final class Render_Converter {
         proto.setCustomCssUrl(Utils_Util.nullGuard(Options.getCustomCssUrl()));
         proto.setEnableJavaScript(Options.isEnableJavaScript());
         proto.setFirstPageNumber(Options.getFirstPageNumber());
-        proto.setFitToPaperWidth(Options.isFitToPaperWidth());
+        proto.setFitToPaperMode(Render_Converter.toProto(Options.getFitToPaperMode()));
         proto.setGrayScale(Options.isGrayScale());
         proto.setInputEncoding(Options.getInputEncoding());
         proto.setMarginBottom(Options.getMarginBottom());
@@ -64,6 +65,12 @@ final class Render_Converter {
 
     static PdfCssMediaType toProto(CssMediaType Input) {
         PdfCssMediaType.Builder tempVar = PdfCssMediaType.newBuilder();
+        tempVar.setEnumValue(Input.ordinal());
+        return tempVar.build();
+    }
+
+    static com.ironsoftware.ironpdf.internal.proto.FitToPaperModes toProto(FitToPaperModes Input) {
+        com.ironsoftware.ironpdf.internal.proto.FitToPaperModes.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.FitToPaperModes.newBuilder();
         tempVar.setEnumValue(Input.ordinal());
         return tempVar.build();
     }

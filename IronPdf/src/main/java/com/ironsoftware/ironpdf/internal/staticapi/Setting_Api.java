@@ -33,7 +33,7 @@ public final class Setting_Api {
     public static Path defaultPathToIronPdfEngineFolder = Paths.get(getIronPdfEngineFolderName());
     public static String subProcessIp = "127.0.0.1";
 
-    private static int findFreePort() {
+    public static int findFreePort() {
         //InetAddress must be "127.0.0.1" to prevent firewall popups
         try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
             socket.setReuseAddress(true);
@@ -151,6 +151,6 @@ public final class Setting_Api {
         return Paths.get(getIronPdfEngineFolderName(), getIronPdfEngineFileName());
     }
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10253";
+    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10283";
 
 }

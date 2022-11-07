@@ -108,13 +108,13 @@
             <plugin>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <configuration>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.48.1:exe:${os.detected.classifier}
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.50.2:exe:${os.detected.classifier}
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
                         ./protofiles
                     </protoSourceRoot>
-                    <protocArtifact>com.google.protobuf:protoc:3.21.1:exe:${os.detected.classifier}
+                    <protocArtifact>com.google.protobuf:protoc:3.21.9:exe:${os.detected.classifier}
                     </protocArtifact>
                 </configuration>
                 <executions>
@@ -195,17 +195,17 @@
             <artifactId>grpc-netty-shaded</artifactId>
             <groupId>io.grpc</groupId>
             <scope>runtime</scope>
-            <version>1.48.1</version>
+            <version>1.50.2</version>
         </dependency>
         <dependency>
             <artifactId>grpc-protobuf</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.48.1</version>
+            <version>1.50.2</version>
         </dependency>
         <dependency>
             <artifactId>grpc-stub</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.48.1</version>
+            <version>1.50.2</version>
         </dependency>
         <dependency>
             <artifactId>javax.annotation-api</artifactId>

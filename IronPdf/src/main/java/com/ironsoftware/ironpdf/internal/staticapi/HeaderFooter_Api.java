@@ -18,6 +18,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -40,6 +41,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -65,40 +67,12 @@ public final class HeaderFooter_Api {
         Utils_Util.handleEmptyResult(emptyResult);
     }
 
-    private static AddTextHeaderFooterRequest setAddTextHeaderFooterRequest(InternalPdfDocument pdfDocument, TextHeaderFooter textHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
-                                                                     int marginRightMm, int marginTopMm, int marginBottomMm, String pdfTitle, boolean isHeader) {
-        AddTextHeaderFooterRequest.Builder req = AddTextHeaderFooterRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
-        req.setFirstPageNumber(firstPageNumber);
-        req.setMarginLeftMm(marginLeftMm);
-        req.setMarginRightMm(marginRightMm);
-        req.setMarginTopMm(marginTopMm);
-        req.setMarginBottomMm(marginBottomMm);
-        req.setPdfTitle(pdfTitle);
-
-        req.setLeftText(
-                textHeaderFooter.getLeftText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getLeftText()));
-        req.setCenterText(
-                textHeaderFooter.getCenterText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getCenterText()));
-        req.setRightText(
-                textHeaderFooter.getRightText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getRightText()));
-        req.setDrawDividerLine(textHeaderFooter.isDrawDividerLine());
-        req.setFont(FontTypes_Converter.toProto(textHeaderFooter.getFont()));
-        req.setFontSize(textHeaderFooter.getFontSize());
-        req.setSpacing(textHeaderFooter.getSpacing());
-
-        req.setIsHeader(isHeader);
-        if (pageIndexesToAddFootersTo != null) {
-            req.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
-        }
-        return req.build();
-    }
-
     /**
      * Renders page headers to an existing PDF File <p>Margin spacing on the PDF page for the header
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -120,6 +94,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -140,6 +115,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -158,6 +134,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
@@ -174,6 +151,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument     PDF Document object
      * @param header          A new instance of {@link TextHeaderFooter} that defines the header
      *                        content and layout.
      * @param firstPageNumber Optional. The number of first page.
@@ -188,8 +166,9 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param header A new instance of {@link TextHeaderFooter} that defines the header content and
-     *               layout.
+     * @param pdfDocument PDF Document object
+     * @param header      A new instance of {@link TextHeaderFooter} that defines the header content and
+     *                    layout.
      */
     public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header) {
         addTextHeader(pdfDocument, header, 1, null, 0, 0, 0, 0, "");
@@ -200,6 +179,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -222,6 +202,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -253,6 +234,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -274,6 +256,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -294,6 +277,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -312,6 +296,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
      *                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
@@ -328,6 +313,7 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
+     * @param pdfDocument     PDF Document object
      * @param footer          A new instance of {@link TextHeaderFooter} that defines the header
      *                        content and layout.
      * @param firstPageNumber Optional. The number of first page.
@@ -342,16 +328,49 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param footer A new instance of {@link TextHeaderFooter} that defines the header content and
-     *               layout.
+     * @param pdfDocument PDF Document object
+     * @param footer      A new instance of {@link TextHeaderFooter} that defines the header content and
+     *                    layout.
      */
     public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer) {
         addTextFooter(pdfDocument, footer, 1, null, 0, 0, 0, 0, "");
     }
 
+    private static AddTextHeaderFooterRequest setAddTextHeaderFooterRequest(InternalPdfDocument pdfDocument, TextHeaderFooter textHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
+                                                                            int marginRightMm, int marginTopMm, int marginBottomMm, String pdfTitle, boolean isHeader) {
+        AddTextHeaderFooterRequest.Builder req = AddTextHeaderFooterRequest.newBuilder();
+        req.setDocument(pdfDocument.remoteDocument);
+        req.setFirstPageNumber(firstPageNumber);
+        req.setMarginLeftMm(marginLeftMm);
+        req.setMarginRightMm(marginRightMm);
+        req.setMarginTopMm(marginTopMm);
+        req.setMarginBottomMm(marginBottomMm);
+        if(pdfTitle != null)
+            req.setPdfTitle(pdfTitle);
+
+        req.setLeftText(
+                textHeaderFooter.getLeftText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getLeftText()));
+        req.setCenterText(
+                textHeaderFooter.getCenterText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getCenterText()));
+        req.setRightText(
+                textHeaderFooter.getRightText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getRightText()));
+        req.setDrawDividerLine(textHeaderFooter.isDrawDividerLine());
+        req.setFont(FontTypes_Converter.toProto(textHeaderFooter.getFont()));
+        req.setFontSize(textHeaderFooter.getFontSize());
+        req.setSpacing(textHeaderFooter.getSpacing());
+
+        req.setIsHeader(isHeader);
+        if (pageIndexesToAddFootersTo != null) {
+            req.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
+        }
+        return req.build();
+    }
+
+
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -378,6 +397,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -398,29 +418,11 @@ public final class HeaderFooter_Api {
                                      int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType,
                                      String pdfTitle, String htmlTitle) {
 
-        AddHtmlHeaderFooterRequestStream.Info.Builder info = AddHtmlHeaderFooterRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
-        info.setIsHeader(true);
-        info.setBaseUrl(header.getBaseUrl() != null ? header.getBaseUrl() : "");
-        info.setFirstPageNumber(firstPageNumber);
-        info.setMarginLeftMm(marginLeftMm);
-        info.setMarginRightMm(marginRightMm);
-        info.setMarginTopMm(marginTopMm);
-        info.setMarginBottomMm(marginBottomMm);
-        info.setCssMediaType(Render_Converter.toProto(renderPdfCssMediaType));
-        info.setPdfTitle(pdfTitle);
-        info.setHtmlTitle(htmlTitle);
-        info.setDrawDividerLine(header.isDrawDividerLine());
+        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(pdfDocument, header, firstPageNumber,
+                pageIndexesToAddFootersTo, marginLeftMm, marginRightMm, marginTopMm, marginBottomMm,
+                renderPdfCssMediaType, pdfTitle, htmlTitle, true);
 
-        if (pageIndexesToAddFootersTo != null) {
-            info.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
-        }
-
-        if (header.getMaxHeight() != null) {
-            info.setMaxHeight(header.getMaxHeight());
-        }
-
-        addHtmlHeaderFooter_Internal(info.build(), header.getHtmlFragment());
+        addHtmlHeaderFooter_Internal(info, header.getHtmlFragment());
     }
 
     private static void addHtmlHeaderFooter_Internal(AddHtmlHeaderFooterRequestStream.Info info,
@@ -457,6 +459,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -481,6 +484,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -503,6 +507,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -524,6 +529,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -543,6 +549,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param marginLeftMm              The left margin of the header on the page in mm.
@@ -560,6 +567,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
      *                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
@@ -576,6 +584,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
+     * @param pdfDocument     PDF Document object
      * @param header          A new instance of IronPdf.HtmlHeaderFooter that defines the header
      *                        content and layout.
      * @param firstPageNumber Optional. The number of first page.
@@ -589,8 +598,9 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param header A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
-     *               layout.
+     * @param pdfDocument PDF Document object
+     * @param header      A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
+     *                    layout.
      */
     public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header) {
         addHtmlHeader(pdfDocument, header, 1, null, 0, 0,
@@ -600,6 +610,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -624,6 +635,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -645,34 +657,16 @@ public final class HeaderFooter_Api {
                                      String pdfTitle, String htmlTitle) {
         RpcClient client = Access.ensureConnection();
 
-        AddHtmlHeaderFooterRequestStream.Info.Builder info = AddHtmlHeaderFooterRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
-        info.setIsHeader(false);
-        info.setBaseUrl(footer.getBaseUrl() != null ? footer.getBaseUrl() : "");
-        info.setFirstPageNumber(firstPageNumber);
-        info.setMarginLeftMm(marginLeftMm);
-        info.setMarginRightMm(marginRightMm);
-        info.setMarginTopMm(marginTopMm);
-        info.setMarginBottomMm(marginBottomMm);
-        info.setCssMediaType(Render_Converter.toProto(renderPdfCssMediaType));
-        info.setPdfTitle(pdfTitle);
-        info.setHtmlTitle(htmlTitle);
-        info.setDrawDividerLine(footer.isDrawDividerLine());
-
-        if (pageIndexesToAddFootersTo != null) {
-            info.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
-        }
-
-        if (footer.getMaxHeight() != null) {
-            info.setMaxHeight(footer.getMaxHeight());
-        }
-
-        addHtmlHeaderFooter_Internal(info.build(), footer.getHtmlFragment());
+        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(pdfDocument, footer, firstPageNumber,
+                pageIndexesToAddFootersTo, marginLeftMm, marginRightMm, marginTopMm, marginBottomMm,
+                renderPdfCssMediaType, pdfTitle, htmlTitle, false);
+        addHtmlHeaderFooter_Internal(info, footer.getHtmlFragment());
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -695,6 +689,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -715,6 +710,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -734,6 +730,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -752,6 +749,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
@@ -768,6 +766,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument               PDF Document object
      * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
      *                                  footer content and layout.
      * @param firstPageNumber           Optional. The number of first page.
@@ -783,6 +782,7 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
+     * @param pdfDocument     PDF Document object
      * @param footer          A new instance of IronPdf.HtmlFooterFooter that defines the footer
      *                        content and layout.
      * @param firstPageNumber Optional. The number of first page.
@@ -796,11 +796,45 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param footer A new instance of IronPdf.HtmlFooterFooter that defines the footer content and
-     *               layout.
+     * @param pdfDocument PDF Document object
+     * @param footer      A new instance of IronPdf.HtmlFooterFooter that defines the footer content and
+     *                    layout.
      */
     public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer) {
         addHtmlFooter(pdfDocument, footer, 1, null, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
+
+    private static AddHtmlHeaderFooterRequestStream.Info setAddHtmlHeaderFooterRequest(InternalPdfDocument pdfDocument, HtmlHeaderFooter htmlHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
+                                                                                       int marginRightMm, int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType, String pdfTitle, String htmlTitle, boolean isHeader) {
+        AddHtmlHeaderFooterRequestStream.Info.Builder info = AddHtmlHeaderFooterRequestStream.Info.newBuilder();
+        info.setDocument(pdfDocument.remoteDocument);
+        info.setIsHeader(false);
+        info.setBaseUrl(htmlHeaderFooter.getBaseUrl() != null ? htmlHeaderFooter.getBaseUrl() : "");
+        info.setFirstPageNumber(firstPageNumber);
+        info.setMarginLeftMm(marginLeftMm);
+        info.setMarginRightMm(marginRightMm);
+        info.setMarginTopMm(marginTopMm);
+        info.setMarginBottomMm(marginBottomMm);
+        info.setCssMediaType(Render_Converter.toProto(renderPdfCssMediaType));
+        if (pdfTitle != null)
+            info.setPdfTitle(pdfTitle);
+        if (htmlTitle != null)
+            info.setHtmlTitle(htmlTitle);
+        info.setDrawDividerLine(htmlHeaderFooter.isDrawDividerLine());
+
+        if (pageIndexesToAddFootersTo != null) {
+            info.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
+        }
+
+        if (htmlHeaderFooter.getMaxHeight() != null) {
+            info.setMaxHeight(htmlHeaderFooter.getMaxHeight());
+        }
+        info.setIsHeader(isHeader);
+        if (pageIndexesToAddFootersTo != null) {
+            info.addAllTargetPageIndexes(pageIndexesToAddFootersTo);
+        }
+        return info.build();
+    }
+
 }

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -142,10 +143,11 @@ final class Utils_Util {
 
     static <T> void waitAndCheck(CountDownLatch finishLatch, List<T> resultChunks) {
         try {
-            finishLatch.await();
+            finishLatch.await(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
 
         if (resultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdfEngine.");

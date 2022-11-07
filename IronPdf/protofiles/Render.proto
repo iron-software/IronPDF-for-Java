@@ -43,7 +43,7 @@ message ChromePdfRenderOptions{
   optional string custom_css_url = 2;
   optional bool enable_java_script = 3;
   optional int32 first_page_number = 4;
-  optional bool fit_to_paper_width = 5;
+  optional FitToPaperModes fit_to_paper_mode = 5;
   optional bool generate_unique_document_identifiers = 6;
   optional bool gray_scale = 7;
   optional double margin_bottom = 8;
@@ -74,5 +74,9 @@ message PdfCssMediaType{
 }
 
 message PdfPaperSize {
+  int32 enum_value = 1;
+}
+
+message FitToPaperModes {
   int32 enum_value = 1;
 }

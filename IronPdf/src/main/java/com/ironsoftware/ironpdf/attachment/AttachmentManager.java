@@ -24,7 +24,6 @@ public class AttachmentManager {
     }
 
     /**
-     /**
      * A Collection of file attachment names (keys) contained within this PdfDocument.
      */
     public final List<String> getAttachments() {
@@ -49,6 +48,15 @@ public class AttachmentManager {
      */
     public final void removeAttachment(String name) {
         Attachment_Api.removePdfAttachment(this.internalPdfDocument, name);
+    }
+
+    /**
+     * Gets attachment data from attachment name
+     *
+     * @param name Attachment name
+     */
+    public final byte[] getAttachmentData(String name) {
+        return Attachment_Api.getPdfAttachmentData(this.internalPdfDocument, name);
     }
 
 }

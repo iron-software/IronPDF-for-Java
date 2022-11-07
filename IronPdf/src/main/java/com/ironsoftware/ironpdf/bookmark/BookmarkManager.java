@@ -63,7 +63,7 @@ public class BookmarkManager {
                     pageIndex, text);
         } else {
             Bookmark_Api.insertBookmark(internalPdfDocument, pageIndex,
-                    text, lastBookmarks.getText(), null);
+                    text, lastBookmarks.getParentBookmarkText(), lastBookmarks.getText());
         }
     }
 
