@@ -170,6 +170,8 @@ final class Access {
 
                 ProcessBuilder pb = new ProcessBuilder(cmdList);
 
+                logger.info("Start IronPdfEngine");
+
                 Process proc = pb.start();
                 catchServerErrors(proc);
 
@@ -187,6 +189,8 @@ final class Access {
                     proc.destroy();
                 }));
 
+                //wait for IronPdfEngine finish initialize
+                Thread.sleep(1000);
                 ironPdfProcess = proc;
 
             } else {
