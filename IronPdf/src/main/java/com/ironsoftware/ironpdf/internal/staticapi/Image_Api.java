@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
+/**
+ * The type Image api.
+ */
 public final class Image_Api {
 
     /**
@@ -23,6 +26,7 @@ public final class Image_Api {
      * @param imagesBytes   The image file as bytes.
      * @param imageBehavior Describes how image should be placed on the PDF page
      * @param renderOptions Rendering options
+     * @return the internal pdf document
      */
     public static InternalPdfDocument imageToPdf(List<byte[]> imagesBytes,
                                                  ImageBehavior imageBehavior, ChromePdfRenderOptions renderOptions) {
@@ -69,20 +73,21 @@ public final class Image_Api {
      * Draw an image multiple times according to the specified parameters; all occurrences of the
      * image will share a single data stream
      *
-     * @param imageBytes    images to draw
-     * @param pageIndexes   Target page indexes
-     * @param x             X coordinate
-     * @param y             Y coordinate
-     * @param desiredWidth  Desired widths
-     * @param desiredHeight Desired heights
+     * @param internalPdfDocument the internal pdf document
+     * @param imageBytes          images to draw
+     * @param pageIndexes         Target page indexes
+     * @param x                   X coordinate
+     * @param y                   Y coordinate
+     * @param desiredWidth        Desired widths
+     * @param desiredHeight       Desired heights
      */
-    public static void drawImage(InternalPdfDocument pdfDocument, byte[] imageBytes,
+    public static void drawImage(InternalPdfDocument internalPdfDocument, byte[] imageBytes,
                                  Iterable<Integer> pageIndexes, double x,
                                  double y, double desiredWidth, double desiredHeight) {
         RpcClient client = Access.ensureConnection();
 
         DrawBitmapRequestStream.Info.Builder info = DrawBitmapRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
+        info.setDocument(internalPdfDocument.remoteDocument);
         info.setX(x);
         info.setY(y);
         info.setDesiredWidth(desiredWidth);
@@ -112,23 +117,29 @@ public final class Image_Api {
 
     /**
      * Finds all embedded Images from within the PDF and returns as list of image bytes
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the list
+     * @throws IOException the io exception
      */
-
-    public static List<byte[]> extractAllImages(InternalPdfDocument pdfDocument) throws IOException {
-        return extractAllImages(pdfDocument, null);
+    public static List<byte[]> extractAllImages(InternalPdfDocument internalPdfDocument) throws IOException {
+        return extractAllImages(internalPdfDocument, null);
     }
 
     /**
      * Finds all embedded Images from within the PDF and returns then as image byte[] objects
      *
-     * @param pageIndexes Index of the page.  Note: Page 1 has index 0. Defaults to all pages
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         Index of the page.  Note: Page 1 has index 0. Defaults to all pages
+     * @return the list
+     * @throws IOException the io exception
      */
-    public static List<byte[]> extractAllImages(InternalPdfDocument pdfDocument,
+    public static List<byte[]> extractAllImages(InternalPdfDocument internalPdfDocument,
                                                 Iterable<Integer> pageIndexes) throws IOException {
         RpcClient client = Access.ensureConnection();
 
         ExtractAllRawImagesRequest.Builder request = ExtractAllRawImagesRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         if (pageIndexes != null) {
             request.addAllPageIndexes(pageIndexes);
         }
@@ -149,17 +160,16 @@ public final class Image_Api {
      * 1 image file is created for each page. <p>FileNamePattern should normally contain an asterisk
      * (*) character which will be substituted for the page numbers</p>
      *
-     * @param pageIndexes   A list of the specific zero based page number to render as images.
-     * @param imageMaxWidth The target maximum width(in pixel) of the output images.
-     * @param dpi           The desired resolution of the output Images.
-     * @return An array of the file paths of the image files created.
-     * <p>
-     * The DPI will be ignored under Linux and macOS.
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         A list of the specific zero based page number to render as images.
+     * @param dpi                 The desired resolution of the output Images.
+     * @param imageMaxWidth       The target maximum width(in pixel) of the output images.
+     * @return An array of the file paths of the image files created. <p> The DPI will be ignored under Linux and macOS.
+     * @throws IOException the io exception
      */
-
-    public static List<byte[]> pdfToImage(InternalPdfDocument pdfDocument,
+    public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
                                           Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth) throws IOException {
-        return pdfToImage(pdfDocument, pageIndexes, dpi, imageMaxWidth, null);
+        return pdfToImage(internalPdfDocument, pageIndexes, dpi, imageMaxWidth, null);
     }
 
     /**
@@ -167,19 +177,21 @@ public final class Image_Api {
      * 1 image file is created for each page. <p>FileNamePattern should normally contain an asterisk
      * (*) character which will be substituted for the page numbers</p>
      *
-     * @param pageIndexes    A list of the specific zero based page number to render as images.
-     * @param imageMaxWidth  The target maximum width(in pixel) of the output images.
-     * @param imageMaxHeight The target maximum height(in pixel) of the output images.
-     * @param dpi            The desired resolution of the output Images.
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         A list of the specific zero based page number to render as images.
+     * @param dpi                 The desired resolution of the output Images.
+     * @param imageMaxWidth       The target maximum width(in pixel) of the output images.
+     * @param imageMaxHeight      The target maximum height(in pixel) of the output images.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
-    public static List<byte[]> pdfToImage(InternalPdfDocument pdfDocument,
+    public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
                                           Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight)
             throws IOException {
         RpcClient client = Access.ensureConnection();
 
         PdfToImagesRequest.Builder request = PdfToImagesRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         request.setDpi(dpi);
 
         if (pageIndexes != null) {
@@ -210,13 +222,15 @@ public final class Image_Api {
      * 1 image file is created for each page. <p>FileNamePattern should normally contain an asterisk
      * (*) character which will be substituted for the page numbers</p>
      *
-     * @param pageIndexes A list of the specific zero based page number to render as images.
-     * @param dpi         The desired resolution of the output Images.
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         A list of the specific zero based page number to render as images.
+     * @param dpi                 The desired resolution of the output Images.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
-    public static List<byte[]> pdfToImage(InternalPdfDocument pdfDocument,
+    public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
                                           Iterable<Integer> pageIndexes, int dpi) throws IOException {
-        return pdfToImage(pdfDocument, pageIndexes, dpi, null, null);
+        return pdfToImage(internalPdfDocument, pageIndexes, dpi, null, null);
     }
 
     /**
@@ -224,12 +238,14 @@ public final class Image_Api {
      * 1 image file is created for each page. <p>FileNamePattern should normally contain an asterisk
      * (*) character which will be substituted for the page numbers</p>
      *
-     * @param pageIndexes A list of the specific zero based page number to render as images.
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         A list of the specific zero based page number to render as images.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
-    public static List<byte[]> pdfToImage(InternalPdfDocument pdfDocument,
+    public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
                                           Iterable<Integer> pageIndexes) throws IOException {
-        return pdfToImage(pdfDocument, pageIndexes, 92, null, null);
+        return pdfToImage(internalPdfDocument, pageIndexes, 92, null, null);
     }
 
     /**
@@ -237,9 +253,11 @@ public final class Image_Api {
      * 1 image file is created for each page. <p>FileNamePattern should normally contain an asterisk
      * (*) character which will be substituted for the page numbers</p>
      *
+     * @param internalPdfDocument the internal pdf document
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
-    public static List<byte[]> pdfToImage(InternalPdfDocument pdfDocument) throws IOException {
-        return pdfToImage(pdfDocument, null, 92, null, null);
+    public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument) throws IOException {
+        return pdfToImage(internalPdfDocument, null, 92, null, null);
     }
 }

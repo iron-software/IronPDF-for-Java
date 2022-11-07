@@ -9,16 +9,22 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+/**
+ * The type Attachment api.
+ */
 public final class Attachment_Api {
 
     /**
      * Gets collection of attachments contained within a pdf document
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the pdf attachment collection
      */
-    public static List<String> getPdfAttachmentCollection(InternalPdfDocument pdfDocument) {
+    public static List<String> getPdfAttachmentCollection(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
         GetPdfAttachmentCollectionRequest.Builder req = GetPdfAttachmentCollectionRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         GetPdfAttachmentCollectionResult res = client.blockingStub.pdfDocumentAttachmentGetPdfAttachmentCollection(
                 req.build());
@@ -34,13 +40,15 @@ public final class Attachment_Api {
     /**
      * Gets attachment data from attachment name
      *
-     * @param name Attachment name
+     * @param internalPdfDocument the internal pdf document
+     * @param name                Attachment name
+     * @return the byte [ ]
      */
-    public static byte[] getPdfAttachmentData(InternalPdfDocument pdfDocument, String name) {
+    public static byte[] getPdfAttachmentData(InternalPdfDocument internalPdfDocument, String name) {
         RpcClient client = Access.ensureConnection();
 
         GetPdfAttachmentDataRequest.Builder req = GetPdfAttachmentDataRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
         req.setName(name);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
@@ -67,10 +75,11 @@ public final class Attachment_Api {
     /**
      * Add a new attachment
      *
-     * @param name            Attachment name
-     * @param attachmentBytes Attachment data
+     * @param internalPdfDocument the internal pdf document
+     * @param name                Attachment name
+     * @param attachmentBytes     Attachment data
      */
-    public static void addPdfAttachment(InternalPdfDocument pdfDocument, String name,
+    public static void addPdfAttachment(InternalPdfDocument internalPdfDocument, String name,
                                         byte[] attachmentBytes) {
         RpcClient client = Access.ensureConnection();
 
@@ -84,7 +93,7 @@ public final class Attachment_Api {
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         AddPdfAttachmentRequestStream.Info.Builder info = AddPdfAttachmentRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
+        info.setDocument(internalPdfDocument.remoteDocument);
         info.setName(name);
 
         // sending request
@@ -112,13 +121,14 @@ public final class Attachment_Api {
     /**
      * Remove attachment by attachment name
      *
-     * @param name Attachment name
+     * @param internalPdfDocument the internal pdf document
+     * @param name                Attachment name
      */
-    public static void removePdfAttachment(InternalPdfDocument pdfDocument, String name) {
+    public static void removePdfAttachment(InternalPdfDocument internalPdfDocument, String name) {
         RpcClient client = Access.ensureConnection();
 
         RemovePdfAttachmentRequest.Builder req = RemovePdfAttachmentRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
         req.setName(name);
 
         EmptyResult res = client.blockingStub.pdfDocumentAttachmentRemovePdfAttachment(

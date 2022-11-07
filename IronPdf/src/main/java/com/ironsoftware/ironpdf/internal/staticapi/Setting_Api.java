@@ -15,13 +15,28 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * The type Setting api.
+ */
 public final class Setting_Api {
 
+    /**
+     * The Logger.
+     */
     static final Logger logger = LoggerFactory.getLogger(Setting_Api.class);
 
-    //will use unique port numbers to avoid conflicts with other instances of IronPdf
+    /**
+     * The constant subProcessPort.
+     */
+//will use unique port numbers to avoid conflicts with other instances of IronPdf
     public static int subProcessPort = findFreePort();
+    /**
+     * The constant licenseKey.
+     */
     public static String licenseKey = "";
+    /**
+     * The constant enableDebug.
+     */
     public static boolean enableDebug = false;
     /**
      * Path to IronPdfEngine folder, default is current
@@ -30,9 +45,20 @@ public final class Setting_Api {
      */
     public static Path ironPdfEngineFolder = Paths.get(System.getProperty("user.dir"),
             getIronPdfEngineFolderName());
+    /**
+     * The constant defaultPathToIronPdfEngineFolder.
+     */
     public static Path defaultPathToIronPdfEngineFolder = Paths.get(getIronPdfEngineFolderName());
+    /**
+     * The constant subProcessIp.
+     */
     public static String subProcessIp = "127.0.0.1";
 
+    /**
+     * Find free port int.
+     *
+     * @return the int
+     */
     public static int findFreePort() {
         //InetAddress must be "127.0.0.1" to prevent firewall popups
         try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
@@ -45,6 +71,11 @@ public final class Setting_Api {
         throw new IllegalStateException("Could not find a free port to start IronPdfEngine");
     }
 
+    /**
+     * Gets available iron pdf engine file.
+     *
+     * @return the available iron pdf engine file
+     */
     public static Optional<File> getAvailableIronPdfEngineFile() {
         try {
             //find IronEngine from ironpdf-engine-os-arch maven package
@@ -92,6 +123,11 @@ public final class Setting_Api {
         return Optional.empty();
     }
 
+    /**
+     * Current os full name string.
+     *
+     * @return the string
+     */
     static String currentOsFullName() {
         if (SystemUtils.IS_OS_WINDOWS) {
             return "Windows";
@@ -104,6 +140,11 @@ public final class Setting_Api {
         throw new RuntimeException("unknown OS:" + SystemUtils.OS_NAME);
     }
 
+    /**
+     * Current os arch string.
+     *
+     * @return the string
+     */
     static String currentOsArch() {
         if (SystemUtils.IS_OS_WINDOWS) {
             if (System.getProperty("os.arch").equalsIgnoreCase("x86")) {
@@ -143,14 +184,27 @@ public final class Setting_Api {
         }
     }
 
+    /**
+     * Gets custom iron pdf engine path.
+     *
+     * @return the custom iron pdf engine path
+     */
     public static Path getCustomIronPdfEnginePath() {
         return Paths.get(ironPdfEngineFolder.toAbsolutePath().toString(), getIronPdfEngineFileName());
     }
 
+    /**
+     * Gets default iron pdf engine path.
+     *
+     * @return the default iron pdf engine path
+     */
     public static Path getDefaultIronPdfEnginePath() {
         return Paths.get(getIronPdfEngineFolderName(), getIronPdfEngineFileName());
     }
 
+    /**
+     * The constant IRON_PDF_ENGINE_VERSION.
+     */
     public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10292";
 
 }

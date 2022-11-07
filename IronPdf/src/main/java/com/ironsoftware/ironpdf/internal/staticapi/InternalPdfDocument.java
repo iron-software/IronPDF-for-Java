@@ -15,13 +15,27 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Internal pdf document. For users, please use {@link com.ironsoftware.ironpdf.PdfDocument} instead.
+ */
 public final class InternalPdfDocument implements AutoCloseable, Printable {
 
+    /**
+     * The Remote document.
+     */
     final com.ironsoftware.ironpdf.internal.proto.PdfDocument remoteDocument;
-    //todo to optimize some code we may use this more often
+    /**
+     * The Temp pages info.
+     */
+//todo to optimize some code we may use this more often
     List<PageInfo> tempPagesInfo = Collections.emptyList();
     private boolean disposed = false;
 
+    /**
+     * Instantiates a new Internal pdf document.
+     *
+     * @param remoteDocument the remote document
+     */
     InternalPdfDocument(com.ironsoftware.ironpdf.internal.proto.PdfDocument remoteDocument) {
         this.remoteDocument = remoteDocument;
     }

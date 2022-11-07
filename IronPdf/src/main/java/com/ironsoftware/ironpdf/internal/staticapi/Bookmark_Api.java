@@ -10,20 +10,24 @@ import java.util.List;
 
 import static com.ironsoftware.ironpdf.internal.staticapi.Exception_Converter.fromProto;
 
+/**
+ * The type Bookmark api.
+ */
 public final class Bookmark_Api {
 
     /**
      * Retrieve all bookmarks within this PDF, recursively retrieve all children of bookmarks within
      * this collection, and return a flat list
      *
+     * @param internalPdfDocument the internal pdf document
      * @return A flattened list of all bookmarks in this collection and all of their children
      */
-    public static List<Bookmark> getBookmarks(InternalPdfDocument pdfDocument) {
+    public static List<Bookmark> getBookmarks(InternalPdfDocument internalPdfDocument) {
 
         RpcClient client = Access.ensureConnection();
 
         GetBookmarksRequest.Builder request = GetBookmarksRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         GetBookmarksResult result = client.blockingStub.pdfDocumentBookmarkGetBookmarks(
                 request.build());
 
@@ -37,29 +41,31 @@ public final class Bookmark_Api {
     /**
      * Insert a new bookmark
      *
-     * @param text       The display text for the link.
-     * @param pageIndex  The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
-     * @param parentText parent bookmark text. set to null for insert at the top
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndex           The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text                The display text for the link.
+     * @param parentText          parent bookmark text. set to null for insert at the top
      */
-    public static void insertBookmarkAsFirstChild(InternalPdfDocument pdfDocument, int pageIndex,
+    public static void insertBookmarkAsFirstChild(InternalPdfDocument internalPdfDocument, int pageIndex,
                                                   String text, String parentText) {
-        insertBookmark(pdfDocument, pageIndex, text, parentText, null);
+        insertBookmark(internalPdfDocument, pageIndex, text, parentText, null);
     }
 
     /**
      * Insert a new bookmark
      *
-     * @param text         The display text for the link.
-     * @param pageIndex    The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
-     * @param parentText   parent bookmark text. set to null for insert at the top
-     * @param previousText previous bookmark text. set to null for insert at first of its siblings
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndex           The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text                The display text for the link.
+     * @param parentText          parent bookmark text. set to null for insert at the top
+     * @param previousText        previous bookmark text. set to null for insert at first of its siblings
      */
-    public static void insertBookmark(InternalPdfDocument pdfDocument, int pageIndex, String text,
+    public static void insertBookmark(InternalPdfDocument internalPdfDocument, int pageIndex, String text,
                                       String parentText, String previousText) {
         RpcClient client = Access.ensureConnection();
 
         InsertBookmarkRequest.Builder request = InsertBookmarkRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         request.setPageIndex(pageIndex);
         request.setText(text);
         if (parentText != null) {
@@ -78,11 +84,12 @@ public final class Bookmark_Api {
     /**
      * Insert a new bookmark
      *
-     * @param text      The display text for the link.
-     * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndex           The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text                The display text for the link.
      */
-    public static void insertBookmarkAtStart(InternalPdfDocument pdfDocument, int pageIndex,
+    public static void insertBookmarkAtStart(InternalPdfDocument internalPdfDocument, int pageIndex,
                                              String text) {
-        insertBookmark(pdfDocument, pageIndex, text, null, null);
+        insertBookmark(internalPdfDocument, pageIndex, text, null, null);
     }
 }

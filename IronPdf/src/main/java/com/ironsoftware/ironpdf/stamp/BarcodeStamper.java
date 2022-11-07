@@ -14,7 +14,7 @@ public class BarcodeStamper extends Stamper {
     /**
      * Barcode encoding type to use for this Stamper. Supported encoding types include: QRCode,
      * Code128, and Code39. Please see:
-     * {@link com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding}.
+     * {@link com.ironsoftware.ironpdf.stamp.BarcodeEncoding}.
      * <p>Default is QRCode</p>
      */
     private BarcodeEncoding barcodeType = BarcodeEncoding.QRCode;
@@ -75,7 +75,7 @@ public class BarcodeStamper extends Stamper {
     /**
      * Gets barcode type. Barcode encoding type to use for this Stamper. Supported encoding types include: QRCode,
      * Code128, and Code39. Please see:
-     * {@link com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding}.
+     * {@link com.ironsoftware.ironpdf.stamp.BarcodeEncoding}.
      * <p>Default is QRCode</p>
      *
      * @return the barcode type
@@ -87,7 +87,7 @@ public class BarcodeStamper extends Stamper {
     /**
      * Sets barcode type. Barcode encoding type to use for this Stamper. Supported encoding types include: QRCode,
      * Code128, and Code39. Please see:
-     * {@link com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding}.
+     * {@link com.ironsoftware.ironpdf.stamp.BarcodeEncoding}.
      * <p>Default is QRCode</p>
      *
      * @param value the value

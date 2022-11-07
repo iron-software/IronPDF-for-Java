@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The type Header footer api.
+ */
 public final class HeaderFooter_Api {
 
     /**
@@ -18,21 +21,19 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm) {
-        addTextHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, "");
     }
 
@@ -41,24 +42,22 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      * @param pdfTitle                  Optional pdfTitle
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm, String pdfTitle) {
         RpcClient client = Access.ensureConnection();
 
-        AddTextHeaderFooterRequest req = setAddTextHeaderFooterRequest(pdfDocument, header,
+        AddTextHeaderFooterRequest req = setAddTextHeaderFooterRequest(internalPdfDocument, header,
                 firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, pdfTitle, true);
 
@@ -72,20 +71,18 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm) {
-        addTextHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, 0, "");
     }
 
@@ -94,19 +91,17 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm) {
-        addTextHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, 0, 0, "");
     }
 
@@ -115,17 +110,15 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
-     * @param marginLeftMm              The left margin of the header on the page in mm.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
+     * @param marginLeftMm              The left margin of the header on the page in mm.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm) {
-        addTextHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
+        addTextHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
                 0, 0, "");
     }
 
@@ -134,16 +127,14 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo) {
-        addTextHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0, "");
+        addTextHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0, "");
     }
 
     /**
@@ -151,14 +142,13 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument     PDF Document object
-     * @param header          A new instance of {@link TextHeaderFooter} that defines the header
-     *                        content and layout.
-     * @param firstPageNumber Optional. The number of first page.
+     * @param internalPdfDocument the internal pdf document
+     * @param header              A new instance of {@link TextHeaderFooter} that defines the header                        content and layout.
+     * @param firstPageNumber     Optional. The number of first page.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header,
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header,
                                      int firstPageNumber) {
-        addTextHeader(pdfDocument, header, firstPageNumber, null, 0, 0, 0, 0, "");
+        addTextHeader(internalPdfDocument, header, firstPageNumber, null, 0, 0, 0, 0, "");
     }
 
     /**
@@ -166,12 +156,11 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow header margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument PDF Document object
-     * @param header      A new instance of {@link TextHeaderFooter} that defines the header content and
-     *                    layout.
+     * @param internalPdfDocument the internal pdf document
+     * @param header              A new instance of {@link TextHeaderFooter} that defines the header content and                    layout.
      */
-    public static void addTextHeader(InternalPdfDocument pdfDocument, TextHeaderFooter header) {
-        addTextHeader(pdfDocument, header, 1, null, 0, 0, 0, 0, "");
+    public static void addTextHeader(InternalPdfDocument internalPdfDocument, TextHeaderFooter header) {
+        addTextHeader(internalPdfDocument, header, 1, null, 0, 0, 0, 0, "");
     }
 
     /**
@@ -179,21 +168,19 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, "");
     }
 
@@ -202,24 +189,22 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      * @param pdfTitle                  Optional pdfTitle
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm, String pdfTitle) {
         RpcClient client = Access.ensureConnection();
 
-        AddTextHeaderFooterRequest req = setAddTextHeaderFooterRequest(pdfDocument, footer,
+        AddTextHeaderFooterRequest req = setAddTextHeaderFooterRequest(internalPdfDocument, footer,
                 firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, pdfTitle, false);
 
@@ -234,20 +219,18 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, 0, "");
     }
 
@@ -256,19 +239,17 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, 0, 0, "");
     }
 
@@ -277,17 +258,15 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
-     * @param marginLeftMm              The left margin of the footer on the page in mm.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
+     * @param marginLeftMm              The left margin of the footer on the page in mm.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
                 0, 0, "");
     }
 
@@ -296,16 +275,14 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of {@link TextHeaderFooter} that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0, "");
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0, "");
     }
 
     /**
@@ -313,14 +290,13 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument     PDF Document object
-     * @param footer          A new instance of {@link TextHeaderFooter} that defines the header
-     *                        content and layout.
-     * @param firstPageNumber Optional. The number of first page.
+     * @param internalPdfDocument the internal pdf document
+     * @param footer              A new instance of {@link TextHeaderFooter} that defines the header                        content and layout.
+     * @param firstPageNumber     Optional. The number of first page.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer,
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer,
                                      int firstPageNumber) {
-        addTextFooter(pdfDocument, footer, firstPageNumber, null, 0, 0, 0, 0, "");
+        addTextFooter(internalPdfDocument, footer, firstPageNumber, null, 0, 0, 0, 0, "");
     }
 
     /**
@@ -328,18 +304,17 @@ public final class HeaderFooter_Api {
      * are set to default values of 25mm. An overload method allow footer margins to be chosen
      * specifically or set to zero.</p>
      *
-     * @param pdfDocument PDF Document object
-     * @param footer      A new instance of {@link TextHeaderFooter} that defines the header content and
-     *                    layout.
+     * @param internalPdfDocument the internal pdf document
+     * @param footer              A new instance of {@link TextHeaderFooter} that defines the header content and                    layout.
      */
-    public static void addTextFooter(InternalPdfDocument pdfDocument, TextHeaderFooter footer) {
-        addTextFooter(pdfDocument, footer, 1, null, 0, 0, 0, 0, "");
+    public static void addTextFooter(InternalPdfDocument internalPdfDocument, TextHeaderFooter footer) {
+        addTextFooter(internalPdfDocument, footer, 1, null, 0, 0, 0, 0, "");
     }
 
-    private static AddTextHeaderFooterRequest setAddTextHeaderFooterRequest(InternalPdfDocument pdfDocument, TextHeaderFooter textHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
+    private static AddTextHeaderFooterRequest setAddTextHeaderFooterRequest(InternalPdfDocument internalPdfDocument, TextHeaderFooter textHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                                                             int marginRightMm, int marginTopMm, int marginBottomMm, String pdfTitle, boolean isHeader) {
         AddTextHeaderFooterRequest.Builder req = AddTextHeaderFooterRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
         req.setFirstPageNumber(firstPageNumber);
         req.setMarginLeftMm(marginLeftMm);
         req.setMarginRightMm(marginRightMm);
@@ -370,26 +345,23 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  *                                  CSS3 Media Queries standard.
      * @param pdfTitle                  Optional pdfTitle
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType,
                                      String pdfTitle) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm,
                 marginTopMm, marginBottomMm, renderPdfCssMediaType, pdfTitle, "");
     }
@@ -397,28 +369,25 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  CSS3 Media Queries standard.
      * @param pdfTitle                  Optional pdfTitle
      * @param htmlTitle                 Optional htmlTitle
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType,
                                      String pdfTitle, String htmlTitle) {
 
-        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(pdfDocument, header, firstPageNumber,
+        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(internalPdfDocument, header, firstPageNumber,
                 pageIndexesToAddFootersTo, marginLeftMm, marginRightMm, marginTopMm, marginBottomMm,
                 renderPdfCssMediaType, pdfTitle, htmlTitle, true);
 
@@ -459,47 +428,42 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  CSS3 Media Queries standard.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm, int marginBottomMm,
                                      CssMediaType renderPdfCssMediaType) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, renderPdfCssMediaType, "", "");
     }
 
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
      * @param marginBottomMm            The bottom margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm, int marginBottomMm) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm,
                 marginTopMm, marginBottomMm, CssMediaType.PRINT, "", "");
     }
@@ -507,21 +471,19 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
      * @param marginTopMm               The top margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm,
                 marginTopMm, 0, CssMediaType.PRINT, "", "");
     }
@@ -529,19 +491,17 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      * @param marginLeftMm              The left margin of the header on the page in mm.
      * @param marginRightMm             The right margin of the header on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm,
                 0, 0, CssMediaType.PRINT, "", "");
     }
@@ -549,115 +509,103 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
-     * @param marginLeftMm              The left margin of the header on the page in mm.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
+     * @param marginLeftMm              The left margin of the header on the page in mm.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the
-     *                                  header content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param header                    A new instance of IronPdf.HtmlHeaderFooter that defines the                                  header content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the header will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the header will be added.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, 0, 0,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, pageIndexesToAddFootersTo, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument     PDF Document object
-     * @param header          A new instance of IronPdf.HtmlHeaderFooter that defines the header
-     *                        content and layout.
-     * @param firstPageNumber Optional. The number of first page.
+     * @param internalPdfDocument the internal pdf document
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header                        content and layout.
+     * @param firstPageNumber     Optional. The number of first page.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header,
                                      int firstPageNumber) {
-        addHtmlHeader(pdfDocument, header, firstPageNumber, null, 0, 0,
+        addHtmlHeader(internalPdfDocument, header, firstPageNumber, null, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page headers to an existing PDF File
      *
-     * @param pdfDocument PDF Document object
-     * @param header      A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
-     *                    layout.
+     * @param internalPdfDocument the internal pdf document
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header content and                    layout.
      */
-    public static void addHtmlHeader(InternalPdfDocument pdfDocument, HtmlHeaderFooter header) {
-        addHtmlHeader(pdfDocument, header, 1, null, 0, 0,
+    public static void addHtmlHeader(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter header) {
+        addHtmlHeader(internalPdfDocument, header, 1, null, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  CSS3 Media Queries standard.
      * @param pdfTitle                  Optional pdfTitle
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType,
                                      String pdfTitle) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, renderPdfCssMediaType, pdfTitle, "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  CSS3 Media Queries standard.
      * @param pdfTitle                  Optional pdfTitle
      * @param htmlTitle                 Optional htmlTitle
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber,
                                      Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm, int marginRightMm,
                                      int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType,
                                      String pdfTitle, String htmlTitle) {
         RpcClient client = Access.ensureConnection();
 
-        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(pdfDocument, footer, firstPageNumber,
+        AddHtmlHeaderFooterRequestStream.Info info = setAddHtmlHeaderFooterRequest(internalPdfDocument, footer, firstPageNumber,
                 pageIndexesToAddFootersTo, marginLeftMm, marginRightMm, marginTopMm, marginBottomMm,
                 renderPdfCssMediaType, pdfTitle, htmlTitle, false);
         addHtmlHeaderFooter_Internal(info, footer.getHtmlFragment());
@@ -666,149 +614,134 @@ public final class HeaderFooter_Api {
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
-     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the
-     *                                  CSS3 Media Queries standard.
+     * @param renderPdfCssMediaType     The style-sheet. 'Print' or 'Screen'. This matches the                                  CSS3 Media Queries standard.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, renderPdfCssMediaType, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
      * @param marginBottomMm            The bottom margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm, int marginBottomMm) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
      * @param marginTopMm               The top margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm, int marginTopMm) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
+     * @param firstPageNumber           Optional. The number of first page.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      * @param marginLeftMm              The left margin of the footer on the page in mm.
      * @param marginRightMm             The right margin of the footer on the page in mm.
-     * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                      int marginRightMm) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
-     * @param marginLeftMm              The left margin of the footer on the page in mm.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
+     * @param marginLeftMm              The left margin of the footer on the page in mm.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument               PDF Document object
-     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the
-     *                                  footer content and layout.
+     * @param internalPdfDocument       the internal pdf document
+     * @param footer                    A new instance of IronPdf.HtmlFooterFooter that defines the                                  footer content and layout.
      * @param firstPageNumber           Optional. The number of first page.
-     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which
-     *                                  the footer will be added.
+     * @param pageIndexesToAddFootersTo Optional# The PageIndexes (zero-based page numbers) to which                                  the footer will be added.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, pageIndexesToAddFootersTo, 0, 0, 0, 0,
                 CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument     PDF Document object
-     * @param footer          A new instance of IronPdf.HtmlFooterFooter that defines the footer
-     *                        content and layout.
-     * @param firstPageNumber Optional. The number of first page.
+     * @param internalPdfDocument the internal pdf document
+     * @param footer              A new instance of IronPdf.HtmlFooterFooter that defines the footer                        content and layout.
+     * @param firstPageNumber     Optional. The number of first page.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer,
                                      int firstPageNumber) {
-        addHtmlFooter(pdfDocument, footer, firstPageNumber, null, 0, 0,
+        addHtmlFooter(internalPdfDocument, footer, firstPageNumber, null, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
     /**
      * Renders HTML page footers to an existing PDF File
      *
-     * @param pdfDocument PDF Document object
-     * @param footer      A new instance of IronPdf.HtmlFooterFooter that defines the footer content and
-     *                    layout.
+     * @param internalPdfDocument the internal pdf document
+     * @param footer              A new instance of IronPdf.HtmlFooterFooter that defines the footer content and                    layout.
      */
-    public static void addHtmlFooter(InternalPdfDocument pdfDocument, HtmlHeaderFooter footer) {
-        addHtmlFooter(pdfDocument, footer, 1, null, 0, 0,
+    public static void addHtmlFooter(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter footer) {
+        addHtmlFooter(internalPdfDocument, footer, 1, null, 0, 0,
                 0, 0, CssMediaType.PRINT, "", "");
     }
 
-    private static AddHtmlHeaderFooterRequestStream.Info setAddHtmlHeaderFooterRequest(InternalPdfDocument pdfDocument, HtmlHeaderFooter htmlHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
+    private static AddHtmlHeaderFooterRequestStream.Info setAddHtmlHeaderFooterRequest(InternalPdfDocument internalPdfDocument, HtmlHeaderFooter htmlHeaderFooter, int firstPageNumber, Iterable<Integer> pageIndexesToAddFootersTo, int marginLeftMm,
                                                                                        int marginRightMm, int marginTopMm, int marginBottomMm, CssMediaType renderPdfCssMediaType, String pdfTitle, String htmlTitle, boolean isHeader) {
         AddHtmlHeaderFooterRequestStream.Info.Builder info = AddHtmlHeaderFooterRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
+        info.setDocument(internalPdfDocument.remoteDocument);
         info.setIsHeader(false);
         info.setBaseUrl(htmlHeaderFooter.getBaseUrl() != null ? htmlHeaderFooter.getBaseUrl() : "");
         info.setFirstPageNumber(firstPageNumber);

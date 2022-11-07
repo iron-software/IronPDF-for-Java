@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The type Render api.
+ */
 public final class Render_Api {
 
     /**
@@ -22,6 +25,7 @@ public final class Render_Api {
      *
      * @param htmlFilePath Path to a Html to be rendered as a PDF.
      * @return A {@link InternalPdfDocument}
+     * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
         return renderHtmlFileAsPdf(htmlFilePath, null, null);
@@ -34,6 +38,7 @@ public final class Render_Api {
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
      * @return A {@link InternalPdfDocument}
+     * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromePdfRenderOptions renderOptions,
@@ -65,8 +70,7 @@ public final class Render_Api {
      * @param html             The Html to be rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
-     *                         URL context for hyperlinks, images, CSS and JavaScript files.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
@@ -124,6 +128,7 @@ public final class Render_Api {
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link InternalPdfDocument}
+     * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromeHttpLoginCredentials loginCredentials
@@ -137,6 +142,7 @@ public final class Render_Api {
      * @param htmlFilePath  Path to a Html to be rendered as a PDF.
      * @param renderOptions Rendering options
      * @return A {@link InternalPdfDocument}
+     * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromePdfRenderOptions renderOptions
@@ -148,8 +154,7 @@ public final class Render_Api {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link InternalPdfDocument}.
      *
-     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a
-     *            PDF.
+     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a            PDF.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderUrlAsPdf(String url) {
@@ -160,8 +165,7 @@ public final class Render_Api {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link InternalPdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
-     *                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
      * @return A {@link InternalPdfDocument}
@@ -196,8 +200,7 @@ public final class Render_Api {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link InternalPdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
-     *                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link InternalPdfDocument}
      */
@@ -210,8 +213,7 @@ public final class Render_Api {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link InternalPdfDocument}.
      *
-     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be
-     *                      rendered as a PDF.
+     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be                      rendered as a PDF.
      * @param renderOptions Rendering options
      * @return A {@link InternalPdfDocument}
      */
@@ -234,9 +236,8 @@ public final class Render_Api {
      * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
      *
      * @param html             The Html to be rendered as a PDF.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
-     *                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
@@ -249,9 +250,8 @@ public final class Render_Api {
      * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
      *
      * @param html          The Html to be rendered as a PDF.
+     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL                      context for hyperlinks, images, CSS and JavaScript files.
      * @param renderOptions Rendering options
-     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL
-     *                      context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
@@ -278,8 +278,7 @@ public final class Render_Api {
      * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
      *
      * @param html    The Html to be rendered as a PDF.
-     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL
-     *                context for hyperlinks, images, CSS and JavaScript files.
+     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL                context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,

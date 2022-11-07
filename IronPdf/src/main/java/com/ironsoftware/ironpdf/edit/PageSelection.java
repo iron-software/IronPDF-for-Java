@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * A PageSelection is a collection of pages from a PDF document. 
+ * A PageSelection is a collection of pages from a PDF document.
  * <p>PageSelection can be used to perform operations on a subset of pages from a PDF document.</p>
  * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument}</p>
  */
@@ -20,6 +20,8 @@ public class PageSelection {
 
     /**
      * Every page of the PDF.
+     *
+     * @return all pages selection
      */
     public static PageSelection allPages() {
         return new PageSelection();
@@ -27,6 +29,9 @@ public class PageSelection {
 
     /**
      * Specific page index. <p>Note: Page 1 has index 0</p>
+     *
+     * @param pageIndex the page index
+     * @return a single page selection
      */
     public static PageSelection singlePage(int pageIndex) {
         PageSelection ps = new PageSelection();
@@ -36,6 +41,8 @@ public class PageSelection {
 
     /**
      * First page (page index 0).
+     *
+     * @return the first page selection
      */
     public static PageSelection firstPage() {
         PageSelection ps = new PageSelection();
@@ -45,6 +52,8 @@ public class PageSelection {
 
     /**
      * First page (page index 0).
+     *
+     * @return the page selection
      */
     public static PageSelection lastPage() {
         PageSelection ps = new PageSelection();
@@ -57,6 +66,7 @@ public class PageSelection {
      *
      * @param startIndex The index of the first PDF page. Note: Page 1 has index 0
      * @param endIndex   The index of the last PDF page.
+     * @return the selected pages selection
      */
     public static PageSelection pageRange(int startIndex, int endIndex) {
         PageSelection ps = new PageSelection();
@@ -68,6 +78,7 @@ public class PageSelection {
      * PageSelection factory.  Generates a list of page indexes to be used.
      *
      * @param pageList The list of pages index of the PDF. Note: Page 1 has index 0
+     * @return the selected pages selection
      */
     public static PageSelection pageRange(List<Integer> pageList) {
         PageSelection ps = new PageSelection();
@@ -75,6 +86,12 @@ public class PageSelection {
         return ps;
     }
 
+    /**
+     * Gets page list.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the page list
+     */
     public List<Integer> getPageList(InternalPdfDocument internalPdfDocument) {
         return pagesList.stream().map(i->{
             if(i == -1){
@@ -84,7 +101,12 @@ public class PageSelection {
         }).collect(Collectors.toList());
     }
 
-    public void setPageList(List<Integer> pageList) {
+    /**
+     * Sets page list.
+     *
+     * @param pageList the page list
+     */
+    private void setPageList(List<Integer> pageList) {
         pagesList = Lists.newArrayList(pageList);
     }
 }

@@ -16,10 +16,10 @@ public final class Security_Api {
      * form
      * editing are disabled.</p>
      */
-    public static void removePasswordsAndEncryption(InternalPdfDocument pdfDocument) {
+    public static void removePasswordsAndEncryption(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
         RemovePasswordsAndEncryptionRequest.Builder req = RemovePasswordsAndEncryptionRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         EmptyResult res = client.blockingStub.pdfDocumentSecurityRemovePasswordsAndEncryption(
                 req.buildPartial());
@@ -29,13 +29,13 @@ public final class Security_Api {
     /**
      * Get PDF security settings
      *
-     * @param pdfDocument PDF document object.
+      .
      * @return PdfSecuritySettings
      */
-    public static SecurityOptions getPdfSecurityOptions(InternalPdfDocument pdfDocument) {
+    public static SecurityOptions getPdfSecurityOptions(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
         GetPdfSecuritySettingsRequest.Builder req = GetPdfSecuritySettingsRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         GetPdfSecuritySettingsResult res = client.blockingStub.pdfDocumentSecurityGetPdfSecuritySettings(
                 req.build());
@@ -51,11 +51,11 @@ public final class Security_Api {
      * Makes this PDF document read only such that: <p>Content is encrypted at 128 bit. Copy and paste
      * of content is disallowed. Annotations and form editing are disabled.</p>
      *
-     * @param pdfDocument PDF document object.
+      .
      * @param ownerPassword The owner password for the PDF.  A string for owner password is required
      *                      to enable PDF encryption and all document security options.
      */
-    public static void makePdfDocumentReadOnly(InternalPdfDocument pdfDocument, String ownerPassword) {
+    public static void makePdfDocumentReadOnly(InternalPdfDocument internalPdfDocument, String ownerPassword) {
         if (Utils_StringHelper.isNullOrWhiteSpace(ownerPassword)) {
             throw new RuntimeException(
                     "MakePdfDocumentReadOnly :: A string for owner password is required to enable PDF encryption and all document security options.");
@@ -73,21 +73,21 @@ public final class Security_Api {
         iron.setAllowUserEdits(Security_Converter.toProto(PdfEditSecurity.NO_EDIT));
         iron.setAllowUserFormData(false);
         iron.setAllowUserPrinting(toProto(PdfPrintSecurity.FULL_PRINT_RIGHTS));
-        setPdfSecuritySettings(pdfDocument, Security_Converter.fromProto(iron.build()));
+        setPdfSecuritySettings(internalPdfDocument, Security_Converter.fromProto(iron.build()));
     }
 
     /**
      * Set PDF security settings
      *
-     * @param pdfDocument PDF document object.
-     * @param pdfSecuritySettings A {@link com.ironsoftware.ironpdf.internal.proto.PdfSecuritySettings} object.
+      .
+     * @param securityOptions A {@link com.ironsoftware.ironpdf.security.SecurityOptions} object.
      */
-    public static void setPdfSecuritySettings(InternalPdfDocument pdfDocument,
-                                              SecurityOptions pdfSecuritySettings) {
+    public static void setPdfSecuritySettings(InternalPdfDocument internalPdfDocument,
+                                              SecurityOptions securityOptions) {
         RpcClient client = Access.ensureConnection();
         SetPdfSecuritySettingsRequest.Builder req = SetPdfSecuritySettingsRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
-        req.setSecuritySettings(Security_Converter.toProto(pdfSecuritySettings));
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setSecuritySettings(Security_Converter.toProto(securityOptions));
 
         EmptyResult res = client.blockingStub.pdfDocumentSecuritySetPdfSecuritySettings(
                 req.buildPartial());

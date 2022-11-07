@@ -5,16 +5,20 @@ import com.ironsoftware.ironpdf.internal.proto.ExtractAllTextRequest;
 import com.ironsoftware.ironpdf.internal.proto.ReplaceTextRequest;
 import com.ironsoftware.ironpdf.internal.proto.StringResult;
 
+/**
+ * The type Text api.
+ */
 public final class Text_Api {
 
     /**
      * Extracts the written text content from the PDF and returns it as a string. <p>Pages are
      * separated by 4 consecutive Environment.NewLines</p>
      *
+     * @param internalPdfDocument the internal pdf document
      * @return All text in the PDF as a string.
      */
-    public static String extractAllText(InternalPdfDocument pdfDocument) {
-        return extractAllText(pdfDocument, null);
+    public static String extractAllText(InternalPdfDocument internalPdfDocument) {
+        return extractAllText(internalPdfDocument, null);
     }
 
 
@@ -22,15 +26,16 @@ public final class Text_Api {
      * Extracts the written text content from the PDF and returns it as a string. <p>Pages are
      * separated by 4 consecutive Environment.NewLines</p>
      *
-     * @param pageIndexes page indexes to extract text (defaults to all pages)
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         page indexes to extract text (defaults to all pages)
      * @return All text in the PDF as a string.
      */
-    public static String extractAllText(InternalPdfDocument pdfDocument,
+    public static String extractAllText(InternalPdfDocument internalPdfDocument,
                                         Iterable<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
 
         ExtractAllTextRequest.Builder req = ExtractAllTextRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         if (pageIndexes != null) {
             req.addAllPageIndexes(pageIndexes);
@@ -48,16 +53,17 @@ public final class Text_Api {
     /**
      * Replace the specified old text with new text on a given page
      *
-     * @param pageIndex Page index to search for old text to replace
-     * @param oldText   Old text to remove
-     * @param newText   New text to add
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndex           Page index to search for old text to replace
+     * @param oldText             Old text to remove
+     * @param newText             New text to add
      */
-    public static void replaceTextOnPage(InternalPdfDocument pdfDocument, int pageIndex,
+    public static void replaceTextOnPage(InternalPdfDocument internalPdfDocument, int pageIndex,
                                          String oldText, String newText) {
         RpcClient client = Access.ensureConnection();
 
         ReplaceTextRequest.Builder req = ReplaceTextRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageIndex(pageIndex);
         req.setCurrentText(oldText);
         req.setNewText(newText);

@@ -19,9 +19,9 @@ public enum FitToPaperModes {
 
     /**
      * Fit an exact number of pixels onto each PDF page.
-     * Uses {@link ChromePdfRenderOptions#setViewPortWidth} to specify the pixel width to fit on each PDF page.
+     * Uses {@link ChromePdfRenderOptions#setViewPortWidth(int)} to specify the pixel width to fit on each PDF page.
      * {@link ChromePdfRenderOptions#setZoom(int)} has no effect. Instead, IronPdf will calculate the zoom level based on
-     * {@link ChromePdfRenderOptions#setViewPortWidth} and {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}
+     * {@link ChromePdfRenderOptions#setViewPortWidth(int)} and {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}
      *
      * <p> Useful when an optimal pixel width is known or printing documents to match a Chrome browser window display
      */
@@ -30,7 +30,7 @@ public enum FitToPaperModes {
     /**
      * Measures minimum HTML content width after it is rendered by the browser and calculates {@link ChromePdfRenderOptions#setZoom(int)}
      * based on the width of the content.
-     * {@link ChromePdfRenderOptions#setZoom(int)} and {@link ChromePdfRenderOptions#setViewPortWidth} have no effect and are calculated automatically by IronPdf.
+     * {@link ChromePdfRenderOptions#setZoom(int)} and {@link ChromePdfRenderOptions#setViewPortWidth(int)} have no effect and are calculated automatically by IronPdf.
      *
      * <p> Useful when fitting a wide content or content of unknown width onto a PDF page
      */
@@ -38,7 +38,7 @@ public enum FitToPaperModes {
     /**
      * Measures minimum HTML content width after it is rendered by the browser using the smallest view port possible, and calculates
      * {@link ChromePdfRenderOptions#setZoom(int)} based on the width of the content.
-     * Use {@link ChromePdfRenderOptions#setViewPortWidth} to specify the minimum number of pixels to be fit on each PDF page.
+     * Use {@link ChromePdfRenderOptions#setViewPortWidth(int)} to specify the minimum number of pixels to be fit on each PDF page.
      * {@link ChromePdfRenderOptions#setZoom(int)} has no effect and is calculated automatically by IronPdf.
      *
      * <p> Useful when fitting smaller content onto a wide page

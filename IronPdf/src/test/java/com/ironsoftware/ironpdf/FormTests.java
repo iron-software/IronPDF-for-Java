@@ -1,17 +1,15 @@
 package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.TestBase;
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.form.FormField;
 import com.ironsoftware.ironpdf.form.FormManager;
-import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class FormTests extends TestBase {
 
@@ -29,7 +27,7 @@ public class FormTests extends TestBase {
     }
 
     @Test
-    public final void FlattenFormSelectPageTest() throws IOException {;
+    public final void FlattenFormSelectPageTest() throws IOException {
         PdfDocument doc = PdfDocument.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
         FormManager formManager = doc.getForm();
         List<FormField> formsBefore = formManager.getFields().getAllFields();
@@ -82,7 +80,9 @@ public class FormTests extends TestBase {
         formManager.setTextFieldFont("fname", FontTypes.getArial(), 20);
         List<FormField> forms = formManager.getFields().getAllFields();
         Assertions.assertEquals(2, forms.size());
-        FormField form = forms.stream().filter(x -> x.getName().equals("fname")).findFirst().get();
+        Optional<FormField> expected = forms.stream().filter(x -> x.getName().equals("fname")).findFirst();
+        Assertions.assertTrue(expected.isPresent());
+        FormField form = expected.get();
         // TODO Maybe add Assertions for Font
         Assertions.assertNotNull(form);
     }

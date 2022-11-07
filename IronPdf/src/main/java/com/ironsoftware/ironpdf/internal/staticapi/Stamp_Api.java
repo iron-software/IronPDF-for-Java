@@ -10,7 +10,7 @@ import java.util.concurrent.CountDownLatch;
 
 public final class Stamp_Api {
 
-    public static void applyStamp(InternalPdfDocument pdfDocument, Stamper stamper,
+    public static void applyStamp(InternalPdfDocument internalPdfDocument, Stamper stamper,
                                   Iterable<Integer> pageIndexesToStamp) {
         RpcClient client = Access.ensureConnection();
 
@@ -19,7 +19,7 @@ public final class Stamp_Api {
 
         ApplyStampRequestStream.Info.Builder info = ApplyStampRequestStream.Info.newBuilder();
 
-        info.setDocument(pdfDocument.remoteDocument);
+        info.setDocument(internalPdfDocument.remoteDocument);
         info.setOpacity(stamper.getOpacity());
         info.setRotation(stamper.getRotation());
         info.setHorizontalAlignment(Stamp_Converter.toProto(stamper.getHorizontalAlignment()));

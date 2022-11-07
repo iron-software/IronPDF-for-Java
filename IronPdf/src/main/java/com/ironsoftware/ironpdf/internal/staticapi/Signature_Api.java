@@ -13,11 +13,11 @@ import java.util.concurrent.CountDownLatch;
 
 public final class Signature_Api {
 
-    public static List<VerifiedSignature> getVerifiedSignatures(InternalPdfDocument pdfDocument) {
+    public static List<VerifiedSignature> getVerifiedSignatures(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
         GetVerifiedSignatureRequest.Builder req = GetVerifiedSignatureRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<GetVerifySignatureResult> resultChunks = new ArrayList<>();
@@ -36,11 +36,11 @@ public final class Signature_Api {
         return Signature_Converter.fromProto(res);
     }
 
-    public static void signPdfWithSignatureFile(InternalPdfDocument pdfDocument, Signature signature) {
+    public static void signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature) {
         RpcClient client = Access.ensureConnection();
 
         SignPdfRequestStream.Info.Builder info = SignPdfRequestStream.Info.newBuilder();
-        info.setDocument(pdfDocument.remoteDocument);
+        info.setDocument(internalPdfDocument.remoteDocument);
 
         if (signature.getSigningContact() != null) {
             info.setSigningContact(signature.getSigningContact());
@@ -97,11 +97,11 @@ public final class Signature_Api {
         Utils_Util.handleEmptyResultChunks(resultChunks);
     }
 
-    public static boolean verifyPdfSignatures(InternalPdfDocument pdfDocument){
+    public static boolean verifyPdfSignatures(InternalPdfDocument internalPdfDocument){
         RpcClient client = Access.ensureConnection();
 
         VerifyPdfSignaturesRequest.Builder req = VerifyPdfSignaturesRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<BooleanResult> resultChunks = new ArrayList<>();

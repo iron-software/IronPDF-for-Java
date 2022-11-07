@@ -24,6 +24,8 @@ public class MetadataManager {
 
     /**
      * Gets the Author of the document.
+     *
+     * @return the author
      */
     public String getAuthor() {
         return getAnyMetadata("Author");
@@ -31,6 +33,9 @@ public class MetadataManager {
 
     /**
      * Gets any metadata value of the document form given key.
+     *
+     * @param key the key
+     * @return the metadata value
      */
     public String getAnyMetadata(String key) {
         return Metadata_Api.getMetadata(static_pdfDocument, key);
@@ -38,6 +43,8 @@ public class MetadataManager {
 
     /**
      * Sets the Author of the document.
+     *
+     * @param value the value
      */
     public void setAuthor(String value) {
         setAnyMetadata("Author", value);
@@ -45,6 +52,9 @@ public class MetadataManager {
 
     /**
      * Sets any metadata value of the document form given key.
+     *
+     * @param key   the key
+     * @param value the value
      */
     public void setAnyMetadata(String key, String value) {
         Metadata_Api.setMetadata(static_pdfDocument, key, value);
@@ -52,6 +62,8 @@ public class MetadataManager {
 
     /**
      * Gets the PDF file creation DateTime.
+     *
+     * @return the creation date
      */
     public String getCreationDate() {
         return getAnyMetadata("CreationDate");
@@ -59,6 +71,8 @@ public class MetadataManager {
 
     /**
      * Sets the PDF file creation DateTime.
+     *
+     * @param value the value
      */
     public void setCreationDate(String value) {
         setAnyMetadata("CreationDate", value);
@@ -66,6 +80,8 @@ public class MetadataManager {
 
     /**
      * Gets the PDF file last-modified DateTime.
+     *
+     * @return the modified date
      */
     public String setModifiedDate() {
         return getAnyMetadata("ModDate");
@@ -73,6 +89,8 @@ public class MetadataManager {
 
     /**
      * Sets the PDF file last-modified DateTime.
+     *
+     * @param value the value
      */
     public void setModifiedDate(String value) {
         setAnyMetadata("ModDate", value);
@@ -80,6 +98,8 @@ public class MetadataManager {
 
     /**
      * Gets the Creator of the document.
+     *
+     * @return the creator
      */
     public String getCreator() {
         return getAnyMetadata("Creator");
@@ -87,6 +107,8 @@ public class MetadataManager {
 
     /**
      * Sets the Creator of the document.
+     *
+     * @param value the value
      */
     public void setCreator(String value) {
         setAnyMetadata("Creator", value);
@@ -95,6 +117,8 @@ public class MetadataManager {
     /**
      * Gets Keywords of the document.  This helps search indexes and operating systems correctly index
      * the PDF.
+     *
+     * @return the keywords
      */
     public String getKeywords() {
         return getAnyMetadata("Keywords");
@@ -103,6 +127,8 @@ public class MetadataManager {
     /**
      * Sets Keywords of the document.  This helps search indexes and operating systems correctly index
      * the PDF.
+     *
+     * @param value the value
      */
     public void setKeywords(String value) {
         setAnyMetadata("Keywords", value);
@@ -110,6 +136,8 @@ public class MetadataManager {
 
     /**
      * Gets the Producer of the document.
+     *
+     * @return the producer
      */
     public String getProducer() {
         return getAnyMetadata("Producer");
@@ -117,6 +145,8 @@ public class MetadataManager {
 
     /**
      * Sets the Producer of the document.
+     *
+     * @param value the value
      */
     public void setProducer(String value) {
         setAnyMetadata("Producer", value);
@@ -125,6 +155,8 @@ public class MetadataManager {
     /**
      * Gets Subject of the document.  This helps search indexes and operating systems correctly index
      * the PDF, and may appear in PDF viewer software.
+     *
+     * @return the subject
      */
     public String getSubject() {
         return getAnyMetadata("Subject");
@@ -133,6 +165,8 @@ public class MetadataManager {
     /**
      * Sets the Subject of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
+     *
+     * @param value the value
      */
     public void setSubject(String value) {
         setAnyMetadata("Subject", value);
@@ -141,6 +175,8 @@ public class MetadataManager {
     /**
      * Gets the Title of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
+     *
+     * @return the title
      */
     public String getTitle() {
         return getAnyMetadata("Title");
@@ -149,6 +185,8 @@ public class MetadataManager {
     /**
      * Sets the Title of the document.  This helps search indexes and operating systems correctly
      * index the PDF, and may appear in PDF viewer software.
+     *
+     * @param value the value
      */
     public void setTitle(String value) {
         setAnyMetadata("Title", value);

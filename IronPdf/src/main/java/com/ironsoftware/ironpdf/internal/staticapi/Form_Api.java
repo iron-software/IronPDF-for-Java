@@ -6,16 +6,22 @@ import com.ironsoftware.ironpdf.internal.proto.*;
 
 import java.util.List;
 
+/**
+ * The type Form api.
+ */
 public final class Form_Api {
 
     /**
      * Get a collection of the user-editable form fields within a PDF document
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the fields
      */
-    public static List<FormField> getFields(InternalPdfDocument pdfDocument) {
+    public static List<FormField> getFields(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
         GetFormRequest.Builder request = GetFormRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
 
         GetFormResult response = client.blockingStub.pdfDocumentFormGetForm(request.build());
         if (response.getResultOrExceptionCase() == GetFormResult.ResultOrExceptionCase.EXCEPTION) {
@@ -28,16 +34,16 @@ public final class Form_Api {
     /**
      * Rename a {@link FormField}
      *
-     * @param currentFieldName Current fully qualified field name
-     * @param newFieldName     New partial field name Please use a fully qualified field name for
-     *                         CurrentFieldName, and a partial field name for NewFieldName
+     * @param internalPdfDocument the internal pdf document
+     * @param currentFieldName    current fully qualified field name
+     * @param newFieldName        new partial field name Please use a fully qualified field name for                         CurrentFieldName, and a partial field name for NewFieldName
      */
-    public static void renameField(InternalPdfDocument pdfDocument, String currentFieldName,
+    public static void renameField(InternalPdfDocument internalPdfDocument, String currentFieldName,
                                    String newFieldName) {
         RpcClient client = Access.ensureConnection();
 
         RenameFieldRequest.Builder request = RenameFieldRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         request.setCurrentFieldName(currentFieldName);
         request.setNewFieldName(newFieldName);
         EmptyResult response = client.blockingStub.pdfDocumentFormRenameField(
@@ -48,14 +54,15 @@ public final class Form_Api {
     /**
      * Set the value of a {@link FormField}
      *
-     * @param fieldName Fully qualified field name
-     * @param value     New value
+     * @param internalPdfDocument the internal pdf document
+     * @param fieldName           fully qualified field name
+     * @param value               new value
      */
-    public static void setFieldValue(InternalPdfDocument pdfDocument, String fieldName, String value) {
+    public static void setFieldValue(InternalPdfDocument internalPdfDocument, String fieldName, String value) {
         RpcClient client = Access.ensureConnection();
 
         SetFromFieldValueRequest.Builder request = SetFromFieldValueRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         request.setFieldName(fieldName);
         request.setFormFieldValue(value);
         EmptyResult response = client.blockingStub.pdfDocumentFormSetFieldValue(
@@ -64,12 +71,20 @@ public final class Form_Api {
     }
 
 
-    public static void setTextFieldFont(InternalPdfDocument pdfDocument, String textFieldName,
+    /**
+     * Sets text field font.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param textFieldName       the text field name
+     * @param font                the font
+     * @param fontSize            the font size
+     */
+    public static void setTextFieldFont(InternalPdfDocument internalPdfDocument, String textFieldName,
                                         FontTypes font, int fontSize) {
         RpcClient client = Access.ensureConnection();
 
         SetFromFieldFontRequest.Builder request = SetFromFieldFontRequest.newBuilder();
-        request.setDocument(pdfDocument.remoteDocument);
+        request.setDocument(internalPdfDocument.remoteDocument);
         request.setFieldName(textFieldName);
         request.setFontType(FontTypes_Converter.toProto(font));
         request.setFontSize(fontSize);
@@ -81,21 +96,24 @@ public final class Form_Api {
 
     /**
      * Flattens a document (make the fields non-editable).
+     *
+     * @param internalPdfDocument the internal pdf document
      */
-    public static void flattenPdfFrom(InternalPdfDocument pdfDocument) {
-        flattenPdfFrom(pdfDocument, null);
+    public static void flattenPdfFrom(InternalPdfDocument internalPdfDocument) {
+        flattenPdfFrom(internalPdfDocument, null);
     }
 
     /**
      * Flattens a document (make the fields non-editable).
      *
-     * @param pageIndexes page indexes to flatten (defaults to all pages)
+     * @param internalPdfDocument the internal pdf document
+     * @param pageIndexes         page indexes to flatten (defaults to all pages)
      */
-    public static void flattenPdfFrom(InternalPdfDocument pdfDocument, Iterable<Integer> pageIndexes) {
+    public static void flattenPdfFrom(InternalPdfDocument internalPdfDocument, Iterable<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
 
         FlattenFormRequest.Builder req = FlattenFormRequest.newBuilder();
-        req.setDocument(pdfDocument.remoteDocument);
+        req.setDocument(internalPdfDocument.remoteDocument);
         if (pageIndexes != null) {
             req.addAllPageIndexes(pageIndexes);
         }

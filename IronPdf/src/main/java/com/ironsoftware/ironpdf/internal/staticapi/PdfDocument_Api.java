@@ -20,7 +20,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+/**
+ * The type Pdf document api.
+ */
 public final class PdfDocument_Api {
+    /**
+     * The Logger.
+     */
     static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
 
     /**
@@ -28,9 +34,7 @@ public final class PdfDocument_Api {
      *
      * @param pdfFilePath The PDF file path.
      * @return An IronPdf.PdfDocument object as loaded from the file path.
-     * @throws IOException               Exception thrown if it can not be opened.
-     * @throws IndexOutOfBoundsException pdfFilePath is null, empty, or consists only of white-space
-     *                                   characters.
+     * @throws IOException Exception thrown if it can not be opened.
      */
     public static InternalPdfDocument fromFile(String pdfFilePath) throws IOException {
         return fromFile(pdfFilePath, null, null);
@@ -43,9 +47,7 @@ public final class PdfDocument_Api {
      * @param pdfFilePath The PDF file path.
      * @param password    Optional user password if the PDF document is encrypted.
      * @return An IronPdf.PdfDocument object as loaded from the file path.
-     * @throws IOException               Exception thrown if it can not be opened.
-     * @throws IndexOutOfBoundsException pdfFilePath is null, empty, or consists only of white-space
-     *                                   characters.
+     * @throws IOException Exception thrown if it can not be opened.
      */
     public static InternalPdfDocument fromFile(String pdfFilePath, String password)
             throws IOException {
@@ -57,12 +59,9 @@ public final class PdfDocument_Api {
      *
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
-     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..)
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,                      modifying restrictions etc..)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
-     * @throws IOException               Exception thrown if it can not be opened.
-     * @throws IndexOutOfBoundsException pdfFilePath is null, empty, or consists only of white-space
-     *                                   characters.
+     * @throws IOException Exception thrown if it can not be opened.
      */
     public static InternalPdfDocument fromFile(String pdfFilePath, String password,
                                                String ownerPassword) throws IOException {
@@ -92,8 +91,8 @@ public final class PdfDocument_Api {
      *
      * @param pdfFileBytes  The PDF file data as byte array.
      * @param userPassword  Optional user password if the PDF document is encrypted.
-     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..)
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,                      modifying restrictions etc..)
+     * @return the internal pdf document
      */
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes, String userPassword,
                                                 String ownerPassword) {
@@ -139,15 +138,25 @@ public final class PdfDocument_Api {
         return Utils_Util.handlePdfDocumentChunks(resultChunks);
     }
 
-    public static void saveAs(InternalPdfDocument pdfDocument, String filePath) throws IOException {
-        byte[] data = PdfDocument_Api.getBytes(pdfDocument);
+    /**
+     * Save as.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param filePath            the file path
+     * @throws IOException the io exception
+     */
+    public static void saveAs(InternalPdfDocument internalPdfDocument, String filePath) throws IOException {
+        byte[] data = PdfDocument_Api.getBytes(internalPdfDocument);
         saveAs(data, filePath);
     }
 
     /**
      * Gets the binary data for the full PDF file as a byte array.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the byte [ ]
      */
-    public static byte[] getBytes(InternalPdfDocument pdfDocument) {
+    public static byte[] getBytes(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
         //for checking that the response stream is finished
@@ -156,7 +165,7 @@ public final class PdfDocument_Api {
 //        ArrayList<byte[]> chunks = new ArrayList<byte[]>();
         List<BytesResultStream> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentGetBinaryData(pdfDocument.remoteDocument,
+        client.stub.pdfDocumentGetBinaryData(internalPdfDocument.remoteDocument,
                 //response handler
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
@@ -174,6 +183,13 @@ public final class PdfDocument_Api {
         return Utils_Util.combineChunk(bytesChunks);
     }
 
+    /**
+     * Save as.
+     *
+     * @param pdfData  the pdf data
+     * @param filePath the file path
+     * @throws IOException the io exception
+     */
     public static void saveAs(byte[] pdfData, String filePath) throws IOException {
         logger.info("save PDF to file: " + filePath);
         File file = new File(filePath);
@@ -193,8 +209,8 @@ public final class PdfDocument_Api {
      *
      * @param pdfFileBytes The PDF file data as byte array.
      * @param userPassword Optional user password if the PDF document is encrypted.
+     * @return the internal pdf document
      */
-
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes, String userPassword) {
         return fromBytes(pdfFileBytes, userPassword, null);
     }
@@ -203,6 +219,7 @@ public final class PdfDocument_Api {
      * Opens an existing PDF document for editing.
      *
      * @param pdfFileBytes The PDF file data as byte array.
+     * @return the internal pdf document
      */
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes) {
         return fromBytes(pdfFileBytes, null, null);
