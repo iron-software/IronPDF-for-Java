@@ -27,7 +27,8 @@ public class BookmarkTests extends TestBase {
         bookmarkManager.addChildBookmark("B2", 0, "B1");
         bookmarkManager.addChildBookmark("B3", 0, "B1");
         bookmarkManager.insertBookmark("B4", 0, "B1", "B3");
-        bookmarkManager.addBookMarkAtEnd("B5", 0);
+        bookmarkManager.addBookMarkAtStart("B5", 0);
+        //todo check addBookMarkAtEnd
 
         List<Bookmark> bookmarkCollection = bookmarkManager.getBookmarks();
 

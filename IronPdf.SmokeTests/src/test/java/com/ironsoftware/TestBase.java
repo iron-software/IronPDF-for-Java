@@ -18,7 +18,6 @@ public class TestBase {
 
     public TestBase() {
         Settings.setDebug(true);
-        Settings.setIronPdfEngineFolder(Paths.get("TestOutput/"));
         License.setLicenseKey(new ConfigManager().getProperty("LicenseKey"));
     }
 
@@ -83,10 +82,9 @@ public class TestBase {
     public byte[] toByteArray(BufferedImage bi, String format)
             throws IOException {
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi, format, baos);
-        byte[] bytes = baos.toByteArray();
-        return bytes;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bi, format, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
 
     }
 }

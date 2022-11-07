@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class FormTests extends TestBase {
 
@@ -80,7 +81,9 @@ public class FormTests extends TestBase {
         formManager.setTextFieldFont("fname", FontTypes.getArial(), 20);
         List<FormField> forms = formManager.getFields().getAllFields();
         Assertions.assertEquals(2, forms.size());
-        FormField form = forms.stream().filter(x -> x.getName().equals("fname")).findFirst().get();
+        Optional<FormField> expected = forms.stream().filter(x -> x.getName().equals("fname")).findFirst();
+        Assertions.assertTrue(expected.isPresent());
+        FormField form = expected.get();
         // TODO Maybe add Assertions for Font
         Assertions.assertNotNull(form);
     }

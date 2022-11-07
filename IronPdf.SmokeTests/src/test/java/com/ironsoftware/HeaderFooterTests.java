@@ -16,7 +16,7 @@ public class HeaderFooterTests extends TestBase {
     public final void AddTextHeaderTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        byte[] imageBytesBefore = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorBefore = GetAvgColor(imageBytesBefore);
         Assertions.assertEquals(Color.WHITE, avgColorBefore);
@@ -28,7 +28,7 @@ public class HeaderFooterTests extends TestBase {
 
         doc.addTextHeader(textHF);
 
-        byte[] imageBytesAfter = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesAfter = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorAfter = GetAvgColor(imageBytesAfter);
         Assertions.assertNotEquals(Color.WHITE, avgColorAfter);
@@ -44,7 +44,7 @@ public class HeaderFooterTests extends TestBase {
     public final void AddTextFooterTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        byte[] imageBytesBefore = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorBefore = GetAvgColor(imageBytesBefore);
         Assertions.assertEquals(Color.WHITE, avgColorBefore);
@@ -56,7 +56,7 @@ public class HeaderFooterTests extends TestBase {
 
         doc.addTextFooter(textHF);
 
-        byte[] imageBytesAfter = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesAfter = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorAfter = GetAvgColor(imageBytesAfter);
         Assertions.assertNotEquals(Color.WHITE, avgColorAfter);
@@ -72,7 +72,7 @@ public class HeaderFooterTests extends TestBase {
     public final void AddHtmlHeaderTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        byte[] imageBytesBefore = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorBefore = GetAvgColor(imageBytesBefore);
         Assertions.assertEquals(Color.WHITE, avgColorBefore);
@@ -83,7 +83,7 @@ public class HeaderFooterTests extends TestBase {
 
         doc.addHtmlHeader(htmlHF);
 
-        byte[] imageBytesAfter = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesAfter = toByteArray(doc.toBufferedImages().get(0));
 
         doc.saveAs(Paths.get("TestOutput/AddHtmlHeaderTest.pdf"));
 
@@ -98,7 +98,7 @@ public class HeaderFooterTests extends TestBase {
     public final void AddHtmlFooterTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        byte[] imageBytesBefore = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
         Color avgColorBefore = GetAvgColor(imageBytesBefore);
         Assertions.assertEquals(Color.WHITE, avgColorBefore);
@@ -109,7 +109,7 @@ public class HeaderFooterTests extends TestBase {
 
         doc.addHtmlFooter(htmlHF);
 
-        byte[] imageBytesAfter = toByteArray(doc.toBufferedImage().get(0));
+        byte[] imageBytesAfter = toByteArray(doc.toBufferedImages().get(0));
 
         doc.saveAs(Paths.get("TestOutput/AddHtmlHeaderTest.pdf"));
 
