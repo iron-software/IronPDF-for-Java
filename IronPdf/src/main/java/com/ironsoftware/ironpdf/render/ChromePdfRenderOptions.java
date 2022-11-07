@@ -293,7 +293,7 @@ public class ChromePdfRenderOptions implements Cloneable {
 
     /**
      * Behavior when fitting HTML content to a physical paper size.
-     * Determines {@link #setZoom)} and {@link #setViewPortWidth)}.
+     * Determines {@link #setZoom(int)} and {@link #setViewPortWidth)}.
      *
      * @param value the value
      */
