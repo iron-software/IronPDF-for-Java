@@ -1533,7 +1533,7 @@ public class PdfDocument implements Printable {
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromePdfRenderOptions renderOptions,
                                                   ChromeHttpLoginCredentials loginCredentials) throws IOException {
-        return new PdfDocument(Render_Api.renderHtmlAsPdf(htmlFilePath, renderOptions, loginCredentials));
+        return new PdfDocument(Render_Api.renderHtmlFileAsPdf(htmlFilePath, renderOptions, loginCredentials));
     }
 
     /**
