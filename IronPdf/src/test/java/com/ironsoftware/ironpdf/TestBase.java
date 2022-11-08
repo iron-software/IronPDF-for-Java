@@ -16,6 +16,7 @@ public class TestBase {
 
     public TestBase() {
         Settings.setDebug(true);
+//        Settings.setLogPath(Paths.get("C:/tmp/mylog.log"));
         License.setLicenseKey(new ConfigManager().getProperty("LicenseKey"));
     }
 

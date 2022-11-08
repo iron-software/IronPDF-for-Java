@@ -38,6 +38,11 @@ public final class Setting_Api {
      * The constant enableDebug.
      */
     public static boolean enableDebug = false;
+
+    /**
+     * Path to IronPdfEngine log.
+     */
+    public static Path logPath = Paths.get("ironpdfengine.log");
     /**
      * Path to IronPdfEngine folder, default is current
      * {currentDirectory}/IronPdfEngine.{revision}.{osName}.{osArch}/ . If IronPdfEngine binary does

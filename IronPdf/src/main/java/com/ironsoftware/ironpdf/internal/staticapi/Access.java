@@ -167,6 +167,7 @@ final class Access {
                 cmdList.add(selectedFile.get().toPath().toAbsolutePath().toString());
                 cmdList.add(String.format("port=%1$s", Setting_Api.subProcessPort));
                 cmdList.add(String.format("enable_debug=%1$s", Setting_Api.enableDebug));
+                cmdList.add(String.format("log_path=%1$s", Setting_Api.logPath));
 
                 if (!Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey)) {
                     cmdList.add(String.format("license_key=%1$s", Setting_Api.licenseKey));

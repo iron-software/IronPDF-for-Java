@@ -25,6 +25,8 @@ import com.ironsoftware.ironpdf.stamp.HtmlStamper;
 import com.ironsoftware.ironpdf.stamp.Stamper;
 import com.ironsoftware.ironpdf.stamp.VerticalAlignment;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
  */
 
 public class PdfDocument implements Printable {
-
+    static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
     private final InternalPdfDocument internalPdfDocument;
 
     //region Constructor
