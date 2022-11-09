@@ -42,7 +42,7 @@ final class Access {
         startServer();
 
         if (channel == null) {
-            channel = ManagedChannelBuilder.forAddress(Setting_Api.subProcessIp,
+            channel = ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
                     Setting_Api.subProcessPort).usePlaintext().build();
         }
 
@@ -165,6 +165,7 @@ final class Access {
                 List<String> cmdList = new ArrayList<>();
 
                 cmdList.add(selectedFile.get().toPath().toAbsolutePath().toString());
+                cmdList.add(String.format("host=%1$s", Setting_Api.subProcessHost));
                 cmdList.add(String.format("port=%1$s", Setting_Api.subProcessPort));
                 cmdList.add(String.format("enable_debug=%1$s", Setting_Api.enableDebug));
                 cmdList.add(String.format("log_path=%1$s", Setting_Api.logPath));
@@ -196,7 +197,7 @@ final class Access {
 
                 //wait for IronPdfEngine finish initialize
                 //not throw timeout exception because we will try to connect IronPdfEngine on first method called.
-                boolean ignored = serverReady.await(10, TimeUnit.SECONDS);
+                boolean ignored = serverReady.await(60, TimeUnit.SECONDS);
 
                 ironPdfProcess = proc;
 

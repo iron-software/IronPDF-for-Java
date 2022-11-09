@@ -33,7 +33,7 @@ public final class Settings {
      * Enable or disable debug mode.
      * <p>***Please set before calling any IronPdf function.***
      *
-     * @param isDebug the is debug
+     * @param isDebug the is debug enabled
      */
     public static void setDebug(boolean isDebug) {
         Setting_Api.enableDebug = isDebug;
@@ -77,5 +77,41 @@ public final class Settings {
      */
     public static void setLogPath(Path path) {
         Setting_Api.logPath = path;
+    }
+
+    /**
+     * Set iron pdf engine host.
+     *
+     * @param host the host
+     */
+    public static void setIronPdfEngineHost(String host){
+        Setting_Api.subProcessHost = host;
+    }
+
+    /**
+     * Get IronPdfEngine host string.
+     *
+     * @return the host string
+     */
+    public static String getIronPdfEngineHost(){
+        return Setting_Api.subProcessHost;
+    }
+
+    /**
+     * Set IronPdfEngine port. Default port will pick automatically.
+     *
+     * @param port the port
+     */
+    public static void setIronPdfEnginePort(int port){
+        Setting_Api.subProcessPort = port;
+    }
+
+    /**
+     * Get IronPdfEngine port int. Default port will pick automatically.
+     *
+     * @return the port int
+     */
+    public static int getIronPdfEnginePort(){
+        return Setting_Api.subProcessPort;
     }
 }

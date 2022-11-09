@@ -14,9 +14,9 @@ Software Engineers to create, edit and extract PDF content in projects in Java.
 
 ## Using IronPDF
 
-### Define IronPDF for Java Dependency
+### Define IronPDF as a Java Dependency
 
-define IronPDF dependency in your pom.xml as follows:
+To define IronPDF as a dependency, please add the following excerpt to your pom.xml:
 
 ```xml  
 <dependencies>
@@ -27,39 +27,45 @@ define IronPDF dependency in your pom.xml as follows:
     </dependency>
 </dependencies>
 ```
-### Write the code
+### Start writing Java code
 
-Once Defined, you can get started by adding `import com.ironsoftware.ironpdf.*` to the top of your Java code. Here is
+Once the dependence is defined, you can get started by adding the `import com.ironsoftware.ironpdf.*` statement to the top of your Java code. Here is
 a sample HTML to PDF example to get started:
 
-```java 
-  PdfDocument pdfDocument = PdfDocument.renderHtmlAsPdf("<h1> ~Hello World~ </h1> Made with IronPDF!");
-  pdfDocument.saveAs(Paths.get("html_saved.pdf"));
+```java
+PdfDocument pdfDocument = PdfDocument.renderHtmlAsPdf("<h1> ~Hello World~ </h1> Made with IronPDF!");
+pdfDocument.saveAs(Paths.get("html_saved.pdf"));
 ```
 
-And another option is to create from URL to PDF:
+This is another example which demonstrates URL to PDF:
 
 ```java 
 PdfDocument pdfDocument = PdfDocument.renderUrlAsPdf("https://ironpdf.com/java");
 pdfDocument.saveAs(Paths.get("url_saved.pdf"));
 ```
 
-### Logging
-IronPdf Java using [slf4j](https://www.slf4j.org/) logger. 
+### Settings
 
-To enable log 
+Note: Please note that all settings, logging, and licensing operations must be executed before any IronPDF methods are called.
+
+#### Applying License Key
+
+```java 
+com.ironsoftware.ironpdf.License.setLicenseKey("YOUR-LICENSE-KEY");
+```
+
+#### Logging
+
+IronPdf Java uses the [slf4j](https://www.slf4j.org/) logger. To enable logging use:
 ```java 
 com.ironsoftware.ironpdf.Settings.setDebug(true);
 ```
-Set IronPdfEngine log path
+To specify the IronPdfEngine log path add:
 ```java 
 com.ironsoftware.ironpdf.Settings.setLogPath(Paths.get("C:/tmp/myIronPdfEngineLog.log"));
 ```
 
-Note: please set before cally any IronPDF function.
-
-#### Not familiar with slf4j?
-Just add this to your pom.xml.
+Not familiar with slf4j? Just add this to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>org.slf4j</groupId>
@@ -70,25 +76,15 @@ Just add this to your pom.xml.
 
 ## About IronPDF for Java
 
-`IronPdf for Java` is based on `IronPdf for .Net.` (so it will be 1 version behind)
+`IronPDF for Java` is based on `IronPDF for .NET`, it will generally be about 1 version behind.
 
-IronPdf for Java using gRPC to talked to `IronPdfEngine`, which
-consumed `IronPdf for .Net`
+IronPDF for Java uses gRPC to communicate with the `IronPdfEngine`, which consumes `IronPDF for .NET`
 
-`IronPdfEngine` binaries will be downloaded automatically when you run the project for the first time.
-`IronPdfEngine` process will start when you call any IronPdf function for the first time, and stop when your application
-is closed, or when it was in idle stage.
+`IronPdfEngine` binaries will automatically be downloaded when running the project for the first time. The `IronPdfEngine` process will start when you call any IronPdf function for the first time, and stop when your application is closed, or when it enters an idle stage.
 
 ## Licensing & Support Available
 
-`IronPdf for Java` is free to use with watermark. To remove watermark [learn more](https://ironpdf.com/licensing/).
-
-### Apply License
-
-```java 
-com.ironsoftware.ironpdf.License.setLicenseKey("YOUR-LICENSE-KEY");
-```
-Note: please set before cally any IronPDF function.
+`IronPdf for Java` is free to use and test with with an IronPDF watermark applied. To remove the watermark [apply for a license or trial license.](https://ironpdf.com/licensing/).
 
 For our full list of code examples, tutorials, licensing information, and documentation
 visit: [https://ironpdf.com/java](https://ironpdf.com/java)

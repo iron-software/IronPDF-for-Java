@@ -55,9 +55,9 @@ public final class Setting_Api {
      */
     public static Path defaultPathToIronPdfEngineFolder = Paths.get(getIronPdfEngineFolderName());
     /**
-     * The constant subProcessIp.
+     * The constant subProcessHost.
      */
-    public static String subProcessIp = "127.0.0.1";
+    public static String subProcessHost = "127.0.0.1";
 
     /**
      * Find free port int.
@@ -210,6 +210,6 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10292";
+    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10338";
 
 }
