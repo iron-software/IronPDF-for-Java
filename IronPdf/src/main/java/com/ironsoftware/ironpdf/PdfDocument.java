@@ -1336,12 +1336,24 @@ public class PdfDocument implements Printable {
     /**
      * Saves this PdfDocument to a file.
      *
-     * @param FilePath File Path
+     * @param filePath File Path
      * @return This PdfDocument for fluid code notation.
      */
-    public final PdfDocument saveAs(Path FilePath) throws IOException {
+    public final PdfDocument saveAs(Path filePath) throws IOException {
         PdfDocument_Api.saveAs(internalPdfDocument,
-                FilePath.toAbsolutePath().toString());
+                filePath.toAbsolutePath().toString());
+        return this;
+    }
+
+    /**
+     * Saves this PdfDocument to a file.
+     *
+     * @param filePath File path string
+     * @return This PdfDocument for fluid code notation.
+     */
+    public final PdfDocument saveAs(String filePath) throws IOException {
+        PdfDocument_Api.saveAs(internalPdfDocument,
+                filePath);
         return this;
     }
 

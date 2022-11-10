@@ -14,12 +14,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 final class Access {
     static final Logger logger = LoggerFactory.getLogger(Access.class);
@@ -32,7 +33,7 @@ final class Access {
     private static BufferedReader stdInput;
     private static BufferedReader stdError;
 
-    private static  CountDownLatch serverReady;
+    private static CountDownLatch serverReady;
 
     static synchronized RpcClient ensureConnection() {
         if (client != null) {
@@ -90,17 +91,29 @@ final class Access {
                 return;
             }
             Path zipFilePath = Paths.get(Setting_Api.defaultPathToIronPdfEngineFolder + ".zip");
-            logger.info("Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
+            if(logger.isInfoEnabled())
+                logger.info("Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
+            else
+                System.out.println("Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
             isTryDownloaded = true;
-            Files.copy(
-                    new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
+
+            try (InputStream stream = new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
                             + Setting_Api.IRON_PDF_ENGINE_VERSION +
                             "&platform=" + Setting_Api.currentOsFullName() +
-                            "&architect=" + Setting_Api.currentOsArch()).openStream(),
-                    zipFilePath,
-                    StandardCopyOption.REPLACE_EXISTING);
-            logger.info(
+                            "&architect=" + Setting_Api.currentOsArch()).openStream()) {
+
+                int downloadSize = stream.available();
+                try (DownloadInputStream pis = new DownloadInputStream(stream, downloadSize, logger)) {
+                    copyInputStreamToFile(pis, zipFilePath.toFile());
+                }
+            }
+
+            if(logger.isInfoEnabled())
+                logger.info(
                     "Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
+            else
+                System.out.println("Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
+
             unzip(zipFilePath.toAbsolutePath().toString(),
                     Setting_Api.ironPdfEngineFolder.toAbsolutePath().toString());
             logger.info("Delete zip file: " + zipFilePath.toAbsolutePath());
@@ -119,8 +132,8 @@ final class Access {
                 ZipEntry entry = entries.nextElement();
                 File entryDestination = new File(destDir, entry.getName());
                 if (entry.isDirectory()) {
-                        Files.createDirectories(entryDestination.toPath());
-                        setPermission(entryDestination);
+                    Files.createDirectories(entryDestination.toPath());
+                    setPermission(entryDestination);
                 } else {
                     File parentDir = entryDestination.getParentFile();
                     Files.createDirectories(parentDir.toPath());
@@ -141,7 +154,7 @@ final class Access {
                 logger.info("Using IronPdfEngine from: " + selectedFile.get().getAbsolutePath());
 
                 try {
-                    logger.info("Try Setting IronPdfEngine permission...");
+//                    logger.info("Try Setting IronPdfEngine permission...");
                     try {
                         File parentDir = selectedFile.get().getParentFile();
                         Files.createDirectories(parentDir.toPath());
@@ -232,10 +245,10 @@ final class Access {
                 InputStreamReader(proc.getInputStream()));
 
         Thread threadInput = new Thread(() -> {
-            engineLogger.info("listening IronPdfEngine");
+            engineLogger.debug("listening IronPdfEngine");
             // Read the output from the command
             stdInput.lines().forEach(line -> {
-                if(line.trim().equalsIgnoreCase("IronPdfEngine is up")){
+                if (line.trim().equalsIgnoreCase("IronPdfEngine is up")) {
                     serverReady.countDown();
                 }
                 if (Setting_Api.enableDebug)
@@ -253,8 +266,13 @@ final class Access {
         Thread threadError = new Thread(() -> {
             // Read the error from the command
             stdError.lines().forEach(line -> {
-                if (Setting_Api.enableDebug)
+                if (Setting_Api.enableDebug) {
                     engineLogger.error("[IronPdfEngine][Error]" + line);
+                } else {
+                    com.ironsoftware.ironpdf.Settings.setDebug(true);
+                    logger.warn("IronPdfEngine Error! For more information, Please enable Debug mode by adding this line before calling any IronPDF methods `com.ironsoftware.ironpdf.Settings.setDebug(true);`");
+                    logger.info("Current log file path: " + Setting_Api.logPath.toAbsolutePath());
+                }
             });
         });
 
