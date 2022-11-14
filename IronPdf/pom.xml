@@ -8,8 +8,12 @@
     <version>please-replace-version</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>An open source client for IronPdf for Java</description>
-    <url>https://github.com/iron-software/IronPDF-for-Java</url>
+    <description>IronPdf is a library developed and maintained by Iron Software that helps Software Engineers to create, edit and extract PDF content in projects in Java.</description>
+    <url>https://ironpdf.com</url>
+    <organization>
+        <name>Iron Software</name>
+        <url>https://ironsoftware.com/</url>
+    </organization>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -27,7 +31,7 @@
     <scm>
         <connection>scm:git:git://github.com/iron-software/IronPDF-for-Java.git</connection>
         <developerConnection>scm:git:ssh://github.com:iron-software/IronPDF-for-Java.git</developerConnection>
-        <url>https://github.com/iron-software/IronPDF-for-Java/tree/master</url>
+        <url>https://github.com/iron-software/IronPDF-for-Java</url>
     </scm>
     <distributionManagement>
         <snapshotRepository>
