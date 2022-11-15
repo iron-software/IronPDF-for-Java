@@ -9,7 +9,12 @@
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>IronPdf is a library developed and maintained by Iron Software that helps Software Engineers to create, edit and extract PDF content in projects in Java.</description>
-    <url>https://github.com/iron-software/IronPDF-for-Java</url>
+    <url>https://ironpdf.com</url>
+    <inceptionYear>2022</inceptionYear>
+    <organization>
+        <name>Iron Software</name>
+        <url>https://ironsoftware.com/</url>
+    </organization>
     <licenses>
         <license>
             <name>MIT License</name>

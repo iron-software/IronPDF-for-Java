@@ -11,7 +11,12 @@
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>An IronPdfEngine binaries for a specific environment packed into a JAR's resources</description>
-    <url>https://github.com/iron-software/IronPDF-for-Java</url>
+    <url>https://ironpdf.com</url>
+    <inceptionYear>2022</inceptionYear>
+    <organization>
+        <name>Iron Software</name>
+        <url>https://ironsoftware.com/</url>
+    </organization>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -141,8 +146,8 @@
                         https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version=${ironpdf.engine.version}&amp;platform=Windows&amp;architect=x64
                     </url>
                     <outputFileName>IronPdfEngine.${ironpdf.engine.version}.Windows.x64.zip</outputFileName>
-                    <unpack>true</unpack>
-                    <outputDirectory>src/main/resources/IronPdfEngine.${ironpdf.engine.version}.Windows.x64
+                    <unpack>false</unpack>
+                    <outputDirectory>src/main/resources
                     </outputDirectory>
                 </configuration>
             </plugin>

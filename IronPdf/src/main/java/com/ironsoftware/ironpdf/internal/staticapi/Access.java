@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
@@ -91,7 +92,7 @@ final class Access {
             if (isTryDownloaded) {
                 return;
             }
-            Path zipFilePath = Paths.get(Setting_Api.defaultPathToIronPdfEngineFolder + ".zip");
+            Path zipFilePath = Paths.get(Setting_Api.ironPdfEngineDefaultFolder + ".zip");
             logInfoOrSystemOut(logger, "Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
             isTryDownloaded = true;
 
@@ -119,7 +120,7 @@ final class Access {
         }
     }
 
-    private static void unzip(String zipFilePath, String destDir) throws IOException {
+    static void unzip(String zipFilePath, String destDir) throws IOException {
         try (java.util.zip.ZipFile zipFile = new ZipFile(zipFilePath)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
@@ -210,26 +211,26 @@ final class Access {
 
             } else {
                 logger.info(
-                        "Cannot find IronPdfEngine at: " + Setting_Api.getDefaultIronPdfEnginePath()
+                        "Cannot find IronPdfEngine at: " + Setting_Api.getIronPdfEngineExecutableDefaultPath()
                                 .toAbsolutePath());
                 if (tryAgain) {
                     downloadIronPdfEngine();
                     logger.info(
-                            "Try to start IronPdfEngine again from: " + Setting_Api.getDefaultIronPdfEnginePath()
+                            "Try to start IronPdfEngine again from: " + Setting_Api.getIronPdfEngineExecutableDefaultPath()
                                     .toAbsolutePath());
                     tryAgain = false;
                     startServer();
                 } else {
                     throw new RuntimeException(String.format("Cannot locate IronPdfEngine. at %1$s",
-                            Setting_Api.getDefaultIronPdfEnginePath().toAbsolutePath()));
+                            Setting_Api.getIronPdfEngineExecutableDefaultPath().toAbsolutePath()));
                 }
 
             }
         } catch (Exception e) {
             logger.error(String.format("Cannot start IronPdfEngine at %1$s.",
-                    Setting_Api.getDefaultIronPdfEnginePath()), e);
+                    Setting_Api.getIronPdfEngineExecutableDefaultPath()), e);
             throw new RuntimeException(String.format("Cannot start IronPdfEngine at %1$s.",
-                    Setting_Api.getDefaultIronPdfEnginePath()), e);
+                    Setting_Api.getIronPdfEngineExecutableDefaultPath()), e);
         }
     }
 

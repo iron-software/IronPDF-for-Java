@@ -19,7 +19,6 @@ class DownloadInputStream extends InputStream {
         sumRead = 0;
         previousPercent = -10;
         this.totalLength = totalLength;
-        System.out.println("LENGTH = " + totalLength);
         this.logger = logger;
     }
 
