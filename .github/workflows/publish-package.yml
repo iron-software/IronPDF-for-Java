@@ -3,7 +3,7 @@ on:
   release:
     types: [created]
 jobs:
-  publish:
+  publish ironpdf:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v3
@@ -35,6 +35,43 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish to Maven Central Repository
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file IronPdf/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+  publish ironpdf-engine-pack:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Replace version with release tag
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-linux-x64/pom.xml
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-windows-x64/pom.xml
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-windows-x86/pom.xml
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Publish to Maven Central Repository
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-linux-x64/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-windows-x64/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}     
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-windows-x86/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
