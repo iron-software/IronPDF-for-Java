@@ -1,6 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.headerfooter.HtmlHeaderFooter;
 import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import org.junit.jupiter.api.Assertions;

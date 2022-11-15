@@ -1,6 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

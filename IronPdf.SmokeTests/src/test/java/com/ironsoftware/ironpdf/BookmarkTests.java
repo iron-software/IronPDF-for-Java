@@ -1,6 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.bookmark.Bookmark;
 import com.ironsoftware.ironpdf.bookmark.BookmarkDestinations;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;

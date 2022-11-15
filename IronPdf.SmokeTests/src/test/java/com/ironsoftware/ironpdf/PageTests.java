@@ -1,6 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.page.PageRotation;

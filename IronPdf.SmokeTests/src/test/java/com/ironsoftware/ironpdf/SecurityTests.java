@@ -1,9 +1,7 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.security.PdfEditSecurity;
 import com.ironsoftware.ironpdf.security.PdfPrintSecurity;
-import com.ironsoftware.ironpdf.security.SecurityManager;
 import com.ironsoftware.ironpdf.security.SecurityOptions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,7 @@ public class SecurityTests extends TestBase {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google_encrypted.pdf"),
                 "123123");
 
-        SecurityManager securityManager = doc.getSecurity();
+        com.ironsoftware.ironpdf.security.SecurityManager securityManager = doc.getSecurity();
 
         SecurityOptions secInfoBefore = securityManager.getCurrentSecurityOptions();
         AssertNullOrEmpty(secInfoBefore.getOwnerPassword());
@@ -56,7 +54,7 @@ public class SecurityTests extends TestBase {
         tempVar.setUserPassword("123123");
         tempVar.setOwnerPassword("123123");
 
-        SecurityManager securityManager = doc.getSecurity();
+        com.ironsoftware.ironpdf.security.SecurityManager securityManager = doc.getSecurity();
         securityManager.setSecurityOptions(tempVar);
 
         SecurityOptions secInfoAfter = securityManager.getCurrentSecurityOptions();
@@ -76,7 +74,7 @@ public class SecurityTests extends TestBase {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google_encrypted.pdf"),
                 "123123");
 
-        SecurityManager securityManager = doc.getSecurity();
+        com.ironsoftware.ironpdf.security.SecurityManager securityManager = doc.getSecurity();
         SecurityOptions secInfoBefore = securityManager.getCurrentSecurityOptions();
 
         AssertNullOrEmpty(secInfoBefore.getOwnerPassword());
@@ -93,7 +91,7 @@ public class SecurityTests extends TestBase {
     public final void MakePdfDocumentReadOnlyTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        SecurityManager securityManager = doc.getSecurity();
+        com.ironsoftware.ironpdf.security.SecurityManager securityManager = doc.getSecurity();
         securityManager.makePdfDocumentReadOnly("123123");
 
         SecurityOptions secInfoAfter = securityManager.getCurrentSecurityOptions();

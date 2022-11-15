@@ -1,7 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.License;
-import com.ironsoftware.ironpdf.Settings;
 import org.junit.jupiter.api.Assertions;
 
 import javax.imageio.ImageIO;
@@ -18,6 +16,7 @@ public class TestBase {
 
     public TestBase() {
         Settings.setDebug(true);
+//        Settings.setLogPath(Paths.get("C:/tmp/mylog.log"));
         License.setLicenseKey(new ConfigManager().getProperty("LicenseKey"));
     }
 

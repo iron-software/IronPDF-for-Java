@@ -1,6 +1,5 @@
-package com.ironsoftware;
+package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.annotation.AnnotationIcon;
 import com.ironsoftware.ironpdf.annotation.AnnotationManager;
 import com.ironsoftware.ironpdf.annotation.AnnotationOptions;
@@ -14,6 +13,7 @@ public class AnnotationTests extends TestBase {
 
     @Test
     public final void AddTextAnnotationTest() throws IOException {
+//        Settings.setDebug(true);
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
         AnnotationOptions options = new AnnotationOptions("This is a text annotation 1");
