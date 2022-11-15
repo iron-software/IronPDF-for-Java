@@ -5,18 +5,21 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
+
 class DownloadInputStream extends InputStream {
 
     private InputStream in;
-    private int length, sumRead;
+    private long totalLength, sumRead;
     private double percent, previousPercent;
     Logger logger;
 
-    public DownloadInputStream(InputStream inputStream, int length, Logger logger) throws IOException {
+    public DownloadInputStream(InputStream inputStream, long totalLength, Logger logger) throws IOException {
         this.in = inputStream;
         sumRead = 0;
         previousPercent = -10;
-        this.length = length;
+        this.totalLength = totalLength;
+        System.out.println("LENGTH = " + totalLength);
         this.logger = logger;
     }
 
@@ -53,20 +56,15 @@ class DownloadInputStream extends InputStream {
     private void evaluatePercent(long readCount) {
         if (readCount != -1) {
             sumRead += readCount;
-            percent = sumRead * 0.01 / length;
+            percent = sumRead * 0.01 / totalLength;
 
-            if (percent > previousPercent + 10) {
+            //Sometimes the totalLength was not correct.
+            if (percent > previousPercent + 10 && percent < 100) {
                 previousPercent = percent;
-                if (logger.isInfoEnabled())
-                    logger.info("Downloading.. " + (int) percent + "%");
-                else
-                    System.out.println("Downloading.. " + (int) percent + "%");
+                logInfoOrSystemOut(logger, "Downloading.. " + (int) percent + "%");
             }
         } else {
-            if (logger.isInfoEnabled())
-                logger.info("Download finished");
-            else
-                System.out.println("Download finished");
+            logInfoOrSystemOut(logger, "Download finished");
         }
     }
 }

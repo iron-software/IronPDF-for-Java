@@ -46,7 +46,7 @@ final class Render_Converter {
         }
 
         proto.setCustomPaperHeight(Options.getCustomPaperHeight());
-        proto.setCustomPaperHeight(Options.getCustomPaperWidth());
+        proto.setCustomPaperWidth(Options.getCustomPaperWidth());
 
         return proto.build();
     }

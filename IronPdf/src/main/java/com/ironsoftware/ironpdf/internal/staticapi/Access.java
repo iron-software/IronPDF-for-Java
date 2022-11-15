@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 final class Access {
@@ -91,28 +92,21 @@ final class Access {
                 return;
             }
             Path zipFilePath = Paths.get(Setting_Api.defaultPathToIronPdfEngineFolder + ".zip");
-            if(logger.isInfoEnabled())
-                logger.info("Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
-            else
-                System.out.println("Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
+            logInfoOrSystemOut(logger, "Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
             isTryDownloaded = true;
 
-            try (InputStream stream = new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
-                            + Setting_Api.IRON_PDF_ENGINE_VERSION +
-                            "&platform=" + Setting_Api.currentOsFullName() +
-                            "&architect=" + Setting_Api.currentOsArch()).openStream()) {
+            URL downloadUrl = new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
+                    + Setting_Api.IRON_PDF_ENGINE_VERSION +
+                    "&platform=" + Setting_Api.currentOsFullName() +
+                    "&architect=" + Setting_Api.currentOsArch());
+            try (InputStream stream = downloadUrl.openStream()) {
 
-                int downloadSize = stream.available();
+                long downloadSize = stream.available();
                 try (DownloadInputStream pis = new DownloadInputStream(stream, downloadSize, logger)) {
                     copyInputStreamToFile(pis, zipFilePath.toFile());
                 }
             }
-
-            if(logger.isInfoEnabled())
-                logger.info(
-                    "Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
-            else
-                System.out.println("Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
+            logInfoOrSystemOut(logger, "Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
 
             unzip(zipFilePath.toAbsolutePath().toString(),
                     Setting_Api.ironPdfEngineFolder.toAbsolutePath().toString());

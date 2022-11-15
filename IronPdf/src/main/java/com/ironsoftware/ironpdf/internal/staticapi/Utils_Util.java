@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.internal.proto.*;
-
+import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -265,6 +265,12 @@ final class Utils_Util {
         if (resultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdfEngine.");
         }
+    }
+    static void logInfoOrSystemOut(Logger logger, String msg){
+        if (logger.isInfoEnabled())
+            logger.info(msg);
+        else
+            System.out.println(msg);
     }
 }
 
