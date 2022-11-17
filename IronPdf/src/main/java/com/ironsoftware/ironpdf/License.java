@@ -12,6 +12,8 @@ public final class License {
      * Gets your current license key. Removes PDF watermarks.
      * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from
      * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>.</p>
+     *
+     * @return the license key
      */
     public static String getLicenseKey() {
         return Setting_Api.licenseKey;
@@ -24,6 +26,8 @@ public final class License {
      * <p>Adding a valid license key removes PDF watermarks and allows advanced functionality.
      * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from
      * <a href="https://ironpdf.com/licensing/">https://ironpdf.com/licensing/</a>.</p>
+     *
+     * @param licenseKey the license key
      */
     public static void setLicenseKey(String licenseKey) {
         Setting_Api.licenseKey = licenseKey;

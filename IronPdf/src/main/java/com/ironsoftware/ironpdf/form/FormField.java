@@ -48,7 +48,18 @@ public class FormField {
     private final FormFieldTypes type;
 
     /**
-     (INTERNAL) Please Get ComboBoxField from {@link FormFieldsSet#getUnknownFields()} from {@link FormManager#getFields()}
+     * (INTERNAL) Please Get ComboBoxField from {@link FormFieldsSet#getUnknownFields()} from {@link FormManager#getFields()}
+     *
+     * @param annotationIndex the annotation index
+     * @param name            the name
+     * @param pageIndex       the page index
+     * @param type            the type
+     * @param x               the x
+     * @param y               the y
+     * @param width           the width
+     * @param height          the height
+     * @param value           the value
+     * @param readOnly        the read only
      */
     public FormField(int annotationIndex, String name, int pageIndex, FormFieldTypes type, double x,
                      double y, double width, double height, String value, boolean readOnly) {

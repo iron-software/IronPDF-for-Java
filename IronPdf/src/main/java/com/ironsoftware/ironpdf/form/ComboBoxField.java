@@ -12,6 +12,18 @@ public class ComboBoxField extends FormField {
 
     /**
      * (INTERNAL) Please Get ComboBoxField from {@link FormFieldsSet#getComboBoxFields()} from {@link FormManager#getFields()}
+     *
+     * @param annotationIndex the annotation index
+     * @param name            the name
+     * @param pageIndex       the page index
+     * @param x               the x
+     * @param y               the y
+     * @param width           the width
+     * @param height          the height
+     * @param value           the value
+     * @param options         the options
+     * @param selectedIndex   the selected index
+     * @param readOnly        the read only
      */
     public ComboBoxField(int annotationIndex, String name, int pageIndex,
                          double x, double y, double width, double height, String value, List<String> options,

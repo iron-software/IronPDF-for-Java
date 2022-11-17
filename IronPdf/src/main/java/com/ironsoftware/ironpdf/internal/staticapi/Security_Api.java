@@ -7,6 +7,9 @@ import com.ironsoftware.ironpdf.security.SecurityOptions;
 
 import static com.ironsoftware.ironpdf.internal.staticapi.Security_Converter.toProto;
 
+/**
+ * The type Security api.
+ */
 public final class Security_Api {
 
     /**
@@ -15,6 +18,8 @@ public final class Security_Api {
      * <p>Content is encrypted at 128 bit. Copy and paste of content is disallowed. Annotations and
      * form
      * editing are disabled.</p>
+     *
+     * @param internalPdfDocument the internal pdf document
      */
     public static void removePasswordsAndEncryption(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
@@ -28,9 +33,11 @@ public final class Security_Api {
 
     /**
      * Get PDF security settings
+     * <p>
+     * .
      *
-      .
-     * @return PdfSecuritySettings
+     * @param internalPdfDocument the internal pdf document
+     * @return PdfSecuritySettings pdf security options
      */
     public static SecurityOptions getPdfSecurityOptions(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
@@ -50,10 +57,11 @@ public final class Security_Api {
     /**
      * Makes this PDF document read only such that: <p>Content is encrypted at 128 bit. Copy and paste
      * of content is disallowed. Annotations and form editing are disabled.</p>
+     * <p>
+     * .
      *
-      .
-     * @param ownerPassword The owner password for the PDF.  A string for owner password is required
-     *                      to enable PDF encryption and all document security options.
+     * @param internalPdfDocument the internal pdf document
+     * @param ownerPassword       The owner password for the PDF.  A string for owner password is required                      to enable PDF encryption and all document security options.
      */
     public static void makePdfDocumentReadOnly(InternalPdfDocument internalPdfDocument, String ownerPassword) {
         if (Utils_StringHelper.isNullOrWhiteSpace(ownerPassword)) {
@@ -78,9 +86,11 @@ public final class Security_Api {
 
     /**
      * Set PDF security settings
+     * <p>
+     * .
      *
-      .
-     * @param securityOptions A {@link com.ironsoftware.ironpdf.security.SecurityOptions} object.
+     * @param internalPdfDocument the internal pdf document
+     * @param securityOptions     A {@link com.ironsoftware.ironpdf.security.SecurityOptions} object.
      */
     public static void setPdfSecuritySettings(InternalPdfDocument internalPdfDocument,
                                               SecurityOptions securityOptions) {

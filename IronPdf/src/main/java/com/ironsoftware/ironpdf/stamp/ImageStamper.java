@@ -24,6 +24,7 @@ public class ImageStamper extends Stamper {
      * Initializes a new instance of the {@link ImageStamper} class.
      *
      * @param imagePath The path of the image to be stamped by this stamper
+     * @throws IOException the io exception
      */
     public ImageStamper(String imagePath) throws IOException {
 
@@ -34,6 +35,7 @@ public class ImageStamper extends Stamper {
      * Initializes a new instance of the {@link ImageStamper} class.
      *
      * @param imagePath The uri of the image to be stamped by this stamper
+     * @throws IOException the io exception
      */
     public ImageStamper(Path imagePath) throws IOException {
         imageData = Files.readAllBytes(imagePath);
@@ -52,6 +54,7 @@ public class ImageStamper extends Stamper {
      * Initializes a new instance of the {@link ImageStamper} class.
      *
      * @param bufferedImage The {@link BufferedImage} object
+     * @throws IOException the io exception
      */
     public ImageStamper(BufferedImage bufferedImage) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -16,6 +16,11 @@ public class FormFieldsSet {
 
     /**
      * (INTERNAL) Please Get FormFieldsSet from {@link FormManager#getFields()}
+     *
+     * @param checkBoxFields the checkbox fields
+     * @param textFields     the text fields
+     * @param comboBoxFields the combo box fields
+     * @param unknownFields  the unknown fields
      */
     public FormFieldsSet(List<CheckBoxField> checkBoxFields,
                          List<TextField> textFields,

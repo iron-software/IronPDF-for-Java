@@ -48,8 +48,10 @@ import java.util.stream.Collectors;
 /**
  * Represents a PDF document. Allows: loading, editing, manipulating, merging, signing printing and saving PDFs.
  */
-
 public class PdfDocument implements Printable {
+    /**
+     * The Logger.
+     */
     static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
     private final InternalPdfDocument internalPdfDocument;
 
@@ -89,8 +91,7 @@ public class PdfDocument implements Printable {
      *
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
-     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..)
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,                      modifying restrictions etc..)
      * @throws IOException if an I/O error occurs reading from the stream
      */
     public PdfDocument(Path pdfFilePath, String password, String ownerPassword) throws IOException {
@@ -103,8 +104,7 @@ public class PdfDocument implements Printable {
      *
      * @param pdfData       The PDF file data as byte array.
      * @param password      Optional user password if the PDF document is encrypted.
-     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..)
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,                      modifying restrictions etc..)
      */
     public PdfDocument(byte[] pdfData, String password, String ownerPassword) {
         this(PdfDocument_Api.fromBytes(pdfData,
@@ -116,6 +116,7 @@ public class PdfDocument implements Printable {
      * Opens an existing PDF document for editing.
      *
      * @param pdfFilePath The PDF file path.
+     * @throws IOException the io exception
      */
     public PdfDocument(Path pdfFilePath) throws IOException {
         this(pdfFilePath, "", "");
@@ -163,8 +164,7 @@ public class PdfDocument implements Printable {
      *
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
-     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,
-     *                      modifying restrictions etc..)
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing,                      modifying restrictions etc..)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
      * @throws IOException if an I/O error occurs reading from the stream
      */
@@ -191,8 +191,7 @@ public class PdfDocument implements Printable {
      * <p>Note:  Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.</p>
      *
      * @param imagesPath A list of file path of the image file.
-     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
-     * served over the web.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or served over the web.
      */
     public static PdfDocument fromImage(List<Path> imagesPath) {
 
@@ -206,8 +205,7 @@ public class PdfDocument implements Printable {
      *
      * @param imagesPath A list of file path of the image file.
      * @param paperSize  A target paper size. Default is A4.
-     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
-     * served over the web.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or served over the web.
      */
     public static PdfDocument fromImage(List<Path> imagesPath, PaperSize paperSize) {
 
@@ -221,8 +219,7 @@ public class PdfDocument implements Printable {
      *
      * @param imagesPath    A list of file path of the image file.
      * @param imageBehavior Describes how image should be placed on the PDF page
-     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
-     * served over the web.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or served over the web.
      */
     public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior) {
         return fromImage(imagesPath, imageBehavior, (ChromePdfRenderOptions) null);
@@ -235,8 +232,7 @@ public class PdfDocument implements Printable {
      * @param imagesPath    A list of file path of the image file.
      * @param imageBehavior Describes how image should be placed on the PDF page.
      * @param paperSize     A target paper size. Default is A4.
-     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
-     * served over the web.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or served over the web.
      */
     public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior, PaperSize paperSize) {
         ChromePdfRenderOptions renderOption = new ChromePdfRenderOptions();
@@ -253,8 +249,7 @@ public class PdfDocument implements Printable {
      * @param imagesPath    A list of file path of the image file.
      * @param imageBehavior Describes how image should be placed on the PDF page.
      * @param renderOptions Rendering options.
-     * @return Returns a {@link PdfDocument} document which can then be edited, saved or
-     * served over the web.
+     * @return Returns a {@link PdfDocument} document which can then be edited, saved or served over the web.
      */
     public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior,
                                         ChromePdfRenderOptions renderOptions) {
@@ -275,6 +270,8 @@ public class PdfDocument implements Printable {
     /**
      * Gets the BookmarkManager for this PDF document. BookmarkManager allows reading, removing and editing of bookmarks from the PDF outline.
      * * <p>See: {@link BookmarkManager}.</p>
+     *
+     * @return the BookmarkManager
      */
     public BookmarkManager getBookmark() {
         return bookmarkManager;
@@ -284,6 +281,8 @@ public class PdfDocument implements Printable {
      * Gets the metadata manager for this PDF document. MetadataManager allows metadata such as Author etc. to be read and set.
      *
      * <p>See: {@link MetadataManager}.
+     *
+     * @return the MetadataManager
      */
     public MetadataManager getMetadata() {
         return metadataManager;
@@ -292,6 +291,8 @@ public class PdfDocument implements Printable {
     /**
      * Gets the annotation manager for this PDF document.  AnnotationManager allows annotation objects to be edited.
      * <p>See: {@link AnnotationManager}.
+     *
+     * @return the AnnotationManager
      */
     public AnnotationManager getAnnotation() {
         return annotationManager;
@@ -300,6 +301,8 @@ public class PdfDocument implements Printable {
     /**
      * Gets the form manager for this PDF document. FormManager allows AcroForm fields to be read and set.
      * <p>See: {@link FormManager}.
+     *
+     * @return the FormManager
      */
     public FormManager getForm() {
         return formManager;
@@ -308,15 +311,27 @@ public class PdfDocument implements Printable {
     /**
      * Gets the attachment manager for this PDF document. AttachmentManager allows attachment objects to be edited.
      * <p>See: {@link AttachmentManager}.
+     *
+     * @return the AttachmentManager
      */
     public AttachmentManager getAttachment() {
         return attachmentManager;
     }
 
+    /**
+     * Gets security.
+     *
+     * @return the SecurityManager
+     */
     public SecurityManager getSecurity() {
         return securityManager;
     }
 
+    /**
+     * Gets signature.
+     *
+     * @return the SignatureManager
+     */
     public SignatureManager getSignature() {
         return signatureManager;
     }
@@ -341,8 +356,7 @@ public class PdfDocument implements Printable {
      * Static method that joins (concatenates) 2 PDF documents together into one PDF document.
      * <p>If the second PDF contains form fields, the resulting PDF's form fields  will be appended with an origin index number.  e.g. 'Name' from the first PDF will become 'Name_0' </p>
      *
-     * @param Documents A List of PdfDocument.  To merge existing PDF files you may use the
-     *                  PdfDocument.FromFile static method in conjunction with Merge.
+     * @param Documents A List of PdfDocument.  To merge existing PDF files you may use the                  PdfDocument.FromFile static method in conjunction with Merge.
      * @return A new, merged {@link PdfDocument}
      */
     public static PdfDocument merge(List<PdfDocument> Documents) {
@@ -404,8 +418,7 @@ public class PdfDocument implements Printable {
      * <p> If AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be 'Name_' </p>
      *
      * @param AnotherPdfFile Another PdfDocument...
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument insertPdf(PdfDocument AnotherPdfFile) {
         return insertPdf(AnotherPdfFile, 0);
@@ -417,8 +430,7 @@ public class PdfDocument implements Printable {
      *
      * @param AnotherPdfFile Another PdfDocument.
      * @param AtIndex        Index at which to insert the new content.  Note: Page 1 has index 0...
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument insertPdf(PdfDocument AnotherPdfFile, int AtIndex) {
         Page_Api.insertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, AtIndex);
@@ -430,8 +442,7 @@ public class PdfDocument implements Printable {
      * <p> If AnotherPdfFile contains form fields, those fields will be appended with '_' in the resulting PDF. e.g. 'Name' will be 'Name_' </p>
      *
      * @param AnotherPdfFile PdfDocument to prepend.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument prependPdf(PdfDocument AnotherPdfFile) {
         Page_Api.insertPage(internalPdfDocument, AnotherPdfFile.internalPdfDocument, 0);
@@ -442,8 +453,7 @@ public class PdfDocument implements Printable {
      * Removes a range of pages from the PDF
      *
      * @param pageSelection The selected page index(es). Default is all pages.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument removePages(PageSelection pageSelection) {
         Page_Api.removePage(internalPdfDocument,
@@ -500,8 +510,7 @@ public class PdfDocument implements Printable {
      * backgroundPdf document.
      *
      * @param backgroundPdf The background PDF document.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf) {
         return this.addBackgroundPdf(backgroundPdf, 0, PageSelection.allPages());
@@ -513,8 +522,7 @@ public class PdfDocument implements Printable {
      *
      * @param backgroundPdf          The background PDF document.
      * @param backgroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, int backgroundPdfPageIndex) {
         return this.addBackgroundPdf(backgroundPdf, backgroundPdfPageIndex, PageSelection.allPages());
@@ -525,10 +533,8 @@ public class PdfDocument implements Printable {
      * page in the backgroundPdf document.
      *
      * @param backgroundPdf The background PDF document.
-     * @param pageSelection PageSelection to which the background/foreground will be added. Default is
-     *                      PageSelection.AllPages().
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @param pageSelection PageSelection to which the background/foreground will be added. Default is                      PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, PageSelection pageSelection) {
         BackgroundForeground_Api.addBackground(
@@ -545,10 +551,8 @@ public class PdfDocument implements Printable {
      *
      * @param backgroundPdf          The background PDF document.
      * @param backgroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
-     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is
-     *                               PageSelection.AllPages().
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is                               PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addBackgroundPdf(PdfDocument backgroundPdf, int backgroundPdfPageIndex,
                                               PageSelection pageSelection) {
@@ -565,8 +569,7 @@ public class PdfDocument implements Printable {
      * the foregroundPdf document.
      *
      * @param foregroundPdf The foreground PDF document.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf) {
         return addForegroundPdf(foregroundPdf, 0, PageSelection.allPages());
@@ -578,8 +581,7 @@ public class PdfDocument implements Printable {
      *
      * @param foregroundPdf          The foreground PDF document.
      * @param foregroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf, int foregroundPdfPageIndex) {
         return this.addForegroundPdf(foregroundPdf, foregroundPdfPageIndex, PageSelection.allPages());
@@ -590,10 +592,8 @@ public class PdfDocument implements Printable {
      * page in the foregroundPdf document.
      *
      * @param foregroundPdf The foreground PDF document.
-     * @param pageSelection PageSelection to which the background/foreground will be added. Default is
-     *                      PageSelection.AllPages().
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @param pageSelection PageSelection to which the background/foreground will be added. Default is                      PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf,
                                               PageSelection pageSelection) {
@@ -606,10 +606,8 @@ public class PdfDocument implements Printable {
      *
      * @param foregroundPdf          The foreground PDF document.
      * @param foregroundPdfPageIndex Index (zero-based page number) of the page to copy from the Background/Foreground PDF. Default is 0.
-     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is
-     *                               PageSelection.AllPages().
-     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line
-     * code style
+     * @param pageSelection          PageSelection to which the background/foreground will be added. Default is                               PageSelection.AllPages().
+     * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument addForegroundPdf(PdfDocument foregroundPdf, int foregroundPdfPageIndex,
                                               PageSelection pageSelection) {
@@ -628,8 +626,8 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page headers onto an existing PDF File
      *
-     * @param header A new instance of IronPdf.TextHeaderFooter that defines the header content and
-     *               layout.
+     * @param header A new instance of IronPdf.TextHeaderFooter that defines the header content and               layout.
+     * @return the pdf document
      */
     public PdfDocument addTextHeader(TextHeaderFooter header) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -645,9 +643,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page headers onto an existing PDF File
      *
-     * @param header        A new instance of IronPdf.TextHeaderFooter that defines the header content and
-     *                      layout.
+     * @param header        A new instance of IronPdf.TextHeaderFooter that defines the header content and                      layout.
      * @param pageSelection Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addTextHeader(TextHeaderFooter header, PageSelection pageSelection) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -663,9 +661,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page headers onto an existing PDF File
      *
-     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header
-     *                            content and layout.
+     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
+     * @return the pdf document
      */
     public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
@@ -680,10 +678,10 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page headers onto an existing PDF File
      *
-     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header
-     *                            content and layout.
+     * @param header              A new instance of IronPdf.TextHeaderFooter that defines the header                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      * @param pageSelection       Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
@@ -698,8 +696,8 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page footers onto an existing PDF File
      *
-     * @param footer A new instance of IronPdf.TextHeaderFooter that defines the footer content and
-     *               layout.
+     * @param footer A new instance of IronPdf.TextHeaderFooter that defines the footer content and               layout.
+     * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -715,9 +713,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page footers onto an existing PDF File
      *
-     * @param footer        A new instance of IronPdf.TextHeaderFooter that defines the footer content and
-     *                      layout.
+     * @param footer        A new instance of IronPdf.TextHeaderFooter that defines the footer content and                      layout.
      * @param pageSelection Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer, PageSelection pageSelection) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -733,9 +731,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page footer onto an existing PDF File
      *
-     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer
-     *                            content and layout.
+     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
+     * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
@@ -750,10 +748,10 @@ public class PdfDocument implements Printable {
     /**
      * Renders TEXT page footer onto an existing PDF File
      *
-     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer
-     *                            content and layout.
+     * @param footer              A new instance of IronPdf.TextHeaderFooter that defines the footer                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      * @param pageSelection       Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
@@ -768,8 +766,8 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page headers onto an existing PDF File
      *
-     * @param header A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
-     *               layout.
+     * @param header A new instance of IronPdf.HtmlHeaderFooter that defines the header content and               layout.
+     * @return the pdf document
      */
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -786,9 +784,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page headers onto an existing PDF File
      *
-     * @param header        A new instance of IronPdf.HtmlHeaderFooter that defines the header content and
-     *                      layout.
+     * @param header        A new instance of IronPdf.HtmlHeaderFooter that defines the header content and                      layout.
      * @param pageSelection Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header, PageSelection pageSelection) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -805,9 +803,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page headers onto an existing PDF File
      *
-     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header
-     *                            content and layout.
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
+     * @return the pdf document
      */
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
@@ -823,10 +821,10 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page headers onto an existing PDF File
      *
-     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header
-     *                            content and layout.
+     * @param header              A new instance of IronPdf.HtmlHeaderFooter that defines the header                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      * @param pageSelection       Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
@@ -843,8 +841,8 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page footers onto an existing PDF File
      *
-     * @param footer A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and
-     *               layout.
+     * @param footer A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and               layout.
+     * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -861,9 +859,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page footers onto an existing PDF File
      *
-     * @param footer        A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and
-     *                      layout.
+     * @param footer        A new instance of IronPdf.HtmlHeaderFooter that defines the footer content and                      layout.
      * @param pageSelection Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, PageSelection pageSelection) {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
@@ -880,9 +878,9 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page footer onto an existing PDF File
      *
-     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer
-     *                            content and layout.
+     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
+     * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
@@ -898,10 +896,10 @@ public class PdfDocument implements Printable {
     /**
      * Renders HTML page footer onto an existing PDF File
      *
-     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer
-     *                            content and layout.
+     * @param footer              A new instance of IronPdf.HtmlHeaderFooter that defines the footer                            content and layout.
      * @param headerFooterOptions HeaderFooterOption.
      * @param pageSelection       Selected page indexes. Default is all pages.
+     * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
@@ -921,6 +919,8 @@ public class PdfDocument implements Printable {
      * Draws an image onto the PDF document
      *
      * @param imagePath The image file path.
+     * @param option    the option
+     * @throws IOException the io exception
      */
     public final void drawImage(Path imagePath, DrawImageOptions option) throws IOException {
         Image_Api.drawImage(internalPdfDocument,
@@ -933,6 +933,7 @@ public class PdfDocument implements Printable {
      * Draws an image onto the PDF document
      *
      * @param imageBytes image byte array
+     * @param option     the option
      */
     public final void drawImage(byte[] imageBytes, DrawImageOptions option) {
         Image_Api.drawImage(internalPdfDocument,
@@ -944,6 +945,7 @@ public class PdfDocument implements Printable {
      * Rasterizes (renders) the PDF into BufferedImage objects.  1 BufferedImage for each page.
      *
      * @return An array of BufferedImage objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> toBufferedImages() throws IOException {
         return toBufferedImages(new ToImageOptions());
@@ -954,6 +956,7 @@ public class PdfDocument implements Printable {
      *
      * @param options The {@link ToImageOptions}
      * @return An array of BufferedImage objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> toBufferedImages(ToImageOptions options) throws IOException {
         return toBufferedImages(options, PageSelection.allPages());
@@ -964,6 +967,7 @@ public class PdfDocument implements Printable {
      *
      * @param pageSelection Selected page indexes. Default is all pages.
      * @return An array of BufferedImage objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> toBufferedImages(PageSelection pageSelection) throws IOException {
         return toBufferedImages(new ToImageOptions(), pageSelection);
@@ -975,6 +979,7 @@ public class PdfDocument implements Printable {
      * @param options       The {@link ToImageOptions}
      * @param pageSelection Selected page indexes. Default is all pages.
      * @return An array of BufferedImage objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> toBufferedImages(ToImageOptions options, PageSelection pageSelection) throws IOException {
         return Image_Api.pdfToImage(internalPdfDocument,
@@ -997,9 +1002,9 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_pages_*.png
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toPngImages(String fileNamePattern)
             throws IOException {
@@ -1012,10 +1017,10 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_pages_*.png
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toPngImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
@@ -1028,10 +1033,10 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_pages_*.png
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toPngImages(String fileNamePattern, PageSelection pageSelection)
             throws IOException {
@@ -1044,11 +1049,11 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_pages_*.png
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_pages_*.png
      * @param options         The {@link ToImageOptions}
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toPngImages(String fileNamePattern, ToImageOptions options, PageSelection pageSelection)
             throws IOException {
@@ -1061,11 +1066,10 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
-     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
-     *                        "gif", "tiff"
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",                        "gif", "tiff"
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public List<String> toImages(String fileNamePattern, String imageFileType)
             throws IOException {
@@ -1078,12 +1082,11 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
-     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
-     *                        "gif", "tiff"
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",                        "gif", "tiff"
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public List<String> toImages(String fileNamePattern, String imageFileType, ToImageOptions options)
             throws IOException {
@@ -1096,12 +1099,11 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
-     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
-     *                        "gif", "tiff"
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",                        "gif", "tiff"
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public List<String> toImages(String fileNamePattern, String imageFileType, PageSelection pageSelection)
             throws IOException {
@@ -1114,13 +1116,12 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
-     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",
-     *                        "gif", "tiff"
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
+     * @param imageFileType   a specific image file type without dot.  E.g.  "jpg", "png", "bmp",                        "gif", "tiff"
      * @param options         The {@link ToImageOptions}
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public List<String> toImages(String fileNamePattern, String imageFileType, ToImageOptions options, PageSelection pageSelection)
             throws IOException {
@@ -1176,9 +1177,9 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toJpegImages(String fileNamePattern)
             throws IOException {
@@ -1191,10 +1192,10 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
      * @param options         The {@link ToImageOptions}
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toJpegImages(String fileNamePattern, ToImageOptions options)
             throws IOException {
@@ -1207,10 +1208,10 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toJpegImages(String fileNamePattern, PageSelection pageSelection)
             throws IOException {
@@ -1223,11 +1224,11 @@ public class PdfDocument implements Printable {
      * <p>fileNamePattern should normally contain an asterisk (*) character which will be substituted
      * for the page numbers.</p>
      *
-     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.
-     *                        E.g.  C:\images\pdf_page_*.jpg
+     * @param fileNamePattern A full or partial file path for the output files containing an asterisk.                        E.g.  C:\images\pdf_page_*.jpg
      * @param options         The {@link ToImageOptions}
      * @param pageSelection   Selected page indexes. Default is all pages.
      * @return An array of the file paths of the image files created.
+     * @throws IOException the io exception
      */
     public final List<String> toJpegImages(String fileNamePattern, ToImageOptions options, PageSelection pageSelection)
             throws IOException {
@@ -1236,12 +1237,13 @@ public class PdfDocument implements Printable {
 
     /**
      * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
-     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * Specific image dimensions and page numbers may be given as optional parameters
      * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
      * page numbers
      *
      * @param filePath A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
      * @return A file path of the image file created.
+     * @throws IOException the io exception
      */
     public String toMultiPageTiff(Path filePath)
             throws IOException {
@@ -1252,13 +1254,14 @@ public class PdfDocument implements Printable {
 
     /**
      * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
-     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * Specific image dimensions and page numbers may be given as optional parameters
      * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
      * page numbers
      *
      * @param filePath      A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
      * @param pageSelection Selected page indexes. Default is all pages.
      * @return A file path of the image file created.
+     * @throws IOException the io exception
      */
     public String toMultiPageTiff(Path filePath, PageSelection pageSelection)
             throws IOException {
@@ -1268,13 +1271,14 @@ public class PdfDocument implements Printable {
 
     /**
      * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
-     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * Specific image dimensions and page numbers may be given as optional parameters
      * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
      * page numbers
      *
      * @param filePath A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
      * @param options  The {@link ToImageOptions}
      * @return A file path of the image file created.
+     * @throws IOException the io exception
      */
     public String toMultiPageTiff(Path filePath, ToImageOptions options)
             throws IOException {
@@ -1283,7 +1287,7 @@ public class PdfDocument implements Printable {
 
     /**
      * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
-     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * Specific image dimensions and page numbers may be given as optional parameters
      * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
      * page numbers
      *
@@ -1291,6 +1295,7 @@ public class PdfDocument implements Printable {
      * @param options       The {@link ToImageOptions}
      * @param pageSelection Selected page indexes. Default is all pages.
      * @return A file path of the image file created.
+     * @throws IOException the io exception
      */
     public String toMultiPageTiff(Path filePath, ToImageOptions options, PageSelection pageSelection)
             throws IOException {
@@ -1315,9 +1320,7 @@ public class PdfDocument implements Printable {
      * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality settings.
      *
      * @param quality            Quality (1 - 100) to use during compression
-     * @param scaleToVisibleSize Scale down the image resolution according to its visible size in the
-     *                           PDF document; may cause distortion with some image configurations.
-     *                           Default is false.
+     * @param scaleToVisibleSize Scale down the image resolution according to its visible size in the                           PDF document; may cause distortion with some image configurations.                           Default is false.
      */
     public final void compressImages(int quality, boolean scaleToVisibleSize) {
         if (quality < 1 || quality > 100) {
@@ -1333,6 +1336,7 @@ public class PdfDocument implements Printable {
      * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
      * @return The extracted images as {@link BufferedImage} objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> extractAllImages() throws IOException {
         return extractAllRawImages().stream().map(bytes -> {
@@ -1352,6 +1356,7 @@ public class PdfDocument implements Printable {
      * Finds all embedded Images from within the PDF and returns as a list of image bytes
      *
      * @return The extracted images as byte arrays.
+     * @throws IOException the io exception
      */
     public final List<byte[]> extractAllRawImages() throws IOException {
         if (Page_Api.getPagesInfo(internalPdfDocument).size()
@@ -1366,6 +1371,7 @@ public class PdfDocument implements Printable {
      *
      * @param pageSelection The selected page index(es). Default is all pages.
      * @return The extracted images as {@link BufferedImage} objects.
+     * @throws IOException the io exception
      */
     public final List<BufferedImage> extractAllImagesFromPages(PageSelection pageSelection)
             throws IOException {
@@ -1387,6 +1393,7 @@ public class PdfDocument implements Printable {
      *
      * @param pageSelection The selected page index(es). Default is all pages.
      * @return The extracted images as byte arrays.
+     * @throws IOException the io exception
      */
     public final List<byte[]> extractAllRawImagesFromPages(PageSelection pageSelection)
             throws IOException {
@@ -1407,6 +1414,7 @@ public class PdfDocument implements Printable {
      *
      * @param filePath File Path
      * @return This PdfDocument for fluid code notation.
+     * @throws IOException the io exception
      */
     public final PdfDocument saveAs(Path filePath) throws IOException {
         PdfDocument_Api.saveAs(internalPdfDocument,
@@ -1419,6 +1427,7 @@ public class PdfDocument implements Printable {
      *
      * @param filePath File path string
      * @return This PdfDocument for fluid code notation.
+     * @throws IOException the io exception
      */
     public final PdfDocument saveAs(String filePath) throws IOException {
         PdfDocument_Api.saveAs(internalPdfDocument,
@@ -1443,6 +1452,8 @@ public class PdfDocument implements Printable {
      * Prints this PDF by sending it to the computer's real world printer(s).
      * <p>For advanced real-world printing options please implement your own java.awt.print code.
      * <p>This class {@link PdfDocument}implements java.awt.print.Printable.</p>
+     *
+     * @throws PrinterException the printer exception
      */
     public void print() throws PrinterException {
         Print_Api.print(internalPdfDocument, true);
@@ -1452,6 +1463,8 @@ public class PdfDocument implements Printable {
      * Prints this PDF by sending it to the computer's real world printer(s).
      * <p>For advanced real-world printing options please implement your own java.awt.print code.
      * <p>This class {@link PdfDocument}implements java.awt.print.Printable.</p>
+     *
+     * @throws PrinterException the printer exception
      */
     public void printWithoutDialog() throws PrinterException {
         Print_Api.print(internalPdfDocument, false);
@@ -1474,8 +1487,7 @@ public class PdfDocument implements Printable {
      * @param html              The HTML fragment which will be stamped onto your PDF.
      * @param opacity           Watermark transparent value. 0 is invisible, 100 if fully opaque.
      * @param verticalAlignment The vertical alignment of the watermark relative to the page.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyWatermark(String html, int opacity,
                                             VerticalAlignment verticalAlignment) {
@@ -1490,8 +1502,7 @@ public class PdfDocument implements Printable {
      * @param opacity             Watermark transparent value. 0 is invisible, 100 if fully opaque.
      * @param verticalAlignment   The vertical alignment of the watermark relative to the page.
      * @param horizontalAlignment The horizontal alignment of the watermark relative to the page.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyWatermark(String html, int opacity,
                                             VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment) {
@@ -1508,8 +1519,7 @@ public class PdfDocument implements Printable {
      *
      * @param html    The HTML fragment which will be stamped onto your PDF.
      * @param opacity Watermark transparent value. 0 is invisible, 100 if fully opaque.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyWatermark(String html, int opacity) {
         return applyWatermark(html, opacity, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
@@ -1519,8 +1529,7 @@ public class PdfDocument implements Printable {
      * Adds Watermark to PDF, Please use {@link #applyStamp(Stamper)} for more control.
      *
      * @param html The HTML fragment which will be stamped onto your PDF.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyWatermark(String html) {
         return applyWatermark(html, 50, VerticalAlignment.MIDDLE, HorizontalAlignment.CENTER);
@@ -1531,8 +1540,7 @@ public class PdfDocument implements Printable {
      * Edits the PDF by applying the  {@link Stamper}'s rendered to every page.
      *
      * @param stamper The  {@link Stamper} object that has the content to be stamped onto the PDF.
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyStamp(Stamper stamper) {
         applyStamp(stamper, PageSelection.allPages());
@@ -1544,10 +1552,8 @@ public class PdfDocument implements Printable {
      *
      * @param stamper       The  {@link Stamper} object that has the content to be stamped onto the PDF.
      * @param pageSelection The selected page index(es). Default is all pages,
-     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line
-     * code style
+     * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
-
     public final PdfDocument applyStamp(Stamper stamper, PageSelection pageSelection) {
         Stamp_Api.applyStamp(internalPdfDocument, stamper, pageSelection.getPageList(internalPdfDocument));
         return this;
@@ -1561,8 +1567,7 @@ public class PdfDocument implements Printable {
     /**
      * Extracts the written text content from the PDF and returns it as a string.
      *
-     * @return All text in the PDF as a string.
-     * <p>Pages are separated by 4 consecutive line breaks</p>
+     * @return All text in the PDF as a string. <p>Pages are separated by 4 consecutive line breaks</p>
      */
     public final String extractAllText() {
         return Text_Api.extractAllText(internalPdfDocument);
@@ -1602,6 +1607,7 @@ public class PdfDocument implements Printable {
      *
      * @param htmlFilePath Path to a Html to be rendered as a PDF.
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
         return renderHtmlFileAsPdf(htmlFilePath, null, null);
@@ -1614,6 +1620,7 @@ public class PdfDocument implements Printable {
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromePdfRenderOptions renderOptions,
@@ -1627,8 +1634,7 @@ public class PdfDocument implements Printable {
      * @param html             The Html to be rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
-     *                         URL context for hyperlinks, images, CSS and JavaScript files.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
@@ -1644,6 +1650,7 @@ public class PdfDocument implements Printable {
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromeHttpLoginCredentials loginCredentials
@@ -1657,6 +1664,7 @@ public class PdfDocument implements Printable {
      * @param htmlFilePath  Path to a Html to be rendered as a PDF.
      * @param renderOptions Rendering options
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromePdfRenderOptions renderOptions
@@ -1668,8 +1676,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a
-     *            PDF.
+     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a            PDF.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderUrlAsPdf(String url) {
@@ -1680,8 +1687,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
-     *                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
@@ -1696,8 +1702,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be
-     *                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
      */
@@ -1710,8 +1715,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be
-     *                      rendered as a PDF.
+     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be                      rendered as a PDF.
      * @param renderOptions Rendering options
      * @return A {@link PdfDocument}
      */
@@ -1734,9 +1738,8 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html             The Html to be rendered as a PDF.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or
-     *                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
@@ -1749,9 +1752,8 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html          The Html to be rendered as a PDF.
+     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL                      context for hyperlinks, images, CSS and JavaScript files.
      * @param renderOptions Rendering options
-     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL
-     *                      context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
@@ -1778,8 +1780,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html    The Html to be rendered as a PDF.
-     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL
-     *                context for hyperlinks, images, CSS and JavaScript files.
+     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL                context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
@@ -1826,6 +1827,7 @@ public class PdfDocument implements Printable {
      *
      * @param rtfFilePath The RTF file path to be rendered as a PDF.
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderRtfFileAsPdf(String rtfFilePath) throws IOException {
         return renderRtfFileAsPdf(Paths.get(rtfFilePath));
@@ -1836,6 +1838,7 @@ public class PdfDocument implements Printable {
      *
      * @param rtfFilePath The RTF file path to be rendered as a PDF.
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderRtfFileAsPdf(Path rtfFilePath) throws IOException {
         return new PdfDocument(Render_Api.renderRtfAsPdf(String.join("", Files.readAllLines(rtfFilePath))));
