@@ -1,11 +1,11 @@
 package com.ironsoftware.ironpdf.internal.staticapi.bookmark;
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.bookmark.Bookmark;
 import com.ironsoftware.ironpdf.bookmark.BookmarkDestinations;
 import com.ironsoftware.ironpdf.internal.staticapi.Bookmark_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

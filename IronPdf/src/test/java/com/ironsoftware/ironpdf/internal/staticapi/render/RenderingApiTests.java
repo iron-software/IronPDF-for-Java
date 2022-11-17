@@ -1,6 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi.render;
 
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import com.ironsoftware.ironpdf.render.PaperSize;

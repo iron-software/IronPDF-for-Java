@@ -260,4 +260,35 @@ public final class Image_Api {
     public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument) throws IOException {
         return pdfToImage(internalPdfDocument, null, 92, null, null);
     }
+
+    public static byte[] toMultiPageTiff(InternalPdfDocument internalPdfDocument,
+                                          Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight) throws IOException {
+        RpcClient client = Access.ensureConnection();
+
+        PdfToMultiPageTiffImageRequest.Builder request = PdfToMultiPageTiffImageRequest.newBuilder();
+        request.setDocument(internalPdfDocument.remoteDocument);
+        request.setDpi(dpi);
+
+        if (pageIndexes != null) {
+            request.addAllPageIndexes(pageIndexes);
+        }
+
+        if (imageMaxWidth != null) {
+            request.setMaxWidth(imageMaxWidth);
+        }
+
+        if (imageMaxHeight != null) {
+            request.setMaxHeight(imageMaxHeight);
+        }
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        ArrayList<ImageResultStream> resultChunks = new ArrayList<>();
+
+        client.stub.pdfDocumentImagePdfToMultiPageTiffImage(request.build(),
+                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        return Utils_Util.handleImageResult(resultChunks);
+    }
 }

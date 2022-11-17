@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi.text;
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.internal.staticapi.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

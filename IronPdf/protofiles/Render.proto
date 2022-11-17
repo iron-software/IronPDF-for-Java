@@ -80,3 +80,7 @@ message PdfPaperSize {
 message FitToPaperModes {
   int32 enum_value = 1;
 }
+
+message RenderPdfDocumentFromRtfStringRequestStream{
+    string rtf_string = 1;
+}

@@ -6,7 +6,7 @@ import com.ironsoftware.ironpdf.page.PageRotation;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Page_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
+import com.ironsoftware.ironpdf.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

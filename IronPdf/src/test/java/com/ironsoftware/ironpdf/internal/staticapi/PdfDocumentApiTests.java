@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import com.ironsoftware.ironpdf.TestBase;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

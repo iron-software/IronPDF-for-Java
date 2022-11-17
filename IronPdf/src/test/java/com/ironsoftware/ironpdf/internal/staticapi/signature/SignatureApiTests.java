@@ -3,7 +3,7 @@ package com.ironsoftware.ironpdf.internal.staticapi.signature;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Render_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.Signature_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.signature.Signature;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

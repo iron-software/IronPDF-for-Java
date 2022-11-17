@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 public class ImageTests extends TestBase {
@@ -35,4 +37,11 @@ public class ImageTests extends TestBase {
         Assertions.assertEquals(1, doc.extractAllImages().size());
     }
 
+    @Test
+    public final void MultiPageTiffTest() throws IOException {
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google.pdf"));
+        String tifFile = doc.toMultiPageTiff(Paths.get("TestOutput/multipagetiff.tiff"));
+
+        Assertions.assertTrue(Files.exists(Paths.get(tifFile)));
+    }
 }

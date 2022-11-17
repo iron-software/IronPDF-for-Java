@@ -48,6 +48,13 @@ message ImagesResultStream{
   }
 }
 
+message ImageResultStream{
+  oneof result_or_exception {
+    bytes raw_image_chunk = 1;
+    RemoteException exception = 2;
+  }
+}
+
 //this will contain a part of image data with index of the image.
 //for using this message, you must combine raw_image_chunk with another raw_image_chunk with the same index
 message RawImageChunkWithIndex{
@@ -56,6 +63,14 @@ message RawImageChunkWithIndex{
 }
 
 message PdfToImagesRequest{
+  PdfDocument document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+  optional int32 dpi = 3;
+  optional int32 max_width = 4;
+  optional int32 max_height = 5;
+}
+
+message PdfToMultiPageTiffImageRequest{
   PdfDocument document = 1;
   repeated int32 page_indexes = 2; // null/empty for all pages
   optional int32 dpi = 3;

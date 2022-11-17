@@ -332,7 +332,6 @@ public final class HeaderFooter_Api {
         req.setDrawDividerLine(textHeaderFooter.isDrawDividerLine());
         req.setFont(FontTypes_Converter.toProto(textHeaderFooter.getFont()));
         req.setFontSize(textHeaderFooter.getFontSize());
-        req.setSpacing(textHeaderFooter.getSpacing());
 
         req.setIsHeader(isHeader);
         if (pageIndexesToAddFootersTo != null) {

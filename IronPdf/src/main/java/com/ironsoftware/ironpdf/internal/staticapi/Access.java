@@ -19,7 +19,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
@@ -180,6 +179,9 @@ final class Access {
 
                 if (!Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey)) {
                     cmdList.add(String.format("license_key=%1$s", Setting_Api.licenseKey));
+                } else {
+                    cmdList.add(String.format("license_key=%1$s",
+                            new ConfigLoader().getProperty("IRONPDF_LICENSE_KEY")));
                 }
                 serverReady = new CountDownLatch(1);
                 ProcessBuilder pb = new ProcessBuilder(cmdList);

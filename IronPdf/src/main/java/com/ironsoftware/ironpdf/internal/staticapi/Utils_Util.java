@@ -198,6 +198,25 @@ final class Utils_Util {
     }
 
     /**
+     * Handle image result list.
+     *
+     * @param resultChunks the result chunks
+     * @return the list
+     * @throws IOException the io exception
+     */
+    static byte[] handleImageResult(List<ImageResultStream> resultChunks) throws IOException {
+        if (resultChunks.size() == 0) {
+            throw new IOException("No response from IronPdf.");
+        }
+        resultChunks.stream().filter(ImageResultStream::hasException).findFirst().ifPresent(x -> {
+            throw Exception_Converter.fromProto(x.getException());
+        });
+        List<byte[]> chunks = resultChunks.stream()
+                .map(c -> c.getRawImageChunk().toByteArray()).collect(Collectors.toList());
+        return Utils_Util.combineChunk(chunks);
+    }
+
+    /**
      * Combine chunk byte [ ].
      *
      * @param chunks the chunks
@@ -266,7 +285,8 @@ final class Utils_Util {
             throw new RuntimeException("No response from IronPdfEngine.");
         }
     }
-    static void logInfoOrSystemOut(Logger logger, String msg){
+
+    static void logInfoOrSystemOut(Logger logger, String msg) {
         if (logger.isInfoEnabled())
             logger.info(msg);
         else

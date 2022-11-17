@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf;
 
+import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import com.ironsoftware.ironpdf.render.PaperSize;
@@ -33,6 +34,14 @@ public class RenderingTests extends TestBase {
         List<PageInfo> info = doc.getPagesInfo();
         Assertions.assertEquals(1, info.size());
         Assertions.assertEquals(420, info.get(0).getWidth(), 1);
+    }
+
+    @Test
+    final void RenderRtfAsPdfTest() throws IOException {
+        PdfDocument doc = PdfDocument.renderRtfFileAsPdf(getTestPath("Data/Sample_RTF.rtf"));
+        List<PageInfo> info = doc.getPagesInfo();
+        Assertions.assertEquals(4, info.size());
+        Assertions.assertTrue(doc.extractTextFromPage(PageSelection.firstPage()).contains("Lorem"));
     }
 
 }

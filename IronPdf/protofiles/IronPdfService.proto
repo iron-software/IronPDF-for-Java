@@ -18,6 +18,7 @@ import "Security.proto";
 import "Signature.proto";
 import "Text.proto";
 import "Compress.proto";
+import "License.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -30,12 +31,14 @@ service IronPdfService {
   rpc Render_FromStringSnippet(stream RenderPdfDocumentFromStringSnippetRequestStream) returns (PdfDocumentResult){}
   rpc Render_FromHtmlFile(RenderPdfDocumentFromHtmlFileRequest) returns (PdfDocumentResult){}
   rpc Render_FromUri(RenderPdfDocumentFromUriRequest) returns (PdfDocumentResult){}
+  rpc Render_FromRtfString(stream RenderPdfDocumentFromRtfStringRequestStream) returns (PdfDocumentResult){}
 
   //Imaging
   rpc PdfDocument_Image_ImageToPdf(stream ImageToPdfRequestStream) returns (PdfDocumentResult){}
   rpc PdfDocument_Image_DrawBitmap(stream DrawBitmapRequestStream) returns (EmptyResult){}
   rpc PdfDocument_Image_ExtractAllRawImages(ExtractAllRawImagesRequest) returns (stream ImagesResultStream){}
   rpc PdfDocument_Image_PdfToImages(PdfToImagesRequest)returns(stream ImagesResultStream){}
+  rpc PdfDocument_Image_PdfToMultiPageTiffImage(PdfToMultiPageTiffImageRequest)returns(stream ImageResultStream){}
 
   //PdfDocument
   rpc PdfDocument_Dispose(PdfDocument) returns (EmptyResult){}
@@ -102,6 +105,12 @@ service IronPdfService {
 
   //Compress
   rpc PdfDocument_Compress_CompressImages(CompressImagesRequest) returns (EmptyResult){}
+
+  //License
+  rpc PdfDocument_License_IsValidLicense(IsValidLicenseRequest) returns (BooleanResult){}
+  rpc PdfDocument_License_IsLicensed(IsLicensedRequest) returns (BooleanResult){}
+  
+
 
 }
 

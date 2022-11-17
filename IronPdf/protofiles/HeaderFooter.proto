@@ -28,7 +28,6 @@ message AddTextHeaderFooterRequest{
   optional bool draw_divider_line = 15;
   optional FontType font = 16;
   optional double font_size = 17;
-  optional double spacing = 18;
 }
 
 //we get rid of HtmlHeaderFooter proto msg because it not fully working with stream when steaming html

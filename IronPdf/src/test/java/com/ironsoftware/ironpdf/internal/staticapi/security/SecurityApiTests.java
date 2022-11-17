@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi.security;
 
 
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.security.PdfEditSecurity;
 import com.ironsoftware.ironpdf.security.PdfPrintSecurity;
 import com.ironsoftware.ironpdf.security.SecurityOptions;

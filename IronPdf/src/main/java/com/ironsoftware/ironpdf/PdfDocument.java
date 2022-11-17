@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1234,6 +1235,74 @@ public class PdfDocument implements Printable {
     }
 
     /**
+     * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
+     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
+     * page numbers
+     *
+     * @param filePath A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
+     * @return A file path of the image file created.
+     */
+    public String toMultiPageTiff(Path filePath)
+            throws IOException {
+
+        return toMultiPageTiff(filePath, new ToImageOptions(), PageSelection.allPages());
+    }
+
+
+    /**
+     * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
+     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
+     * page numbers
+     *
+     * @param filePath      A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
+     * @param pageSelection Selected page indexes. Default is all pages.
+     * @return A file path of the image file created.
+     */
+    public String toMultiPageTiff(Path filePath, PageSelection pageSelection)
+            throws IOException {
+
+        return toMultiPageTiff(filePath, new ToImageOptions(), pageSelection);
+    }
+
+    /**
+     * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
+     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
+     * page numbers
+     *
+     * @param filePath A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
+     * @param options  The {@link ToImageOptions}
+     * @return A file path of the image file created.
+     */
+    public String toMultiPageTiff(Path filePath, ToImageOptions options)
+            throws IOException {
+        return toMultiPageTiff(filePath, options, PageSelection.allPages());
+    }
+
+    /**
+     * Renders the pages of the PDF as TIFF (Tagged Image File Format / Tif) file and saves it to disk.
+     * Specific image dimensions and page numbers may be given as optional parameters</para>
+     * FileNamePattern should normally contain an asterisk (*) character which will be substituted for the
+     * page numbers
+     *
+     * @param filePath      A file path for the output file.  E.g.  C:\images\pdf_pages.tiff
+     * @param options       The {@link ToImageOptions}
+     * @param pageSelection Selected page indexes. Default is all pages.
+     * @return A file path of the image file created.
+     */
+    public String toMultiPageTiff(Path filePath, ToImageOptions options, PageSelection pageSelection)
+            throws IOException {
+
+        byte[] tifData = Image_Api.toMultiPageTiff(
+                internalPdfDocument, pageSelection.getPageList(internalPdfDocument),
+                options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight());
+
+        return Files.write(filePath, tifData).toAbsolutePath().toString();
+    }
+
+    /**
      * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality setting.
      *
      * @param quality Quality (1 - 100) to use during compression
@@ -1513,13 +1582,15 @@ public class PdfDocument implements Printable {
     /**
      * Replace the specified old text with new text on a given page.
      *
-     * @param pageIndex Page index to search for old text to replace
-     * @param oldText   Old text to remove
-     * @param newText   New text to add
+     * @param pageSelection The selected page index(es).
+     * @param oldText       Old text to remove
+     * @param newText       New text to add
      */
-    public final void replaceTextOnPage(int pageIndex, String oldText, String newText) {
-        Text_Api.replaceTextOnPage(internalPdfDocument, pageIndex,
-                oldText, newText);
+    public final void replaceText(PageSelection pageSelection, String oldText, String newText) {
+        pageSelection.getPageList(internalPdfDocument).forEach(page -> {
+            Text_Api.replaceTextOnPage(internalPdfDocument, page,
+                    oldText, newText);
+        });
     }
 
     //endregion
@@ -1739,5 +1810,36 @@ public class PdfDocument implements Printable {
                                               ChromePdfRenderOptions renderOptions) {
         return renderHtmlAsPdf(html, renderOptions, null, null);
     }
+
+    /**
+     * Creates a PDF file from RTF string, and returns it as a {@link PdfDocument}.
+     *
+     * @param rtfString The RTF string to be rendered as a PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderRtfAsPdf(String rtfString) {
+        return new PdfDocument(Render_Api.renderRtfAsPdf(rtfString));
+    }
+
+    /**
+     * Creates a PDF file from RTF file, and returns it as a {@link PdfDocument}.
+     *
+     * @param rtfFilePath The RTF file path to be rendered as a PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderRtfFileAsPdf(String rtfFilePath) throws IOException {
+        return renderRtfFileAsPdf(Paths.get(rtfFilePath));
+    }
+
+    /**
+     * Creates a PDF file from RTF file, and returns it as a {@link PdfDocument}.
+     *
+     * @param rtfFilePath The RTF file path to be rendered as a PDF.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderRtfFileAsPdf(Path rtfFilePath) throws IOException {
+        return new PdfDocument(Render_Api.renderRtfAsPdf(String.join("", Files.readAllLines(rtfFilePath))));
+    }
+
     //endregion
 }

@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi.headerfooter;
 
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.headerfooter.HtmlHeaderFooter;
 import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import com.ironsoftware.ironpdf.internal.staticapi.*;

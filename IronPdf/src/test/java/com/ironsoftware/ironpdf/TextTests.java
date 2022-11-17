@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf;
 
+import com.ironsoftware.ironpdf.edit.PageSelection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class TextTests extends TestBase {
     public final void ReplaceTextOnPageTest() throws IOException {
         PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><div>AA</div><div>BC</div></body>");
         doc.saveAs(Paths.get("C:/tmp/ReplaceTextOnPageTest.pdf"));
-        doc.replaceTextOnPage(0, "AA", "BB");
+        doc.replaceText(PageSelection.firstPage(), "AA", "BB");
         Assertions.assertTrue(doc.extractAllText().contains("BB"));
     }
 

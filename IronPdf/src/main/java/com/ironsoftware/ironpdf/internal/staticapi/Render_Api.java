@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.internal.proto.PdfDocumentResult;
+import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromRtfStringRequestStream;
 import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromStringSnippetRequestStream;
 import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromUriRequest;
 import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
@@ -308,5 +309,35 @@ public final class Render_Api {
     public static InternalPdfDocument renderHtmlAsPdf(String html,
                                                       ChromePdfRenderOptions renderOptions) {
         return renderHtmlAsPdf(html, renderOptions, null, null);
+    }
+
+    /**
+     * Creates a PDF file from RTF string, and returns it as a {@link InternalPdfDocument}.
+     *
+     * @param rtfString The RTF string to be rendered as a PDF.
+     * @return A {@link InternalPdfDocument}
+     */
+    public static InternalPdfDocument renderRtfAsPdf(String rtfString) {
+        RpcClient client = Access.ensureConnection();
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+
+        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+
+        io.grpc.stub.StreamObserver<RenderPdfDocumentFromRtfStringRequestStream> requestStream =
+                client.stub.renderFromRtfString(
+                        new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+        for (Iterator<char[]> it = Utils_Util.chunk(rtfString.toCharArray()); it.hasNext(); ) {
+            char[] htmlChunk = it.next();
+            RenderPdfDocumentFromRtfStringRequestStream.Builder dataMsg = RenderPdfDocumentFromRtfStringRequestStream.newBuilder();
+            dataMsg.setRtfString(String.valueOf(htmlChunk));
+            requestStream.onNext(dataMsg.build());
+        }
+        requestStream.onCompleted();
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        return Utils_Util.handlePdfDocumentChunks(resultChunks);
     }
 }

@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi.stamp;
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.internal.staticapi.*;
 import com.ironsoftware.ironpdf.stamp.HtmlStamper;
 import org.junit.jupiter.api.Assertions;

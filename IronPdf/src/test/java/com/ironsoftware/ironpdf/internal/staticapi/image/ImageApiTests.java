@@ -4,7 +4,7 @@ import com.ironsoftware.ironpdf.image.ImageBehavior;
 import com.ironsoftware.ironpdf.internal.staticapi.Image_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
+import com.ironsoftware.ironpdf.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ public class ImageApiTests extends TestBase {
     @Test
     public final void ImageToPdfTest() throws IOException {
         byte[] srcImage = Files.readAllBytes(Paths.get(getTestFile("/Data/iron.jpg")));
-        InternalPdfDocument doc = Image_Api.imageToPdf(Collections.singletonList(srcImage), ImageBehavior.CENTERED_ON_PAGE,null);
+        InternalPdfDocument doc = Image_Api.imageToPdf(Collections.singletonList(srcImage), ImageBehavior.CENTERED_ON_PAGE, null);
         byte[] image = Image_Api.extractAllImages(doc, Collections.singletonList(0)).get(0);
         Assertions.assertNotEquals(Color.WHITE, GetAvgColor(image));
     }
@@ -50,4 +50,14 @@ public class ImageApiTests extends TestBase {
             Assertions.assertNotNull(bi);
         }
     }
+
+    @Test
+    public final void MultiPageTiffTest() throws IOException {
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/google.pdf"));
+        byte[] tiffData = Image_Api.toMultiPageTiff(doc, Collections.singletonList(0), 96, null, null);
+        Assertions.assertNotNull(tiffData);
+        Assertions.assertTrue(tiffData.length > 0);
+    }
+
+
 }

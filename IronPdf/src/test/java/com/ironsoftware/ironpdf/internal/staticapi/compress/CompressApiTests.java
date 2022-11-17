@@ -1,8 +1,8 @@
 package com.ironsoftware.ironpdf.internal.staticapi.compress;
 
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.internal.staticapi.Compress_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
 import org.junit.jupiter.api.Assertions;

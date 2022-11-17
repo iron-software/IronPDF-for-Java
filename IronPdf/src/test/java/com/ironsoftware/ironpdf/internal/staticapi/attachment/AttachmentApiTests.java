@@ -1,9 +1,9 @@
 package com.ironsoftware.ironpdf.internal.staticapi.attachment;
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.internal.staticapi.Attachment_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

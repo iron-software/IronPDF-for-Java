@@ -1,11 +1,11 @@
 package com.ironsoftware.ironpdf.internal.staticapi.annotation;
 
+import com.ironsoftware.ironpdf.TestBase;
 import com.ironsoftware.ironpdf.annotation.AnnotationIcon;
 import com.ironsoftware.ironpdf.annotation.TextAnnotation;
 import com.ironsoftware.ironpdf.internal.staticapi.Annotation_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
-import com.ironsoftware.ironpdf.internal.staticapi.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
