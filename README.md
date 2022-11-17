@@ -80,7 +80,51 @@ Not familiar with slf4j? Just add this to your `pom.xml`:
 
 IronPDF for Java uses gRPC to communicate with the `IronPdfEngine`, which consumes `IronPDF for .NET`
 
-`IronPdfEngine` binaries will automatically be downloaded when running the project for the first time. The `IronPdfEngine` process will start when you call any IronPdf function for the first time, and stop when your application is closed, or when it enters an idle stage.
+## About IronPDF Engine
+
+`IronPdfEngine` is the core of IronPdf. To use `IronPdf for Java` `IronPdfEngine` binaries is required. 
+
+The `IronPdfEngine` process will start when you call any IronPdf function for the first time, and stop when your application is closed, or when it enters an idle stage.
+
+By default `IronPdf for Java` will download `IronPdfEngine` binaries on the first run (or when it cannot find the binaries).
+
+### Install IronPDF Engine as a maven dependency
+We have an option if you don't want to download `IronPdfEngine` on the first run. 
+
+Just add one of this to your pom.xml.
+
+#### For windows x64
+```xml
+<dependency>
+    <groupId>com.ironsoftware</groupId>
+    <artifactId>ironpdf-engine-windows-x64</artifactId>
+    <version>20xx.xx.xxxx</version>
+</dependency>
+```
+
+#### For windows x86
+```xml
+<dependency>
+    <groupId>com.ironsoftware</groupId>
+    <artifactId>ironpdf-engine-windows-x86</artifactId>
+    <version>20xx.xx.xxxx</version>
+</dependency>
+```
+
+#### For Linux x64
+```xml
+<dependency>
+    <groupId>com.ironsoftware</groupId>
+    <artifactId>ironpdf-engine-linux-x64</artifactId>
+    <version>20xx.xx.xxxx</version>
+</dependency>
+```
+
+#### For Mac 
+```
+---Coming Soon---
+```
+
 
 ## Licensing & Support Available
 
