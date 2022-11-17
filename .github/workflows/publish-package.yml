@@ -40,6 +40,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
   publish-ironpdf-engine-pack:
+    needs: publish-ironpdf
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v3

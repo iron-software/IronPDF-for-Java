@@ -40,6 +40,38 @@ jobs:
         path: IronPdf.SmokeTests/target/surefire-reports/*.xml
         reporter: java-junit
         fail-on-error: true
+
+  test_on_windows_with_engine:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Replace IronPdf LicenseKey
+      run: |
+        sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf.SmokeTests/src/test/resources/config.properties
+    - name: Replace IronPdf version
+      run: |
+        sed -i 's/please-replace-version/${{ github.event.inputs.ironpdf_version }}/g' IronPdf.SmokeTests/pom-with-engine.xml
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build
+      run: mvn --batch-mode -DskipTests package --file IronPdf.SmokeTests/pom-with-engine.xml
+      
+    - name: Test
+      run: mvn --batch-mode '-Dmaven.test.failure.ignore=true' test --file IronPdf.SmokeTests/pom-with-engine.xml
+      
+    - name: Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Windows Tests
+        path: IronPdf.SmokeTests/target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: true      
       
   test_on_ubuntu:
     runs-on: ubuntu-18.04
