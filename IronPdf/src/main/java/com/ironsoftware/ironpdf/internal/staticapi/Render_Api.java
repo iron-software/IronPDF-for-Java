@@ -66,13 +66,6 @@ public final class Render_Api {
                     htmlFilePath));
         }
 
-        if(baseUrl == null){
-            //default baseUrl to parent dir
-            File parent = htmlFile.getParentFile();
-            if(parent != null && parent.exists())
-                baseUrl = parent.getAbsolutePath();
-        }
-
         return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials, baseUrl);
     }
 
@@ -116,7 +109,7 @@ public final class Render_Api {
         }
         if(baseUrl!=null){
             if(Setting_Api.isIronPdfEngineDocker){
-                logger.warn("baseUrl does not support with IronPdfEngine in Docker yer.");
+                logger.warn("baseUrl does not support when using IronPdfEngine in Docker, For alternative please use PdfDocument.renderZipAsPdf()");
             }else {
                 info.setBaseUrl(baseUrl);
             }
