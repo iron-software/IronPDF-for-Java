@@ -7,7 +7,6 @@ import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
  * <p>When using HtmlHeaderFooter it is important to set {@link #htmlFragment}</p>
  * <p>Merge meta-data into your html using any of these placeholder strings: {page} {total-pages}
  * {url} {date} {time} {html-title} {pdf-title}</p>
- * <p>See:{@link ChromePdfRenderOptions#setHtmlHeader(HtmlHeaderFooter)} &amp; {@link ChromePdfRenderOptions#setHtmlFooter(HtmlHeaderFooter)}</p>
  * <p>See:{@link com.ironsoftware.ironpdf.PdfDocument#addHtmlHeader(HtmlHeaderFooter)}  &amp; {@link com.ironsoftware.ironpdf.PdfDocument#addHtmlFooter(HtmlHeaderFooter)} </p>
  */
 public class HtmlHeaderFooter implements Cloneable {

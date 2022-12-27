@@ -36,13 +36,25 @@ message RenderPdfDocumentFromUriRequest {
   optional ChromeHttpLoginCredentials http_options = 3;
 }
 
+message RenderPdfDocumentFromZipRequestStream {
+  oneof request {
+    Info info = 1;
+    bytes raw_zip_chunk = 2;
+  }
+  message Info{
+  string main_file = 1;
+  optional ChromePdfRenderOptions render_options = 2;
+  optional ChromeHttpLoginCredentials http_options = 3;
+  }
+}
+
+
 //we not allow to add HeaderFooter because html and string could be too long to handle that we need to use stream which will makes things complicated.
 message ChromePdfRenderOptions{
  // optional bool apply_margin_to_header_and_footer = 1;
   optional bool create_pdf_forms_from_html = 1;
   optional string custom_css_url = 2;
   optional bool enable_java_script = 3;
-  optional int32 first_page_number = 4;
   optional FitToPaperModes fit_to_paper_mode = 5;
   optional bool generate_unique_document_identifiers = 6;
   optional bool gray_scale = 7;

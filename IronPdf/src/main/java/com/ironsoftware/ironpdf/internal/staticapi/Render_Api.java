@@ -1,15 +1,16 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.PdfDocumentResult;
-import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromRtfStringRequestStream;
-import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromStringSnippetRequestStream;
-import com.ironsoftware.ironpdf.internal.proto.RenderPdfDocumentFromUriRequest;
+import com.google.protobuf.ByteString;
+import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public final class Render_Api {
 
+    static final Logger logger = LoggerFactory.getLogger(Render_Api.class);
+
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link InternalPdfDocument}.
      *
@@ -29,7 +32,7 @@ public final class Render_Api {
      * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, null, null);
+        return renderHtmlFileAsPdf(htmlFilePath, null, null,null);
     }
 
     /**
@@ -41,14 +44,15 @@ public final class Render_Api {
      * @return A {@link InternalPdfDocument}
      * @throws IOException the io exception
      */
-    public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+    public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath, String baseUrl,
                                                           ChromePdfRenderOptions renderOptions,
                                                           ChromeHttpLoginCredentials loginCredentials) throws IOException {
         if (Utils_StringHelper.isNullOrWhiteSpace(htmlFilePath)) {
             throw new IllegalArgumentException("Value 'htmlFilePath' cannot be null or empty.");
         }
 
-        String absoluteFilePath = (new File(htmlFilePath)).getAbsolutePath();
+        File htmlFile = new File(htmlFilePath);
+        String absoluteFilePath = htmlFile.getAbsolutePath();
         if (!(new File(absoluteFilePath)).isFile()) {
             throw new IOException(
                     String.format("%1$s is not a valid Html file path. That file does not exist.",
@@ -62,7 +66,14 @@ public final class Render_Api {
                     htmlFilePath));
         }
 
-        return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials, "");
+        if(baseUrl == null){
+            //default baseUrl to parent dir
+            File parent = htmlFile.getParentFile();
+            if(parent != null && parent.exists())
+                baseUrl = parent.getAbsolutePath();
+        }
+
+        return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials, baseUrl);
     }
 
     /**
@@ -103,7 +114,14 @@ public final class Render_Api {
         if (login != null) {
             info.setHttpOptions(login);
         }
-        info.setBaseUrl(baseUrl != null ? baseUrl : "");
+        if(baseUrl!=null){
+            if(Setting_Api.isIronPdfEngineDocker){
+                logger.warn("baseUrl does not support with IronPdfEngine in Docker yer.");
+            }else {
+                info.setBaseUrl(baseUrl);
+            }
+
+        }
 
         RenderPdfDocumentFromStringSnippetRequestStream.Builder infoMsg =
                 RenderPdfDocumentFromStringSnippetRequestStream.newBuilder();
@@ -134,7 +152,7 @@ public final class Render_Api {
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromeHttpLoginCredentials loginCredentials
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, null, loginCredentials);
+        return renderHtmlFileAsPdf(htmlFilePath,null, null, loginCredentials);
     }
 
     /**
@@ -148,7 +166,7 @@ public final class Render_Api {
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromePdfRenderOptions renderOptions
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, renderOptions, null);
+        return renderHtmlFileAsPdf(htmlFilePath,null, renderOptions, null);
     }
 
     /**
@@ -187,10 +205,6 @@ public final class Render_Api {
         if (loginCredentials != null) {
             request.setHttpOptions(Render_Converter.toProto(loginCredentials));
         }
-
-        final CountDownLatch finishLatch = new CountDownLatch(1);
-
-        List<PdfDocumentResult> msgChunks = new ArrayList<>();
 
         PdfDocumentResult res = client.blockingStub.renderFromUri(request.build());
 
@@ -334,6 +348,61 @@ public final class Render_Api {
             dataMsg.setRtfString(String.valueOf(htmlChunk));
             requestStream.onNext(dataMsg.build());
         }
+        requestStream.onCompleted();
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        return Utils_Util.handlePdfDocumentChunks(resultChunks);
+    }
+
+    public static InternalPdfDocument renderZipAsPdf(Path zipFilePath, String mainFile,
+                                                     ChromePdfRenderOptions renderOptions,
+                                                     ChromeHttpLoginCredentials loginCredentials) throws IOException {
+        RpcClient client = Access.ensureConnection();
+
+
+
+        RenderPdfDocumentFromZipRequestStream.Info.Builder info =
+                RenderPdfDocumentFromZipRequestStream.Info.newBuilder();
+
+        com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptions renderOp = Render_Converter.toProto(
+                renderOptions);
+        if (renderOp != null) {
+            info.setRenderOptions(renderOp);
+        }
+
+        com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentials login = Render_Converter.toProto(
+                loginCredentials);
+        if (login != null) {
+            info.setHttpOptions(login);
+        }
+        if(mainFile!=null){
+            info.setMainFile(mainFile);
+        }
+
+        RenderPdfDocumentFromZipRequestStream.Builder infoMsg =
+                RenderPdfDocumentFromZipRequestStream.newBuilder();
+        infoMsg.setInfo(info);
+
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+
+        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+
+        io.grpc.stub.StreamObserver<RenderPdfDocumentFromZipRequestStream> requestStream =
+                client.stub.renderFromZip(
+                        new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+        requestStream.onNext(infoMsg.build());
+
+        byte[] zipByte = Files.readAllBytes(zipFilePath);
+        for (Iterator<byte[]> it = Utils_Util.chunk(zipByte); it.hasNext(); ) {
+            byte[] zipChunk = it.next();
+            RenderPdfDocumentFromZipRequestStream.Builder dataMsg = RenderPdfDocumentFromZipRequestStream.newBuilder();
+            dataMsg.setRawZipChunk(ByteString.copyFrom(zipChunk));
+            requestStream.onNext(dataMsg.build());
+        }
+
         requestStream.onCompleted();
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);

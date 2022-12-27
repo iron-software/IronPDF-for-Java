@@ -17,6 +17,7 @@ public class TestBase {
 
     public TestBase() {
         Settings.setDebug(true);
+//        Settings.useIronPdfEngineDocker();
 //        Settings.setLogPath(Paths.get("C:/tmp/mylog.log"));
     }
 

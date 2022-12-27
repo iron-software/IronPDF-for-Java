@@ -12,14 +12,14 @@ public class TextApiTests extends TestBase {
     @Test
     public final void ExtractAllTextTest() {
         InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body>A A AA</body>");
-        Assertions.assertTrue(Text_Api.extractAllText(doc).contains("A A AA"));
+        Assertions.assertTrue(Text_Api.extractAllText(doc).replace(" ","").contains("AAAA"));
     }
 
     @Test
     public final void ReplaceTextOnPageTest() throws IOException {
         InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body><div>AA</div><div>BC</div></body>");
-        PdfDocument_Api.saveAs(doc, "C:/tmp/ReplaceTextOnPageTest.pdf");
         Text_Api.replaceTextOnPage(doc, 0, "AA", "BB");
-        Assertions.assertTrue(Text_Api.extractAllText(doc).contains("BB"));
+        String text = Text_Api.extractAllText(doc);
+        Assertions.assertTrue(text.replaceAll("(\\r|\\n)", "").contains("BB"));
     }
 }

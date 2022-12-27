@@ -44,4 +44,12 @@ public class RenderingTests extends TestBase {
         Assertions.assertTrue(doc.extractTextFromPage(PageSelection.firstPage()).contains("Lorem"));
     }
 
+    @Test
+    final void RenderZipAsPdfTest() throws IOException {
+        PdfDocument doc = PdfDocument.renderZipAsPdf(getTestPath("Data/ZipTest.zip"),"Basic.html");
+        List<PageInfo> info = doc.getPagesInfo();
+        Assertions.assertEquals(4, info.size());
+        Assertions.assertFalse(doc.extractAllImages().isEmpty());
+    }
+
 }

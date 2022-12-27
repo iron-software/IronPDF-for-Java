@@ -8,6 +8,7 @@ message Empty{}
 
 message HandshakeRequest{
   string expectedVersion = 1;
+  optional string prog_lang = 2;
 }
 
 message HandshakeResponse{

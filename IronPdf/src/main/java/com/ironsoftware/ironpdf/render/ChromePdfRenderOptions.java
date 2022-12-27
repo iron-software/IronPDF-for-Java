@@ -1,12 +1,10 @@
 package com.ironsoftware.ironpdf.render;
 
-import com.ironsoftware.ironpdf.headerfooter.HtmlHeaderFooter;
-import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import com.ironsoftware.ironpdf.internal.staticapi.Render_Api;
 
 /**
  * Html To PDF output options for {@link Render_Api}. Specify options such as Paper-Size, DPI,
- * Headers and Footers and other Chromium specific browser setup options.
+ * and other Chromium specific browser setup options.
  */
 public class ChromePdfRenderOptions implements Cloneable {
 
@@ -32,12 +30,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
      */
     private boolean enableJavaScript = true;
-    /**
-     * First page number to be used in PDF Headers and Footers.
-     * <p>
-     * {@link #textHeader} {@link #htmlHeader} {@link #textFooter} {@link #htmlFooter}
-     */
-    private int firstPageNumber = 1;
+
     /**
      * Behavior when fitting HTML content to a physical paper size.
      * Determines {@link #getZoom()} and  {@link #getViewPortWidth()}.
@@ -51,14 +44,6 @@ public class ChromePdfRenderOptions implements Cloneable {
      * Outputs a black-and-white PDF
      */
     private boolean grayScale = false;
-    /**
-     * Sets the header content for every PDF page as Html.  Supports 'mail-merge'.
-     */
-    private HtmlHeaderFooter htmlHeader = new HtmlHeaderFooter();
-    /**
-     * Sets the footer content for every PDF page as Html.  Supports 'mail-merge'.
-     */
-    private HtmlHeaderFooter htmlFooter = new HtmlHeaderFooter();
     /**
      * The input character encoding as a string;
      */
@@ -101,16 +86,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * considering the rendering of JavaScript, Ajax or animations.
      */
     private int renderDelay = 0;
-    /**
-     * Sets the header content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     */
-    private TextHeaderFooter textHeader = new TextHeaderFooter();
-    /**
-     * Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     */
-    private TextHeaderFooter textFooter = new TextHeaderFooter();
+
     /**
      * Render timeout in seconds
      */
@@ -257,28 +233,6 @@ public class ChromePdfRenderOptions implements Cloneable {
      */
     public void setEnableJavaScript(boolean value) {
         enableJavaScript = value;
-    }
-
-    /**
-     * Gets first page number. First page number to be used in PDF Headers and Footers.
-     * <p>
-     * {@link #setTextHeader} {@link #setHtmlHeader} {@link #setTextFooter} {@link #setHtmlFooter}
-     *
-     * @return the first page number
-     */
-    public int getFirstPageNumber() {
-        return firstPageNumber;
-    }
-
-    /**
-     * Sets first page number. First page number to be used in PDF Headers and Footers.
-     * <p>
-     * {@link #setTextHeader} {@link #setHtmlHeader} {@link #setTextFooter} {@link #setHtmlFooter}
-     *
-     * @param value the value
-     */
-    public void setFirstPageNumber(int value) {
-        firstPageNumber = value;
     }
 
     /**
@@ -603,94 +557,7 @@ public class ChromePdfRenderOptions implements Cloneable {
      * @throws CloneNotSupportedException the clone not supported exception
      */
     public Object Clone() throws CloneNotSupportedException {
-        ChromePdfRenderOptions output = (ChromePdfRenderOptions) clone();
-        output.setTextFooter(
-                (TextHeaderFooter) (getTextFooter() == null ? null : getTextFooter().Clone()));
-        output.setTextHeader(
-                (TextHeaderFooter) (getTextHeader() == null ? null : getTextHeader().Clone()));
-        output.setHtmlFooter(
-                (HtmlHeaderFooter) (getHtmlFooter() == null ? null : getHtmlFooter().Clone()));
-        output.setHtmlHeader(
-                (HtmlHeaderFooter) (getHtmlHeader() == null ? null : getHtmlHeader().Clone()));
-
-        return output;
-    }
-
-    /**
-     * Gets text header. The header content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     *
-     * @return the text header
-     */
-    public TextHeaderFooter getTextHeader() {
-        return textHeader;
-    }
-
-    /**
-     * Sets text header. The header content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     *
-     * @param value the value
-     */
-    public void setTextHeader(TextHeaderFooter value) {
-        textHeader = value;
-    }
-
-    /**
-     * Gets text footer. Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     *
-     * @return the text footer
-     */
-    public TextHeaderFooter getTextFooter() {
-        return textFooter;
-    }
-
-    /**
-     * Sets text footer. Sets the footer content for every PDF page as text. Supports 'mail-merge' and automatically
-     * turns urls into hyperlinks.
-     *
-     * @param value the value
-     */
-    public void setTextFooter(TextHeaderFooter value) {
-        textFooter = value;
-    }
-
-
-    /**
-     * Gets html header. The header content for every PDF page as Html.  Supports 'mail-merge'.
-     *
-     * @return the html header
-     */
-    public HtmlHeaderFooter getHtmlHeader() {
-        return htmlHeader;
-    }
-
-    /**
-     * Sets html header. The header content for every PDF page as Html.  Supports 'mail-merge'.
-     *
-     * @param value the value
-     */
-    public void setHtmlHeader(HtmlHeaderFooter value) {
-        htmlHeader = value;
-    }
-
-    /**
-     * Gets html footer. The footer content for every PDF page as Html.  Supports 'mail-merge'.
-     *
-     * @return the html footer
-     */
-    public HtmlHeaderFooter getHtmlFooter() {
-        return htmlFooter;
-    }
-
-    /**
-     * Sets html footer. The footer content for every PDF page as Html.  Supports 'mail-merge'.
-     *
-     * @param value the value
-     */
-    public void setHtmlFooter(HtmlHeaderFooter value) {
-        htmlFooter = value;
+        return (ChromePdfRenderOptions) clone();
     }
 
     /**

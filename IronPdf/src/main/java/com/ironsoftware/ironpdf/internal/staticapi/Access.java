@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static com.ironsoftware.ironpdf.internal.staticapi.Setting_Api.*;
 import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
@@ -33,7 +34,6 @@ final class Access {
     private static boolean tryAgain = true;
     private static BufferedReader stdInput;
     private static BufferedReader stdError;
-
     private static CountDownLatch serverReady;
 
     static synchronized RpcClient ensureConnection() {
@@ -41,7 +41,8 @@ final class Access {
             return client;
         }
 
-        startServer();
+        if(!isIronPdfEngineDocker)
+            startServer();
 
         if (channel == null) {
             channel = ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
@@ -55,11 +56,12 @@ final class Access {
 
         logger.debug("Handshaking, Expected IronPdfEngine Version : " + Setting_Api.IRON_PDF_ENGINE_VERSION);
 
-        HandshakeRequest.Builder handshakeRequest_firstTry = HandshakeRequest.newBuilder();
-        handshakeRequest_firstTry.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
+        HandshakeRequest.Builder handshakeRequest = HandshakeRequest.newBuilder();
+        handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
+        handshakeRequest.setProgLang("java");
 
         HandshakeResponse res_firstTry = newClient.blockingStub.handshake(
-                handshakeRequest_firstTry.build());
+                handshakeRequest.build());
 
         logger.debug("Handshake result:" + res_firstTry);
 
@@ -72,7 +74,7 @@ final class Access {
                 logger.error("Mismatch IronPdfEngine version expected: "
                         + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
                 //todo download new Binary
-                if (tryAgain) {
+                if (!isIronPdfEngineDocker && tryAgain) {
                     stopIronPdfEngine();
                     downloadIronPdfEngine();
                     Setting_Api.subProcessPort = Setting_Api.findFreePort();
@@ -91,8 +93,10 @@ final class Access {
             if (isTryDownloaded) {
                 return;
             }
-            Path zipFilePath = Paths.get(Setting_Api.ironPdfEngineDefaultFolder + ".zip");
-            logInfoOrSystemOut(logger, "Download IronPdfEngine to default dir: " + zipFilePath.toAbsolutePath());
+            Path zipFilePath = Paths.get(ironPdfEngineWorkingDirectory.toAbsolutePath().toString(),
+                    Setting_Api.getIronPdfEngineZipName());
+
+            logInfoOrSystemOut(logger, "Download IronPdfEngine to working dir: " + zipFilePath.toAbsolutePath());
             isTryDownloaded = true;
 
             URL downloadUrl = new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
@@ -106,10 +110,11 @@ final class Access {
                     copyInputStreamToFile(pis, zipFilePath.toFile());
                 }
             }
-            logInfoOrSystemOut(logger, "Unzipping IronPdfEngine to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
 
+            Path unzippedFolder = Paths.get(ironPdfEngineWorkingDirectory.toAbsolutePath().toString(), Setting_Api.getIronPdfEngineFolderName());
+            logInfoOrSystemOut(logger, "Unzipping IronPdfEngine to dir: " + unzippedFolder);
             unzip(zipFilePath.toAbsolutePath().toString(),
-                    Setting_Api.ironPdfEngineFolder.toAbsolutePath().toString());
+                    unzippedFolder.toAbsolutePath().toString());
             logger.info("Delete zip file: " + zipFilePath.toAbsolutePath());
             Files.deleteIfExists(zipFilePath.toAbsolutePath());
         } catch (IOException e) {
@@ -143,7 +148,7 @@ final class Access {
 
     static synchronized void startServer() {
         try {
-            Optional<File> selectedFile = Setting_Api.getAvailableIronPdfEngineFile();
+            Optional<File> selectedFile = getAvailableIronPdfEngineFile();
             if (selectedFile.isPresent()) {
                 logger.info("Using IronPdfEngine from: " + selectedFile.get().getAbsolutePath());
 
@@ -176,6 +181,9 @@ final class Access {
                 cmdList.add(String.format("port=%1$s", Setting_Api.subProcessPort));
                 cmdList.add(String.format("enable_debug=%1$s", Setting_Api.enableDebug));
                 cmdList.add(String.format("log_path=%1$s", Setting_Api.logPath));
+                cmdList.add(String.format("programming_language=%1$s", "java"));
+                if (Setting_Api.tempFolderPath != null)
+                    cmdList.add(String.format("temp_folder_path=%1$s", Setting_Api.tempFolderPath.toAbsolutePath()));
 
                 if (!Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey)) {
                     cmdList.add(String.format("license_key=%1$s", Setting_Api.licenseKey));
@@ -213,26 +221,24 @@ final class Access {
 
             } else {
                 logger.info(
-                        "Cannot find IronPdfEngine at: " + Setting_Api.getIronPdfEngineExecutableDefaultPath()
+                        "Cannot find IronPdfEngine from ironpdf working dir:" + Setting_Api.ironPdfEngineWorkingDirectory
                                 .toAbsolutePath());
                 if (tryAgain) {
                     downloadIronPdfEngine();
-                    logger.info(
-                            "Try to start IronPdfEngine again from: " + Setting_Api.getIronPdfEngineExecutableDefaultPath()
-                                    .toAbsolutePath());
+                    logger.info("Try to start IronPdfEngine again");
                     tryAgain = false;
                     startServer();
                 } else {
                     throw new RuntimeException(String.format("Cannot locate IronPdfEngine. at %1$s",
-                            Setting_Api.getIronPdfEngineExecutableDefaultPath().toAbsolutePath()));
+                            Setting_Api.getIronPdfEngineExecutablePath(ironPdfEngineWorkingDirectory)
+                                    .toAbsolutePath()));
                 }
 
             }
         } catch (Exception e) {
-            logger.error(String.format("Cannot start IronPdfEngine at %1$s.",
-                    Setting_Api.getIronPdfEngineExecutableDefaultPath()), e);
-            throw new RuntimeException(String.format("Cannot start IronPdfEngine at %1$s.",
-                    Setting_Api.getIronPdfEngineExecutableDefaultPath()), e);
+            logger.error("Cannot start IronPdfEngine (working dir: " + ironPdfEngineWorkingDirectory.toAbsolutePath() + ")", e);
+            e.printStackTrace();
+            throw new RuntimeException("Cannot start IronPdfEngine due to " + e.getMessage(), e);
         }
     }
 
@@ -315,5 +321,77 @@ final class Access {
         } catch (Exception exception) {
             logger.warn("Set permission failed : " + file.getAbsolutePath(), exception);
         }
+    }
+
+    /**
+     * Gets available iron pdf engine file.
+     *
+     * @return the available iron pdf engine file
+     */
+    private static Optional<File> getAvailableIronPdfEngineFile() {
+
+        Path binFromWorkingDir = getIronPdfEngineExecutablePath(ironPdfEngineWorkingDirectory);
+        try {
+            if (Files.exists(binFromWorkingDir)) {
+                logger.info("IronPdfEngine found at: " + binFromWorkingDir);
+                return Optional.of(binFromWorkingDir.toFile());
+            }
+        } catch (Exception ignored) {
+        }
+        logger.info("IronPdfEngine not found at IronPdfEngine working directory: " + binFromWorkingDir.toAbsolutePath());
+
+        //check for ironpdf-engine package
+        try {
+            String engineResourceClassName = "com.ironsoftware.ironpdf.internal.EngineResource" + currentOsFullName() + currentOsArch();
+            try (InputStream inputStream = Class.forName(engineResourceClassName)
+                    .getResourceAsStream("/" + getIronPdfEngineFolderName() + ".zip")) {
+
+                Path zipFilePath = Paths.get(ironPdfEngineWorkingDirectory.toAbsolutePath().toString(), Setting_Api.getIronPdfEngineFolderName() + ".zip");
+                copyInputStreamToFile(inputStream, zipFilePath.toFile());
+
+                Path unzipTargetPath = Paths.get(ironPdfEngineWorkingDirectory.toAbsolutePath().toString(), Setting_Api.getIronPdfEngineFolderName() + "/");
+                logInfoOrSystemOut(logger, "Unzipping IronPdfEngine (from dependency) to dir: " + unzipTargetPath);
+
+                Access.unzip(zipFilePath.toAbsolutePath().toString(),
+                        unzipTargetPath.toAbsolutePath().toString());
+                Files.deleteIfExists(zipFilePath.toAbsolutePath());
+            }
+
+            if (Files.exists(binFromWorkingDir)) {
+                logger.info(
+                        "IronPdfEngine found (extracted from ironpdf-engine package) (EngineResource) at: " + binFromWorkingDir);
+                return Optional.of(binFromWorkingDir.toFile());
+            }
+        } catch (ClassNotFoundException ignored) {
+            //it is ok if engineResourceClassName not exists (e.g. ironpdf-engine-linux-x64 package)
+            logger.debug("Cannot detect IronPdfEngine from ironpdf-engine package, skipped");
+        } catch (Exception e) {
+            logger.debug("IronPdfEngine from ironpdf-engine package not found", e);
+        }
+
+        //backup by look at System.getProperty("user.dir")
+        Path binFromUserDir = getIronPdfEngineExecutablePath(Paths.get(System.getProperty("user.dir")));
+        try {
+            if (Files.exists(binFromUserDir)) {
+                logger.info("IronPdfEngine found at: " + binFromUserDir);
+                return Optional.of(binFromUserDir.toFile());
+            }
+        } catch (Exception ignored) {
+        }
+        logger.info("IronPdfEngine not found at: " + "(System.getProperty(\"user.dir\")): " + binFromUserDir.toAbsolutePath());
+
+        //backup by look at current dir
+        Path binFromCurrentDir = getIronPdfEngineExecutablePath(Paths.get("."));
+        try {
+            if (Files.exists(binFromCurrentDir)) {
+                logger.info("IronPdfEngine found at: " + binFromCurrentDir);
+                return Optional.of(binFromCurrentDir.toFile());
+            }
+        } catch (Exception ignored) {
+        }
+        logger.info("IronPdfEngine not found at current dir: " + binFromCurrentDir.toAbsolutePath());
+
+
+        return Optional.empty();
     }
 }

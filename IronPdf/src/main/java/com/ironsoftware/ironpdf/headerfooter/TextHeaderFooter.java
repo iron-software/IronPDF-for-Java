@@ -6,7 +6,6 @@ import com.ironsoftware.ironpdf.font.FontTypes;
  * Defines a text based PDF Header and Footer.
  * <p>{@link TextHeaderFooter} uses a fast and logical approach to rendering Headers and Footers for the most
  * common use cases. A more advanced option available to developers is {@link HtmlHeaderFooter}.</p>
- * <p>See:{@link com.ironsoftware.ironpdf.render.ChromePdfRenderOptions#setTextHeader(TextHeaderFooter)} &amp; :{@link com.ironsoftware.ironpdf.render.ChromePdfRenderOptions#setTextFooter(TextHeaderFooter)}</p>
  * <p>See:{@link com.ironsoftware.ironpdf.PdfDocument#addTextHeader(TextHeaderFooter)} &amp; {@link com.ironsoftware.ironpdf.PdfDocument#addTextFooter(TextHeaderFooter)}  </p>
  */
 public class TextHeaderFooter implements Cloneable {

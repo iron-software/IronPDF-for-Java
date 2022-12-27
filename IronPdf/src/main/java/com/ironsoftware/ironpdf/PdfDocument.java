@@ -1610,8 +1610,21 @@ public class PdfDocument implements Printable {
      * @throws IOException the io exception
      */
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, null, null);
+        return renderHtmlFileAsPdf(htmlFilePath, null, null, null);
     }
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath Path to a Html to be rendered as a PDF.
+     * @param baseUrl      Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath, String baseUrl) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, baseUrl, null, null);
+    }
+
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
@@ -1625,23 +1638,24 @@ public class PdfDocument implements Printable {
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromePdfRenderOptions renderOptions,
                                                   ChromeHttpLoginCredentials loginCredentials) throws IOException {
-        return new PdfDocument(Render_Api.renderHtmlFileAsPdf(htmlFilePath, renderOptions, loginCredentials));
+        return renderHtmlFileAsPdf(htmlFilePath, null, renderOptions, loginCredentials);
     }
 
     /**
-     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
      *
-     * @param html             The Html to be rendered as a PDF.
+     * @param htmlFilePath     Path to a Html to be rendered as a PDF.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link PdfDocument}
+     * @throws IOException the io exception
      */
-    public static PdfDocument renderHtmlAsPdf(String html,
-                                              ChromePdfRenderOptions renderOptions,
-                                              ChromeHttpLoginCredentials loginCredentials,
-                                              String baseUrl) {
-        return new PdfDocument(Render_Api.renderHtmlAsPdf(html, renderOptions, loginCredentials, baseUrl));
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  String baseUrl,
+                                                  ChromePdfRenderOptions renderOptions,
+                                                  ChromeHttpLoginCredentials loginCredentials) throws IOException {
+        return new PdfDocument(Render_Api.renderHtmlFileAsPdf(htmlFilePath, baseUrl, renderOptions, loginCredentials));
     }
 
     /**
@@ -1655,7 +1669,23 @@ public class PdfDocument implements Printable {
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromeHttpLoginCredentials loginCredentials
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, null, loginCredentials);
+        return renderHtmlFileAsPdf(htmlFilePath, null, null, loginCredentials);
+    }
+
+    /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath     Path to a Html to be rendered as a PDF.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
+     * @param loginCredentials Http login credentials
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  String baseUrl,
+                                                  ChromeHttpLoginCredentials loginCredentials
+    ) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, baseUrl, null, loginCredentials);
     }
 
     /**
@@ -1673,10 +1703,26 @@ public class PdfDocument implements Printable {
     }
 
     /**
+     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * @param htmlFilePath  Path to a Html to be rendered as a PDF.
+     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
+     * @param renderOptions Rendering options
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
+                                                  String baseUrl,
+                                                  ChromePdfRenderOptions renderOptions
+    ) throws IOException {
+        return renderHtmlFileAsPdf(htmlFilePath, renderOptions, null);
+    }
+
+    /**
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a            PDF.
+     * @param url An absolute (fully formed) Uri.  Points to the Html document to be rendered as a PDF.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderUrlAsPdf(String url) {
@@ -1687,7 +1733,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
@@ -1702,7 +1748,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be                         rendered as a PDF.
+     * @param url              An absolute (fully formed) Uri.  Points to the Html document to be rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
      */
@@ -1715,13 +1761,29 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a URL or local file path and returns it as a
      * {@link PdfDocument}.
      *
-     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be                      rendered as a PDF.
+     * @param url           An absolute (fully formed) Uri.  Points to the Html document to be rendered as a PDF.
      * @param renderOptions Rendering options
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderUrlAsPdf(String url,
                                              ChromePdfRenderOptions renderOptions) {
         return renderUrlAsPdf(url, renderOptions, null);
+    }
+
+    /**
+     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
+     *
+     * @param html             The Html to be rendered as a PDF.
+     * @param renderOptions    Rendering options
+     * @param loginCredentials Http login credentials
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
+     * @return A {@link PdfDocument}
+     */
+    public static PdfDocument renderHtmlAsPdf(String html,
+                                              ChromePdfRenderOptions renderOptions,
+                                              ChromeHttpLoginCredentials loginCredentials,
+                                              String baseUrl) {
+        return new PdfDocument(Render_Api.renderHtmlAsPdf(html, renderOptions, loginCredentials, baseUrl));
     }
 
     /**
@@ -1738,7 +1800,7 @@ public class PdfDocument implements Printable {
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html             The Html to be rendered as a PDF.
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
+     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
      */
@@ -1842,6 +1904,37 @@ public class PdfDocument implements Printable {
      */
     public static PdfDocument renderRtfFileAsPdf(Path rtfFilePath) throws IOException {
         return new PdfDocument(Render_Api.renderRtfAsPdf(String.join("", Files.readAllLines(rtfFilePath))));
+    }
+
+    /**
+     *Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
+     *<p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
+     *<p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
+     *<p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
+     *<p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
+     *@param zipFilePath Path to a Zip to be rendered as a PDF.
+     *@param mainFile Name of the primary HTML file.
+     *@param renderOptions Rendering options
+     *@return
+     *A {@link PdfDocument}
+     */
+    public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile, ChromePdfRenderOptions renderOptions) throws IOException {
+        return new PdfDocument(Render_Api.renderZipAsPdf(zipFilePath, mainFile, renderOptions, new ChromeHttpLoginCredentials()));
+    }
+
+    /**
+     *Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
+     *<p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
+     *<p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
+     *<p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
+     *<p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
+     *@param zipFilePath Path to a Zip to be rendered as a PDF.
+     *@param mainFile Name of the primary HTML file.
+     *@return
+     *A {@link PdfDocument}
+     */
+    public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile) throws IOException {
+        return new PdfDocument(Render_Api.renderZipAsPdf(zipFilePath, mainFile, new ChromePdfRenderOptions(), new ChromeHttpLoginCredentials()));
     }
 
     //endregion

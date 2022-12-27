@@ -4,18 +4,11 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-
-import static com.ironsoftware.ironpdf.internal.staticapi.Utils_Util.logInfoOrSystemOut;
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 /**
  * The type Setting api.
@@ -41,25 +34,23 @@ public final class Setting_Api {
      */
     public static boolean enableDebug = false;
 
+    static boolean isIronPdfEngineDocker = false;
+
     /**
      * Path to IronPdfEngine log.
      */
     public static Path logPath = Paths.get("ironpdfengine.log");
     /**
-     * Path to IronPdfEngine folder, default is current
-     * {currentDirectory}/IronPdfEngine.{revision}.{osName}.{osArch}/ . If IronPdfEngine binary does
-     * not exist, it will download automatically to this folder.
+     * Path to IronPdfEngine working directory. default is current directory.
+     * If IronPdfEngine binary does not exist, we will download automatically to this folder.
      */
-    public static Path ironPdfEngineFolder = Paths.get(System.getProperty("user.dir"),
-            getIronPdfEngineFolderName());
-    /**
-     * The constant defaultPathToIronPdfEngineFolder.
-     */
-    public final static Path ironPdfEngineDefaultFolder = Paths.get(getIronPdfEngineFolderName());
+    public static Path ironPdfEngineWorkingDirectory = Paths.get(System.getProperty("user.dir"));
     /**
      * The constant subProcessHost.
      */
     public static String subProcessHost = "127.0.0.1";
+
+    public static Path tempFolderPath = null;
 
     /**
      * Find free port int.
@@ -76,71 +67,6 @@ public final class Setting_Api {
         } catch (IOException ignored) {
         }
         throw new IllegalStateException("Could not find a free port to start IronPdfEngine");
-    }
-
-    /**
-     * Gets available iron pdf engine file.
-     *
-     * @return the available iron pdf engine file
-     */
-    public static Optional<File> getAvailableIronPdfEngineFile() {
-
-        try {
-            if (Files.exists(getIronPdfEngineExecutablePath())) {
-                logger.info("IronPdfEngine found at: " + getIronPdfEngineExecutablePath());
-                return Optional.of(getIronPdfEngineExecutablePath().toFile());
-            }
-        } catch (Exception ignored) {
-        }
-        logger.info("IronPdfEngine not found at: " + getIronPdfEngineExecutablePath());
-
-        try {
-            try (InputStream ad = Class.forName(
-                    "com.ironsoftware.ironpdf.internal.EngineResource" + currentOsFullName()
-                            + currentOsArch()).getResourceAsStream("/" + getIronPdfEngineFolderName() + ".zip")) {
-
-                Path zipFilePath = Paths.get(Setting_Api.ironPdfEngineDefaultFolder + ".zip");
-                copyInputStreamToFile(ad, zipFilePath.toFile());
-
-                logInfoOrSystemOut(logger, "Unzipping IronPdfEngine (from dependency) to dir: " + Setting_Api.ironPdfEngineFolder.toAbsolutePath());
-
-                Access.unzip(zipFilePath.toAbsolutePath().toString(),
-                        Setting_Api.ironPdfEngineFolder.toAbsolutePath().toString());
-                Files.deleteIfExists(zipFilePath.toAbsolutePath());
-            }
-
-            Path fp = getIronPdfEngineExecutablePath();
-            if (Files.exists(fp)) {
-                logger.info(
-                        "IronPdfEngine found (from ironpdf-engine package) (EngineResource) at: " + fp);
-                return Optional.of(fp.toFile());
-            }
-        } catch (ClassNotFoundException ignored) {
-
-        } catch (Exception e) {
-            logger.debug("IronPdfEngine from ironpdf-engine package not found", e);
-        }
-
-        try {
-            if (Files.exists(getIronPdfEngineExecutableDefaultPath())) {
-                logger.info("IronPdfEngine found at: " + getIronPdfEngineExecutableDefaultPath());
-                return Optional.of(getIronPdfEngineExecutableDefaultPath().toFile());
-            }
-        } catch (Exception ignored) {
-        }
-        logger.info("IronPdfEngine not found at Default: " + getIronPdfEngineExecutableDefaultPath());
-
-        try {
-            Path dir = Paths.get(System.getProperty("user.dir"), getIronPdfEngineFolderName());
-            if (Files.exists(dir)) {
-                logger.info("IronPdfEngine found at: " + dir);
-                return Optional.of(dir.toFile());
-            }
-        } catch (Exception ignored) {
-        }
-        logger.info("IronPdfEngine not found at: " + "System.getProperty(\"user.dir\")/"
-                + getIronPdfEngineFolderName());
-        return Optional.empty();
     }
 
     /**
@@ -181,7 +107,7 @@ public final class Setting_Api {
         throw new RuntimeException("unknown OS:" + SystemUtils.OS_NAME);
     }
 
-    private static String getIronPdfEngineFolderName() {
+    public static String getIronPdfEngineFolderName() {
         return "IronPdfEngine." +
                 IRON_PDF_ENGINE_VERSION +
                 "." +
@@ -190,7 +116,11 @@ public final class Setting_Api {
                 currentOsArch();
     }
 
-    private static String getIronPdfEngineExecutableFileName() {
+    public static String getIronPdfEngineZipName() {
+        return getIronPdfEngineFolderName() + ".zip";
+    }
+
+    public static String getIronPdfEngineExecutableFileName() {
         if (SystemUtils.IS_OS_WINDOWS) {
             return "IronPdfEngine.exe";
         } else if (SystemUtils.IS_OS_LINUX) {
@@ -209,22 +139,22 @@ public final class Setting_Api {
      *
      * @return the custom iron pdf engine path
      */
-    public static Path getIronPdfEngineExecutablePath() {
-        return Paths.get(ironPdfEngineFolder.toAbsolutePath().toString(), getIronPdfEngineExecutableFileName());
+    public static Path getIronPdfEngineExecutablePath(Path workingDir) {
+        return Paths.get(workingDir.toAbsolutePath().toString()
+                , getIronPdfEngineFolderName()
+                , getIronPdfEngineExecutableFileName());
     }
 
-    /**
-     * Gets default iron pdf engine path.
-     *
-     * @return the default iron pdf engine path
-     */
-    public static Path getIronPdfEngineExecutableDefaultPath() {
-        return Paths.get(getIronPdfEngineFolderName(), getIronPdfEngineExecutableFileName());
+
+    public static void useIronPdfEngineDocker(int port){
+        logger.info("Using IronPdfEngine Docker port:" +port);
+        subProcessPort = port;
+        isIronPdfEngineDocker = true;
     }
 
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2022.11.10577";
+    public static final String IRON_PDF_ENGINE_VERSION = "2022.12.11188";
 
 }

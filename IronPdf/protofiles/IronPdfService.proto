@@ -32,6 +32,7 @@ service IronPdfService {
   rpc Render_FromHtmlFile(RenderPdfDocumentFromHtmlFileRequest) returns (PdfDocumentResult){}
   rpc Render_FromUri(RenderPdfDocumentFromUriRequest) returns (PdfDocumentResult){}
   rpc Render_FromRtfString(stream RenderPdfDocumentFromRtfStringRequestStream) returns (PdfDocumentResult){}
+  rpc Render_FromZip(stream RenderPdfDocumentFromZipRequestStream) returns (PdfDocumentResult){}
 
   //Imaging
   rpc PdfDocument_Image_ImageToPdf(stream ImageToPdfRequestStream) returns (PdfDocumentResult){}
@@ -44,6 +45,7 @@ service IronPdfService {
   rpc PdfDocument_Dispose(PdfDocument) returns (EmptyResult){}
   rpc PdfDocument_GetBinaryData(PdfDocument)  returns (stream BytesResultStream){}
   rpc PdfDocument_FromBytes(stream PdfDocumentConstructorStream)returns (PdfDocumentResult){}
+  rpc PdfDocument_Copy(PdfDocument)returns (PdfDocumentResult){}
 
   //Page
   rpc PdfDocument_Page_RemovePages(RemovePagesRequest) returns (EmptyResult){}

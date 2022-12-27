@@ -22,7 +22,6 @@ final class Render_Converter {
         proto.setCreatePdfFormsFromHtml(Options.isCreatePdfFormsFromHtml());
         proto.setCustomCssUrl(Utils_Util.nullGuard(Options.getCustomCssUrl()));
         proto.setEnableJavaScript(Options.isEnableJavaScript());
-        proto.setFirstPageNumber(Options.getFirstPageNumber());
         proto.setFitToPaperMode(Render_Converter.toProto(Options.getFitToPaperMode()));
         proto.setGrayScale(Options.isGrayScale());
         proto.setInputEncoding(Options.getInputEncoding());
