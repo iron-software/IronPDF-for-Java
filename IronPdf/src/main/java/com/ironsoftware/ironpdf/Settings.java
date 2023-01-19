@@ -33,7 +33,7 @@ public final class Settings {
 
     /**
      * Enable or disable debug mode.
-     * <p>***Please set before calling any IronPdf function.***
+     * <p>***Recommended to set before calling any IronPdf function.***
      *
      * @param isDebug the is debug enabled
      */
@@ -53,7 +53,7 @@ public final class Settings {
     /**
      * Sets path to IronPDF engine working directory. default is current directory.
      * If IronPdfEngine binary does not exist, We will download automatically to this folder.
-     * <p>***Please set before calling any IronPdf function.***
+     * <p>***Recommended to set before calling any IronPdf function.***
      *
      * @param path the path
      * @throws IOException the io exception
@@ -74,7 +74,7 @@ public final class Settings {
 
     /**
      * Sets IronPDF engine log file path.
-     * <p>***Please set before calling any IronPdf function.***
+     * <p>***Recommended to set before calling any IronPdf function.***
      *
      * @param path the log file path
      */

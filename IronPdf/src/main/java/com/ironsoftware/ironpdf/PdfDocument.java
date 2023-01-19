@@ -736,7 +736,7 @@ public class PdfDocument implements Printable {
      * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
-        HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
+        HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
                 PageSelection.allPages().getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
@@ -754,7 +754,7 @@ public class PdfDocument implements Printable {
      * @return the pdf document
      */
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
-        HeaderFooter_Api.addTextHeader(internalPdfDocument, footer,
+        HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
                 pageSelection.getPageList(internalPdfDocument),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
@@ -1715,7 +1715,7 @@ public class PdfDocument implements Printable {
                                                   String baseUrl,
                                                   ChromePdfRenderOptions renderOptions
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, renderOptions, null);
+        return renderHtmlFileAsPdf(htmlFilePath, baseUrl, renderOptions, null);
     }
 
     /**

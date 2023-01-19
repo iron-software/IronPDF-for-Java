@@ -18,6 +18,7 @@ final class Exception_Converter {
             case "IronPdfInputException":
                 throw new IronPdfInputException(ex);
             case "IronPdfLicensingException":
+            case "LicensingException":
                 throw new IronPdfLicensingException(ex);
             case "IronPdfNativeException":
                 throw new IronPdfNativeException(ex);

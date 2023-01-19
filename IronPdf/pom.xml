@@ -109,7 +109,7 @@
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
-                        ./protofiles
+                        ${project.basedir}/../../IronPdfEngine.ProtoFiles
                     </protoSourceRoot>
                     <protocArtifact>com.google.protobuf:protoc:3.21.9:exe:${os.detected.classifier}
                     </protocArtifact>

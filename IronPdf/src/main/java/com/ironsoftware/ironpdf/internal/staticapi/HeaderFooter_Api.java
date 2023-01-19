@@ -323,12 +323,15 @@ public final class HeaderFooter_Api {
         if(pdfTitle != null)
             req.setPdfTitle(pdfTitle);
 
-        req.setLeftText(
-                textHeaderFooter.getLeftText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getLeftText()));
-        req.setCenterText(
-                textHeaderFooter.getCenterText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getCenterText()));
-        req.setRightText(
-                textHeaderFooter.getRightText() == null ? null : Utils_Util.nullGuard(textHeaderFooter.getRightText()));
+        if(textHeaderFooter.getLeftText() != null)
+            req.setLeftText(textHeaderFooter.getLeftText());
+
+        if(textHeaderFooter.getCenterText() != null)
+            req.setCenterText(textHeaderFooter.getCenterText());
+
+        if(textHeaderFooter.getRightText() != null)
+            req.setRightText(textHeaderFooter.getRightText());
+
         req.setDrawDividerLine(textHeaderFooter.isDrawDividerLine());
         req.setFont(FontTypes_Converter.toProto(textHeaderFooter.getFont()));
         req.setFontSize(textHeaderFooter.getFontSize());

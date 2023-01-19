@@ -21,7 +21,7 @@ public final class License {
 
     /**
      * Sets your license key.
-     * <p>***Please set license key before calling any IronPdf function.***
+     * <p>***Recommended to set license key before calling any IronPdf function.***
      * <p>You will need to add a valid license key to perform any IronPdf operations beyond basic testing.
      * <p>Adding a valid license key removes PDF watermarks and allows advanced functionality.
      * <p>Get a free development license at <a href="https://ironpdf.com/licensing/#trial-license">https://ironpdf.com/licensing/#trial-license</a> or purchase a deployment license from
@@ -31,6 +31,7 @@ public final class License {
      */
     public static void setLicenseKey(String licenseKey) {
         Setting_Api.licenseKey = licenseKey;
+        License_Api.SetLicensed(licenseKey);
     }
 
     /**

@@ -338,7 +338,7 @@ public final class Render_Api {
         for (Iterator<char[]> it = Utils_Util.chunk(rtfString.toCharArray()); it.hasNext(); ) {
             char[] htmlChunk = it.next();
             RenderPdfDocumentFromRtfStringRequestStream.Builder dataMsg = RenderPdfDocumentFromRtfStringRequestStream.newBuilder();
-            dataMsg.setRtfString(String.valueOf(htmlChunk));
+            dataMsg.setRtfStringChunk(String.valueOf(htmlChunk));
             requestStream.onNext(dataMsg.build());
         }
         requestStream.onCompleted();

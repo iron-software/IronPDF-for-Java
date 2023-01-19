@@ -1,8 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.BooleanResult;
-import com.ironsoftware.ironpdf.internal.proto.IsLicensedRequest;
-import com.ironsoftware.ironpdf.internal.proto.IsValidLicenseRequest;
+import com.ironsoftware.ironpdf.internal.proto.*;
 
 /**
  * The type Text api.
@@ -43,5 +41,16 @@ public final class License_Api {
         BooleanResult res = client.blockingStub.pdfDocumentLicenseIsLicensed(req.build());
 
         return Utils_Util.handleBooleanResult(res);
+    }
+
+    public static void SetLicensed(String licenseKey) {
+        RpcClient client = Access.ensureConnection();
+
+        SetLicenseKeyRequest.Builder req = SetLicenseKeyRequest.newBuilder();
+        req.setLicenseKey(licenseKey);
+
+        EmptyResult res = client.blockingStub.pdfDocumentLicenseSetLicenseKey(req.build());
+
+        Utils_Util.handleEmptyResult(res);
     }
 }
