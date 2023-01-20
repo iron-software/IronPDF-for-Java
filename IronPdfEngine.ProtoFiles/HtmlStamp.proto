@@ -1,0 +1,90 @@
+syntax = "proto3";
+package IronPdfEngine.Proto;
+import "PdfDocument.proto";
+import "Render.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message ApplyStampRequestStream{
+  oneof request {
+    Info info = 1;
+    string stamp_value = 2;
+    bytes  stamp_image_bytes = 3; //only for image_stamper
+  }
+  message Info{
+    PdfDocument document = 1;
+    repeated int32 target_pages_indexes = 2;
+    optional int32 opacity = 3;
+    optional int32 rotation = 4;
+    optional HorizontalAlignment horizontal_alignment = 5;
+    optional VerticalAlignment vertical_alignment = 6;
+    optional Length horizontal_offset = 7;
+    optional Length vertical_offset = 8;
+    optional Length max_width = 9;
+    optional Length max_height = 10;
+    optional Length min_width = 11;
+    optional Length min_height = 12;
+    optional string hyperlink = 13;
+    optional double scale = 14;
+    optional bool is_stamp_behind_content = 15;
+
+    oneof stamper_type_info{
+      HtmlStamperInfo html_stamper = 16;
+      ImageStamperInfo image_stamper = 17;
+      TextStamperInfo text_stamper = 18;
+      BarcodeStamperInfo barcode_stamper = 19;
+    }
+  }
+}
+
+message HtmlStamperInfo {
+  optional string base_url = 1;
+  optional int32 render_delay = 2;
+  optional int32 timeout = 3;
+  optional PdfCssMediaType css_media_type = 4;
+}
+
+message Length {
+  double value = 1;
+  MeasurementUnit unit = 2;
+}
+
+message MeasurementUnit{
+  int32 enum_value = 1;
+}
+
+
+message VerticalAlignment{
+  int32 enum_value = 1;
+}
+
+message HorizontalAlignment{
+  int32 enum_value = 1;
+}
+
+message TextStamperInfo {
+  optional bool is_bold = 1;
+  optional bool is_italic = 2;
+  optional bool is_underline = 3;
+  optional bool is_strikethrough = 4;
+  optional string font_family = 5;
+  optional int32 font_size = 6;
+  optional bool use_google_font = 7;
+  optional string text_color = 8;
+  optional string background_color = 9;
+}
+
+message ImageStamperInfo{
+
+}
+
+message BarcodeStamperInfo{
+  optional BarcodeEncoding barcode_type = 1;
+  optional int32 width_px = 2;
+  optional int32 height_px = 3;
+}
+
+message BarcodeEncoding{
+  int32 enum_value = 1;
+}
