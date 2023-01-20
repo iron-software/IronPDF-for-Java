@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+package IronPdfEngine.Proto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message FontType{
+  int32 id = 1;
+  string name = 2;
+  optional string font_file_path = 3;
+}
