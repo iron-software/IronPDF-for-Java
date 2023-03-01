@@ -121,4 +121,24 @@ public final class Form_Api {
         EmptyResult res = client.blockingStub.pdfDocumentFormFlattenForm(req.build());
         Utils_Util.handleEmptyResult(res);
     }
+
+    /**
+     * Sets text field font.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param formFieldName       the form field name
+     * @param isReadOnly          the read only value
+     */
+    public static void setFormFieldIsReadOnly(InternalPdfDocument internalPdfDocument, String formFieldName,
+                                        boolean isReadOnly) {
+        RpcClient client = Access.ensureConnection();
+
+        SetFormFieldIsReadOnlyRequest.Builder request = SetFormFieldIsReadOnlyRequest.newBuilder();
+        request.setDocument(internalPdfDocument.remoteDocument);
+        request.setFieldName(formFieldName);
+        request.setIsReadOnly(isReadOnly);
+        EmptyResult response = client.blockingStub.pdfDocumentFormSetFormFieldIsReadOnly(
+                request.build());
+        Utils_Util.handleEmptyResult(response);
+    }
 }

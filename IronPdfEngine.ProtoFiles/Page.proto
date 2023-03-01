@@ -50,7 +50,7 @@ message RemovePagesRequest{
   repeated int32 page_indexes = 2;
 }
 
-message RotatePagesRequest{
+message SetPagesRotationRequest{
   PdfDocument document = 1;
   repeated int32 page_indexes = 2;
   PageRotation page_rotation = 3;

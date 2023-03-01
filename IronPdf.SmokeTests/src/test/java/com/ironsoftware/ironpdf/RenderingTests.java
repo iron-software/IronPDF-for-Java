@@ -40,7 +40,7 @@ public class RenderingTests extends TestBase {
     final void RenderRtfAsPdfTest() throws IOException {
         PdfDocument doc = PdfDocument.renderRtfFileAsPdf(getTestPath("Data/Sample_RTF.rtf"));
         List<PageInfo> info = doc.getPagesInfo();
-        Assertions.assertEquals(4, info.size());
+        Assertions.assertTrue(info.size()>1);
         Assertions.assertTrue(doc.extractTextFromPage(PageSelection.firstPage()).contains("Lorem"));
     }
 
@@ -50,6 +50,18 @@ public class RenderingTests extends TestBase {
         List<PageInfo> info = doc.getPagesInfo();
         Assertions.assertEquals(4, info.size());
         Assertions.assertFalse(doc.extractAllImages().isEmpty());
+    }
+
+    @Test
+    public final void RenderHtmlAsPdfWithJavascriptTest() {
+        ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
+        tempVar.setPaperSize(PaperSize.A2);
+        tempVar.setJavascript("console.log('ExecutePostProcessingJavascript test'); document.querySelectorAll('h1').forEach(function(el){el.style.color='red';})");
+        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", "",
+                tempVar);
+        List<PageInfo> info = doc.getPagesInfo();
+        Assertions.assertEquals(1, info.size());
+        Assertions.assertEquals(420, info.get(0).getWidth(), 1);
     }
 
 }

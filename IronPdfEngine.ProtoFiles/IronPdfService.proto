@@ -19,6 +19,7 @@ import "Signature.proto";
 import "Text.proto";
 import "Compress.proto";
 import "License.proto";
+import "Logger.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -38,6 +39,7 @@ service IronPdfService {
   
   //Imaging
   rpc PdfDocument_Image_ImageToPdf(stream ImageToPdfRequestStream) returns (PdfDocumentResult){}
+  rpc PdfDocument_Image_ImageFilesToPdf(stream ImageFilesToPdfRequestStream) returns (PdfDocumentResult){}
   rpc PdfDocument_Image_DrawBitmap(stream DrawBitmapRequestStream) returns (EmptyResult){}
   rpc PdfDocument_Image_ExtractAllRawImages(ExtractAllRawImagesRequest) returns (stream ImagesResultStream){}
   rpc PdfDocument_Image_PdfToImages(PdfToImagesRequest)returns(stream ImagesResultStream){}
@@ -45,17 +47,19 @@ service IronPdfService {
 
   //PdfDocument
   rpc PdfDocument_Dispose(PdfDocument) returns (EmptyResult){}
-  rpc PdfDocument_GetBinaryData(PdfDocument)  returns (stream BytesResultStream){}
+  rpc PdfDocument_GetBinaryData(GetBinaryDataRequest)  returns (stream BytesResultStream){}
   rpc PdfDocument_FromBytes(stream PdfDocumentConstructorStream)returns (PdfDocumentResult){}
   rpc PdfDocument_Copy(PdfDocument)returns (PdfDocumentResult){}
-
+  rpc PdfDocument_GetRevisionCount(PdfDocument)returns (IntResult){}
+  rpc PdfDocument_GetRevision(GetRevisionRequest)returns (PdfDocumentResult){}
+  
   //Page
   rpc PdfDocument_Page_RemovePages(RemovePagesRequest) returns (EmptyResult){}
   rpc PdfDocument_Page_Merge(PdfDocumentMergeRequest) returns (PdfDocumentResult){}
   rpc PdfDocument_Page_InsertPdf(PdfDocumentInsertRequest)returns (EmptyResult){}
   rpc PdfDocument_Page_GetPages(GetPagesRequest) returns(GetPagesResult){}
   rpc PdfDocument_Page_CopyPages(CopyPagesRequest) returns(PdfDocumentResult){}
-  rpc PdfDocument_Page_RotatePages(RotatePagesRequest) returns(EmptyResult){}
+  rpc PdfDocument_Page_SetPagesRotation(SetPagesRotationRequest) returns(EmptyResult){}
   rpc PdfDocument_Page_ResizePage(ResizePageRequest) returns(EmptyResult){}
 
   //Metadata
@@ -94,9 +98,10 @@ service IronPdfService {
   rpc PdfDocument_BackgroundForeground_AddBackgroundForeground(AddBackgroundForegroundRequest) returns(EmptyResult){}
 
   //Signature
-  rpc PdfDocument_Signature_SignPdf(stream SignPdfRequestStream) returns (EmptyResult){}
+  rpc PdfDocument_Signature_Sign(stream SignRequestStream) returns (EmptyResult){}
   rpc PdfDocument_Signature_GetVerifiedSignature(GetVerifiedSignatureRequest) returns (GetVerifySignatureResult){}
   rpc PdfDocument_Signature_VerifiedSignatures(VerifyPdfSignaturesRequest) returns (BooleanResult);
+  rpc PdfDocument_Signature_RemoveSignatures(RemoveSignaturesRequest) returns (EmptyResult);
 
   //Text
   rpc PdfDocument_Text_ExtractAllText(ExtractAllTextRequest)returns(StringResult){}
@@ -119,7 +124,8 @@ service IronPdfService {
   rpc PdfDocument_License_IsLicensed(IsLicensedRequest) returns (BooleanResult){}
   rpc PdfDocument_License_SetLicenseKey(SetLicenseKeyRequest) returns (EmptyResult){}
 
-
+  //Logger
+  rpc PdfDocument_Logger_SetIsDebug(SetIsDebugRequest) returns (EmptyResult){}
 }
 
 

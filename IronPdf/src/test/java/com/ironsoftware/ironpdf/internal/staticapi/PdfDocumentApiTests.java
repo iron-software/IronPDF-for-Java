@@ -24,7 +24,13 @@ public class PdfDocumentApiTests extends TestBase {
     @Test
     public final void GetBytesTest() throws IOException {
         InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
-        AssertNotNullOrEmpty(PdfDocument_Api.getBytes(doc));
+        AssertNotNullOrEmpty(PdfDocument_Api.getBytes(doc,false));
+    }
+
+    @Test
+    public final void GetBytesIncrementalTest() throws IOException {
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
+        AssertNotNullOrEmpty(PdfDocument_Api.getBytes(doc,true));
     }
 
     @Test

@@ -253,13 +253,15 @@ public class PdfDocument implements Printable {
      */
     public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior,
                                         ChromePdfRenderOptions renderOptions) {
-        return new PdfDocument(Image_Api.imageToPdf(imagesPath.stream().map(x -> {
-            try {
-                return Files.readAllBytes(x);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()), imageBehavior, renderOptions));
+
+       List<Image_Api.ImageData> imageDataList =  imagesPath.stream().map(x -> {
+                    try {
+                        return new Image_Api.ImageData(Files.readAllBytes(x),FilenameUtils.getExtension(x.toAbsolutePath().toString()) );
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }}).collect(Collectors.toList());
+
+        return new PdfDocument(Image_Api.imageToPdf(imageDataList, imageBehavior, renderOptions));
     }
 
 
@@ -488,7 +490,7 @@ public class PdfDocument implements Printable {
      * @param rotation Degrees of rotation. May be 0,90,180 or 270
      */
     public final void rotateAllPages(PageRotation rotation) {
-        Page_Api.rotatePage(internalPdfDocument, rotation);
+        Page_Api.setPageRotation(internalPdfDocument, rotation);
     }
 
     /**
@@ -498,9 +500,23 @@ public class PdfDocument implements Printable {
      * @param pageSelection Selected page indexes. Default is all pages.
      */
     public final void rotatePage(PageRotation pageRotation, PageSelection pageSelection) {
-        Page_Api.rotatePage(internalPdfDocument, pageRotation,
+        Page_Api.setPageRotation(internalPdfDocument, pageRotation,
                 pageSelection.getPageList(internalPdfDocument));
     }
+
+    /**
+     Resize a page to the specified dimensions (in millimeters)
+
+     @param pageWidth Desired page width, in millimeters
+     @param pageHeight Desired page height, in millimeters
+     @param pageSelection Selected page indexes.
+     */
+    public final void resizePage(double pageWidth, double pageHeight, PageSelection pageSelection){
+        pageSelection.getPageList(internalPdfDocument).forEach(x->{
+            Page_Api.resizePage(internalPdfDocument, pageWidth, pageHeight, x);
+        });
+    }
+
     //endregion
 
     // region BackgroundForeground
@@ -1436,12 +1452,58 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     * Returns the binary data for the full PDF file.
+     * Saves this PdfDocument to a file.
      *
-     * @return This PdfDocument expressed as a byte array.
+     * @param filePath File Path
+     * @return This PdfDocument for fluid code notation.
+     * @throws IOException the io exception
+     */
+    public final PdfDocument saveAsRevision(Path filePath) throws IOException {
+        PdfDocument_Api.saveAsRevision(internalPdfDocument,
+                filePath.toAbsolutePath().toString());
+        return this;
+    }
+
+    /**
+     * Saves this PdfDocument to a file.
+     *
+     * @param filePath File path string
+     * @return This PdfDocument for fluid code notation.
+     * @throws IOException the io exception
+     */
+    public final PdfDocument saveAsRevision(String filePath) throws IOException {
+        PdfDocument_Api.saveAsRevision(internalPdfDocument,
+                filePath);
+        return this;
+    }
+
+    /**
+     * Saves the PDF as byte array, including any changes.
+     *
+     * @return The PDF file as a byte array.
      */
     public final byte[] getBinaryData() {
-        return PdfDocument_Api.getBytes(internalPdfDocument);
+        return PdfDocument_Api.getBytes(internalPdfDocument, false);
+    }
+
+    /**
+     Saves the PDF as byte array with changes appended to the end of the file.
+
+     @return The PDF file as a byte array.
+     */
+    public final byte[] getBinaryDataIncremental() {
+        return PdfDocument_Api.getBytes(internalPdfDocument, true);
+    }
+
+
+
+    /**
+     Creates a copy of this document at the specified revision number. {@link PdfDocument#saveAsRevision}/>
+
+     @return a {@link PdfDocument} document
+     */
+    public final PdfDocument getRevision(int index) {
+        return new PdfDocument(PdfDocument_Api.getRevision(internalPdfDocument, index));
     }
 
     //endregion

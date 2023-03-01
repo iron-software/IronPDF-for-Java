@@ -88,3 +88,20 @@ message ImageToPdfRequestStream{
     optional ChromePdfRenderOptions render_options = 2;
   }
 }
+
+message RawImageChunkWithIndexAndFileType{
+  int32 image_index = 1;
+  bytes raw_image_chunk = 2;
+  string file_type = 3;
+}
+
+message ImageFilesToPdfRequestStream{
+  oneof request {
+    Info info = 1;
+    RawImageChunkWithIndexAndFileType raw_images_file_chunk = 2;
+  }
+  message Info{
+    ImageBehavior image_behavior = 1;
+    optional ChromePdfRenderOptions render_options = 2;
+  }
+}

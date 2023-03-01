@@ -16,16 +16,21 @@ public class VerifiedSignature {
 
     private Instant signingDate;
 
-    public VerifiedSignature(String signatureName, String signingContact, String signingReason, String signingLocation, Instant signingDate, boolean isValid) {
+    private boolean isValid;
+
+    private String filter;
+
+    public VerifiedSignature(String signatureName, String signingContact, String signingReason, String signingLocation, Instant signingDate, boolean isValid, String filter) {
         this.signatureName = signatureName;
         this.signingContact = signingContact;
         this.signingReason = signingReason;
         this.signingLocation = signingLocation;
         this.signingDate = signingDate;
         this.isValid = isValid;
+        this.filter = filter;
     }
 
-    private boolean isValid;
+
 
     /**
      * Gets the field name of the digital signature.
@@ -80,4 +85,16 @@ public class VerifiedSignature {
     public boolean isValid() {
         return isValid;
     }
+
+
+    /**
+     * Signature filter
+     *
+     * @return Signature filter
+     */
+    public String getFilter() {
+        return filter;
+    }
+
+
 }
