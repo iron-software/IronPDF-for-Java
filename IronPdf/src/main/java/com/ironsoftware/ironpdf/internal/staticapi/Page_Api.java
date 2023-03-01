@@ -126,14 +126,8 @@ public final class Page_Api {
      * @param internalPdfDocument the internal pdf document
      * @param pageRotation        Degrees of rotation
      */
-    public static void rotatePage(InternalPdfDocument internalPdfDocument, PageRotation pageRotation) {
-        RpcClient client = Access.ensureConnection();
-        RotatePagesRequest.Builder req = RotatePagesRequest.newBuilder();
-        req.setDocument(internalPdfDocument.remoteDocument);
-        req.setPageRotation(Page_Converter.toProto(pageRotation));
-
-        EmptyResult res = client.blockingStub.pdfDocumentPageRotatePages(req.build());
-        Utils_Util.handleEmptyResult(res);
+    public static void setPageRotation(InternalPdfDocument internalPdfDocument, PageRotation pageRotation) {
+        setPageRotation(internalPdfDocument, pageRotation, null);
     }
 
     /**
@@ -143,17 +137,17 @@ public final class Page_Api {
      * @param pageRotation        Degrees of rotation
      * @param pageIndexes         Indexes of the pages to rotate in an IEnumerable, list or array. PageIndex                     is a 'Zero based' page number, the first page being 0
      */
-    public static void rotatePage(InternalPdfDocument internalPdfDocument, PageRotation pageRotation,
-                                  Iterable<Integer> pageIndexes) {
+    public static void setPageRotation(InternalPdfDocument internalPdfDocument, PageRotation pageRotation,
+                                       Iterable<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
-        RotatePagesRequest.Builder req = RotatePagesRequest.newBuilder();
+        SetPagesRotationRequest.Builder req = SetPagesRotationRequest.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageRotation(Page_Converter.toProto(pageRotation));
         if (pageIndexes != null) {
             req.addAllPageIndexes(pageIndexes);
         }
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageRotatePages(req.build());
+        EmptyResult res = client.blockingStub.pdfDocumentPageSetPagesRotation(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -175,5 +169,25 @@ public final class Page_Api {
         PdfDocumentResult res = client.blockingStub.pdfDocumentPageCopyPages(req.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
+    }
+
+    /**
+     Resize a page to the specified dimensions (in millimeters)
+
+     @param pageWidth Desired page width, in millimeters
+     @param pageHeight Desired page height, in millimeters
+     @param pageIndex Selected page indexes.
+     */
+    public static void resizePage(InternalPdfDocument internalPdfDocument, double pageWidth, double pageHeight,
+                                       Integer pageIndex) {
+        RpcClient client = Access.ensureConnection();
+        ResizePageRequest.Builder req = ResizePageRequest.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setPageHeight(pageHeight);
+        req.setPageWidth(pageWidth);
+        req.setPageIndex(pageIndex);
+
+        EmptyResult res = client.blockingStub.pdfDocumentPageResizePage(req.build());
+        Utils_Util.handleEmptyResult(res);
     }
 }

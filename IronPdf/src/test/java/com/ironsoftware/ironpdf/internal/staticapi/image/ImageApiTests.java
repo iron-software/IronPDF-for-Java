@@ -21,7 +21,7 @@ public class ImageApiTests extends TestBase {
     @Test
     public final void ImageToPdfTest() throws IOException {
         byte[] srcImage = Files.readAllBytes(Paths.get(getTestFile("/Data/iron.jpg")));
-        InternalPdfDocument doc = Image_Api.imageToPdf(Collections.singletonList(srcImage), ImageBehavior.CENTERED_ON_PAGE, null);
+        InternalPdfDocument doc = Image_Api.imageToPdf(Collections.singletonList(new Image_Api.ImageData(srcImage,"jpg")), ImageBehavior.CENTERED_ON_PAGE, null);
         byte[] image = Image_Api.extractAllImages(doc, Collections.singletonList(0)).get(0);
         Assertions.assertNotEquals(Color.WHITE, GetAvgColor(image));
     }

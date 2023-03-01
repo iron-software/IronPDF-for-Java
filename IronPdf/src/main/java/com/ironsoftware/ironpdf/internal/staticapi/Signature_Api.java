@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.signature.Signature;
+import com.ironsoftware.ironpdf.signature.SignaturePermissions;
 import com.ironsoftware.ironpdf.signature.VerifiedSignature;
 
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ public final class Signature_Api {
         return Signature_Converter.fromProto(res);
     }
 
-    public static void signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature) {
+    public static void signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions) {
         RpcClient client = Access.ensureConnection();
 
-        SignPdfRequestStream.Info.Builder info = SignPdfRequestStream.Info.newBuilder();
+        SignRequestStream.Info.Builder info = SignRequestStream.Info.newBuilder();
         info.setDocument(internalPdfDocument.remoteDocument);
 
         if (signature.getSigningContact() != null) {
@@ -63,20 +64,27 @@ public final class Signature_Api {
                     .setNanos(signature.getSignatureDate().getNano()));
         }
 
+        info.setSignaturePermission(Signature_Converter.toProto(permissions));
+
+
+        if (signature.getTimeStampUrl() != null) {
+            info.setTimeStampUrl(signature.getTimeStampUrl());
+        }
+
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<EmptyResult> resultChunks = new ArrayList<>();
-        io.grpc.stub.StreamObserver<SignPdfRequestStream> requestStream =
-                client.stub.pdfDocumentSignatureSignPdf(
+        io.grpc.stub.StreamObserver<SignRequestStream> requestStream =
+                client.stub.pdfDocumentSignatureSign(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        SignPdfRequestStream.Builder infoMsg =
-                SignPdfRequestStream.newBuilder();
+        SignRequestStream.Builder infoMsg =
+                SignRequestStream.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
         for (Iterator<byte[]> it = Utils_Util.chunk(signature.getCertificateRawData()); it.hasNext(); ) {
             byte[] bytes = it.next();
-            SignPdfRequestStream.Builder msg = SignPdfRequestStream.newBuilder();
+            SignRequestStream.Builder msg = SignRequestStream.newBuilder();
             msg.setCertificateFileBytesChunk(ByteString.copyFrom(bytes));
             requestStream.onNext(msg.build());
         }
@@ -84,7 +92,7 @@ public final class Signature_Api {
         if(signature.getSignatureImage() != null){
             for (Iterator<byte[]> it = Utils_Util.chunk(signature.getSignatureImage()); it.hasNext(); ) {
                 byte[] bytes = it.next();
-                SignPdfRequestStream.Builder msg = SignPdfRequestStream.newBuilder();
+                SignRequestStream.Builder msg = SignRequestStream.newBuilder();
                 msg.setSignatureImageChunk(ByteString.copyFrom(bytes));
                 requestStream.onNext(msg.build());
             }
@@ -117,6 +125,28 @@ public final class Signature_Api {
         BooleanResult res = resultChunks.stream().findFirst().get();
 
         return Utils_Util.handleBooleanResult(res);
+    }
+
+    public static void removeSignature(InternalPdfDocument internalPdfDocument){
+        RpcClient client = Access.ensureConnection();
+
+        RemoveSignaturesRequest.Builder req = RemoveSignaturesRequest.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
+
+        client.stub.pdfDocumentSignatureRemoveSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        if (resultChunks.size() == 0) {
+            throw new RuntimeException("No response from IronPdf.");
+        }
+
+        EmptyResult res = resultChunks.stream().findFirst().get();
+
+        Utils_Util.handleEmptyResultChunks(resultChunks);
     }
 
 }

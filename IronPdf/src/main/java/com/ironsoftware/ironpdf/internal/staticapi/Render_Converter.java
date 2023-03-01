@@ -39,7 +39,7 @@ final class Render_Converter {
         proto.setViewPortWidth(Options.getViewPortWidth());
         proto.setZoom(Options.getZoom());
         proto.setCssMediaType(Render_Converter.toProto(Options.getCssMediaType()));
-
+        proto.setJavascript(Utils_Util.nullGuard(Options.getJavascript()));
         if (Options.getPaperSize() != PaperSize.Custom) {
             return proto.build();
         }

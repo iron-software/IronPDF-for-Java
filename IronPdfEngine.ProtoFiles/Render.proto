@@ -75,6 +75,7 @@ message ChromePdfRenderOptions{
   optional PdfCssMediaType css_media_type = 22;
   optional double custom_paper_width = 23;
   optional double custom_paper_height = 24;
+  optional string javascript = 25;
 }
 
 message PdfPaperOrientation{

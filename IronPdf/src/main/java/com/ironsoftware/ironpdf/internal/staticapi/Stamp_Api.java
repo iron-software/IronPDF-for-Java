@@ -72,6 +72,9 @@ public final class Stamp_Api {
             textStamperInfo.setIsUnderline(((TextStamper) stamper).isUnderline());
             textStamperInfo.setIsStrikethrough(((TextStamper) stamper).isStrikethrough());
             textStamperInfo.setUseGoogleFont(((TextStamper) stamper).isUseGoogleFont());
+            textStamperInfo.setTextColor(((TextStamper) stamper).getFontColorCode());
+            textStamperInfo.setBackgroundColor(((TextStamper) stamper).getBackgroundColorCode());
+
             info.setTextStamper(textStamperInfo);
             stampValue = ((TextStamper) stamper).getText();
         } else if (stamper instanceof BarcodeStamper) {

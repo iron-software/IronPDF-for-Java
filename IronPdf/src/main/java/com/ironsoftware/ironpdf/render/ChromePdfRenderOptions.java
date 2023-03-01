@@ -35,11 +35,11 @@ public class ChromePdfRenderOptions implements Cloneable {
      * Behavior when fitting HTML content to a physical paper size.
      * Determines {@link #getZoom()} and  {@link #getViewPortWidth()}.
      * <p>See {@link FitToPaperModes} for a detailed description of each mode.</p>
-     * <p>{@link FitToPaperModes#None} disables automatic fitting behavior.</p>
+     * <p>{@link FitToPaperModes#Zoom} disables automatic fitting behavior.</p>
      * <p>{@link FitToPaperModes#Automatic} automatically measures and fits HTML content onto each PDF page.</p>
      * <p>Default value is FitToPaperModes.None.</p>
      */
-    private FitToPaperModes fitToPaperMode = FitToPaperModes.None;
+    private FitToPaperModes fitToPaperMode = FitToPaperModes.Zoom;
     /**
      * Outputs a black-and-white PDF
      */
@@ -118,6 +118,11 @@ public class ChromePdfRenderOptions implements Cloneable {
      * The zoom level in %. Enlarges the rendering size of Html documents.
      */
     private int zoom = 100;
+
+    /**
+     * A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
+     */
+    private String javascript;
 
     /**
      * Is create pdf forms from html. Turns all Html forms elements into editable PDF forms.
@@ -533,6 +538,14 @@ public class ChromePdfRenderOptions implements Cloneable {
     }
 
     /**
+     * Get A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
+     * @return the javascript string
+     */
+    public String getJavascript() {
+        return javascript;
+    }
+
+    /**
      * Gets zoom. The zoom level in %. Enlarges the rendering size of Html documents.
      *
      * @return the zoom
@@ -617,4 +630,11 @@ public class ChromePdfRenderOptions implements Cloneable {
         setPaperSize(com.ironsoftware.ironpdf.render.PaperSize.Custom);
     }
 
+    /**
+     * Set A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
+     * @param javascript a javascript string.
+     */
+    public void setJavascript(String javascript) {
+        this.javascript = javascript;
+    }
 }

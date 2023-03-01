@@ -3,9 +3,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.PdfDocument;
-import com.ironsoftware.ironpdf.internal.proto.BytesResultStream;
-import com.ironsoftware.ironpdf.internal.proto.PdfDocumentConstructorStream;
-import com.ironsoftware.ironpdf.internal.proto.PdfDocumentResult;
+import com.ironsoftware.ironpdf.internal.proto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +144,20 @@ public final class PdfDocument_Api {
      * @throws IOException the io exception
      */
     public static void saveAs(InternalPdfDocument internalPdfDocument, String filePath) throws IOException {
-        byte[] data = PdfDocument_Api.getBytes(internalPdfDocument);
+        byte[] data = PdfDocument_Api.getBytes(internalPdfDocument, false);
+        saveAs(data, filePath);
+    }
+
+    /**
+     * Save as.
+     * Saves current changes as a revision and returns the revised the document, optionally also saving the document to disk
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param filePath            the file path
+     * @throws IOException the io exception
+     */
+    public static void saveAsRevision(InternalPdfDocument internalPdfDocument, String filePath) throws IOException {
+        byte[] data = PdfDocument_Api.getBytes(internalPdfDocument, true);
         saveAs(data, filePath);
     }
 
@@ -154,9 +165,10 @@ public final class PdfDocument_Api {
      * Gets the binary data for the full PDF file as a byte array.
      *
      * @param internalPdfDocument the internal pdf document
-     * @return the byte [ ]
+     * @param isIncremental isIncremental
+     * @return the pdf byte array
      */
-    public static byte[] getBytes(InternalPdfDocument internalPdfDocument) {
+    public static byte[] getBytes(InternalPdfDocument internalPdfDocument, boolean isIncremental) {
         RpcClient client = Access.ensureConnection();
 
         //for checking that the response stream is finished
@@ -165,7 +177,11 @@ public final class PdfDocument_Api {
 //        ArrayList<byte[]> chunks = new ArrayList<byte[]>();
         List<BytesResultStream> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentGetBinaryData(internalPdfDocument.remoteDocument,
+        GetBinaryDataRequest.Builder req = GetBinaryDataRequest.newBuilder();
+        req.setIsIncremental(isIncremental);
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        client.stub.pdfDocumentGetBinaryData(req.build(),
                 //response handler
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
@@ -181,6 +197,35 @@ public final class PdfDocument_Api {
         ).collect(Collectors.toList());
 
         return Utils_Util.combineChunk(bytesChunks);
+    }
+
+    /**
+     * Gets the binary data for the full PDF file as a byte array.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param index revision index
+     * @return the internal pdf document
+     */
+    public static InternalPdfDocument getRevision(InternalPdfDocument internalPdfDocument, int index) {
+        RpcClient client = Access.ensureConnection();
+
+        //for checking that the response stream is finished
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+
+        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+
+        GetRevisionRequest.Builder req = GetRevisionRequest.newBuilder();
+        req.setIndex(index);
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        client.stub.pdfDocumentGetRevision(req.build(),
+                //response handler
+                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
+        );
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        return Utils_Util.handlePdfDocumentChunks(resultChunks);
     }
 
     /**

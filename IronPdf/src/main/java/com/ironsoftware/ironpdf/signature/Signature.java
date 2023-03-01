@@ -43,6 +43,10 @@ public class Signature {
 
     private String password = null;
 
+    /**
+     * Url to be used when time-stamping the signature
+     */
+    private String timeStampUrl = null;
 
     /**
      * Initializes a new instance of the {@link Signature} class using a .pfx or .p12 digital signature
@@ -233,6 +237,25 @@ public class Signature {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    /**
+     * Gets Url to be used when time-stamping the signature
+     *
+     * @return the timestamp url
+     */
+    public String getTimeStampUrl() {
+        return timeStampUrl;
+    }
+
+    /**
+     * Sets Url to be used when time-stamping the signature
+     *
+     * @param timeStampUrl the timestamp url
+     */
+    public void setTimeStampUrl(String timeStampUrl) {
+        this.timeStampUrl = timeStampUrl;
     }
 
 }

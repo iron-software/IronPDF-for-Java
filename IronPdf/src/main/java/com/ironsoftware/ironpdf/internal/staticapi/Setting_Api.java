@@ -4,9 +4,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,7 +21,7 @@ public final class Setting_Api {
      * The constant subProcessPort.
      */
 //will use unique port numbers to avoid conflicts with other instances of IronPdf
-    public static int subProcessPort = findFreePort();
+    public static int subProcessPort = getDefaultPort();
     /**
      * The constant licenseKey.
      */
@@ -57,16 +54,8 @@ public final class Setting_Api {
      *
      * @return the int
      */
-    public static int findFreePort() {
-        //InetAddress must be "127.0.0.1" to prevent firewall popups
-        try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))) {
-            socket.setReuseAddress(true);
-            int port = socket.getLocalPort();
-            socket.close();
-            return port;
-        } catch (IOException ignored) {
-        }
-        throw new IllegalStateException("Could not find a free port to start IronPdfEngine");
+    public static int getDefaultPort() {
+        return 33350;
     }
 
     /**
@@ -155,6 +144,6 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2023.1.11674";
+    public static final String IRON_PDF_ENGINE_VERSION = "2023.2.4";
 
 }

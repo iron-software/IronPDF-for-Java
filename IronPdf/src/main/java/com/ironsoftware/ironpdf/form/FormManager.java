@@ -90,6 +90,17 @@ public class FormManager {
     }
 
     /**
+     * Set the is read only value of a {@link FormField}
+     *
+     * @param fieldName Fully qualified field name
+     * @param value     is read only
+     */
+    public void setFieldReadOnly(String fieldName, boolean value) {
+        Form_Api.setFormFieldIsReadOnly(internalPdfDocument, fieldName,
+                value);
+    }
+
+    /**
      * Set the font of a {@link TextField}
      *
      * @param textFieldName Fully qualified field name

@@ -15,7 +15,7 @@ public enum FitToPaperModes {
      * <p> Useful when using 'print' CSS media style or printing documents to match the Chrome browser print preview.
      */
 
-    None,
+    Zoom,
 
     /**
      * Fit an exact number of pixels onto each PDF page.

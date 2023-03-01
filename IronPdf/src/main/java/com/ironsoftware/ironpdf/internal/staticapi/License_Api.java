@@ -44,6 +44,9 @@ public final class License_Api {
     }
 
     public static void SetLicensed(String licenseKey) {
+        if(Access.client == null)
+            return;
+
         RpcClient client = Access.ensureConnection();
 
         SetLicenseKeyRequest.Builder req = SetLicenseKeyRequest.newBuilder();

@@ -19,7 +19,7 @@ public class TestMain {
 //            (TestBase.getTestFile("/Data/google.pdf"));
 
             System.out.println("B !" + cc);
-            byte[] cs = PdfDocument_Api.getBytes(cc);
+            byte[] cs = PdfDocument_Api.getBytes(cc,false);
 
             System.out.println("C !" + cs.length);
             PdfDocument_Api.saveAs(cs, "TestOutput/FROM_JAVA.pdf");

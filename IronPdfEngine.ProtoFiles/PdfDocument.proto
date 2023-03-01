@@ -26,3 +26,13 @@ message PdfDocumentConstructorStream {
     optional string owner_password = 2;
   }
 }
+
+message GetBinaryDataRequest{
+    PdfDocument document = 1;
+    bool isIncremental = 2; 
+}
+
+message GetRevisionRequest{
+    PdfDocument document = 1;
+    int32 index = 2; 
+}

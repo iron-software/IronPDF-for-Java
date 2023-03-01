@@ -18,21 +18,31 @@ import java.util.stream.IntStream;
  */
 public final class Image_Api {
 
+    public static class ImageData {
+        byte[] data;
+        String fileExtension;
+
+        public ImageData(byte[] data, String fileExtension) {
+            this.data = data;
+            this.fileExtension = fileExtension;
+        }
+    }
+
     /**
      * Converts multiple image files to a PDF document.  Each image creates 1 page which matches the
      * image dimensions. The default PaperSize is A4. You can set it via {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}
      * Note: Imaging.ImageBehavior.CropPage will set PaperSize equal to ImageSize.
      *
-     * @param imagesBytes   The image file as bytes.
+     * @param imagesData   The {@link ImageData}
      * @param imageBehavior Describes how image should be placed on the PDF page
      * @param renderOptions Rendering options
      * @return the internal pdf document
      */
-    public static InternalPdfDocument imageToPdf(List<byte[]> imagesBytes,
+    public static InternalPdfDocument imageToPdf(List<ImageData> imagesData,
                                                  ImageBehavior imageBehavior, ChromePdfRenderOptions renderOptions) {
         RpcClient client = Access.ensureConnection();
 
-        ImageToPdfRequestStream.Info.Builder info = ImageToPdfRequestStream.Info.newBuilder();
+        ImageFilesToPdfRequestStream.Info.Builder info = ImageFilesToPdfRequestStream.Info.newBuilder();
         info.setRenderOptions(
                 Render_Converter.toProto((renderOptions != null ? renderOptions : new ChromePdfRenderOptions())));
         info.setImageBehavior(Image_Converter.toProto(imageBehavior));
@@ -40,24 +50,25 @@ public final class Image_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<ImageToPdfRequestStream> requestStream =
-                client.stub.pdfDocumentImageImageToPdf(
+        io.grpc.stub.StreamObserver<ImageFilesToPdfRequestStream> requestStream =
+                client.stub.pdfDocumentImageImageFilesToPdf(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        ImageToPdfRequestStream.Builder infoMsg =
-                ImageToPdfRequestStream.newBuilder();
+        ImageFilesToPdfRequestStream.Builder infoMsg =
+                ImageFilesToPdfRequestStream.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
-        for (int imageIndex : IntStream.range(0, imagesBytes.size()).toArray()) {
-            byte[] image = imagesBytes.get(imageIndex);
-            for (Iterator<byte[]> it = Utils_Util.chunk(image); it.hasNext(); ) {
+        for (int imageIndex : IntStream.range(0, imagesData.size()).toArray()) {
+            ImageData imageData = imagesData.get(imageIndex);
+            for (Iterator<byte[]> it = Utils_Util.chunk(imageData.data); it.hasNext(); ) {
                 byte[] chunk = it.next();
-                ImageToPdfRequestStream.Builder msg = ImageToPdfRequestStream.newBuilder();
-                RawImageChunkWithIndex.Builder rawImageChunkWithIndex = RawImageChunkWithIndex.newBuilder();
-                rawImageChunkWithIndex.setRawImageChunk(ByteString.copyFrom(chunk));
-                rawImageChunkWithIndex.setImageIndex(imageIndex);
-                msg.setRawImagesChunk(rawImageChunkWithIndex);
+                ImageFilesToPdfRequestStream.Builder msg = ImageFilesToPdfRequestStream.newBuilder();
+                RawImageChunkWithIndexAndFileType.Builder rawImageFilesChunkWithIndex = RawImageChunkWithIndexAndFileType.newBuilder();
+                rawImageFilesChunkWithIndex.setRawImageChunk(ByteString.copyFrom(chunk));
+                rawImageFilesChunkWithIndex.setImageIndex(imageIndex);
+                rawImageFilesChunkWithIndex.setFileType(imageData.fileExtension);
+                msg.setRawImagesFileChunk(rawImageFilesChunkWithIndex);
                 requestStream.onNext(msg.build());
             }
         }

@@ -15,9 +15,9 @@ public class CompressApiTests extends TestBase {
     @Test
     public final void CompressImages() throws IOException {
         InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/google.pdf"));
-        int originalBytesSize = PdfDocument_Api.getBytes(doc).length;
+        int originalBytesSize = PdfDocument_Api.getBytes(doc,false).length;
         Compress_Api.compressImages(doc, 20, false);
-        int compressedBytesSize = PdfDocument_Api.getBytes(doc).length;
+        int compressedBytesSize = PdfDocument_Api.getBytes(doc,false).length;
 
         Assertions.assertTrue(originalBytesSize > compressedBytesSize);
     }

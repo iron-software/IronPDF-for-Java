@@ -2,6 +2,8 @@ package com.ironsoftware.ironpdf.stamp;
 
 import com.ironsoftware.ironpdf.edit.PageSelection;
 
+import java.awt.*;
+
 /**
  * This allows the user to edit an existing PDF by adding some stamped text. A subclass of
  * {@link Stamper}. Defines a Text PDF Stamper. Can be applied with:
@@ -38,6 +40,17 @@ public class TextStamper extends Stamper {
      * Note: If using a web font from <a href="https://fonts.google.com/">font.google</a> then you must set {@link #setUseGoogleFont} property of this TextStamper to true.
      */
     private String fontFamily = "Arial";
+
+    /**
+     Font Color. Default is '#000000' (Black).
+     */
+    private String fontColorCode = "#000000";
+
+    /**
+     Background Color. Default is '#00FFFFFF' (Transparent).
+     */
+    private String backgroundColorCode = "#00FFFFFF" ;
+
     /**
      * Must be set to true to when using {@link #fontFamily} from <a href="https://fonts.google.com/">font.google</a> as a web
      * font
@@ -209,6 +222,42 @@ public class TextStamper extends Stamper {
      */
     public final void setUseGoogleFont(boolean value) {
         useGoogleFont = value;
+    }
+
+    /**
+     * Gets Font Color. Default is '#000000' (Black).
+     *
+     * @return the font color
+     */
+    public final String getFontColorCode() {
+        return fontColorCode;
+    }
+
+    /**
+     * Sets Font Color. Default is '#000000' (Black).
+     *
+     * @param value font color
+     */
+    public final void setFontColor(String value) {
+        fontColorCode = value;
+    }
+
+    /**
+     * Gets Background Color. Default is '#00FFFFFF' (Transparent).
+     *
+     * @return the font color
+     */
+    public final String getBackgroundColorCode() {
+        return backgroundColorCode;
+    }
+
+    /**
+     * Sets Background Color. Default is '#00FFFFFF' (Transparent).
+     *
+     * @param value font color
+     */
+    public final void setBackgroundColorCode(String value) {
+        backgroundColorCode = value;
     }
 
 }

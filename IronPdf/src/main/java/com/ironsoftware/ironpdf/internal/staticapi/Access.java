@@ -41,7 +41,7 @@ final class Access {
             return client;
         }
 
-        if(!isIronPdfEngineDocker)
+        if (!isIronPdfEngineDocker)
             startServer();
 
         if (channel == null) {
@@ -70,17 +70,20 @@ final class Access {
                 client = newClient;
                 return client;
             case REQUIREDVERSION:
+                //skiped due to known issue in v2022.2.4
+//                logger.error("Mismatch IronPdfEngine version expected: "
+//                        + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
+//                //todo download new Binary
+//                if (!isIronPdfEngineDocker && tryAgain) {
+//                    tryAgain = false;
+//                    stopIronPdfEngine();
+//                    downloadIronPdfEngine();
+//                    Setting_Api.subProcessPort = Setting_Api.getDefaultPort();
+//                    return ensureConnection();
+//                }
+                client = newClient;
+                return client;
 
-                logger.error("Mismatch IronPdfEngine version expected: "
-                        + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
-                //todo download new Binary
-                if (!isIronPdfEngineDocker && tryAgain) {
-                    stopIronPdfEngine();
-                    downloadIronPdfEngine();
-                    Setting_Api.subProcessPort = Setting_Api.findFreePort();
-                    ensureConnection();
-                    tryAgain = false;
-                }
             case EXCEPTION:
                 throw Exception_Converter.fromProto(res_firstTry.getException());
             default:
@@ -209,7 +212,7 @@ final class Access {
                 // * OS kill command
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     shutdownChanel();
-                    logger.info("Killing IronPdfEngine process");
+                    logger.info("Shutdown IronPdfEngine process");
                     proc.destroy();
                 }));
 
@@ -220,8 +223,8 @@ final class Access {
                 ironPdfProcess = proc;
 
             } else {
-                logger.info(
-                        "Cannot find IronPdfEngine from ironpdf working dir:" + Setting_Api.ironPdfEngineWorkingDirectory
+                logger.debug(
+                        "Cannot find IronPdfEngine from ironPdf working dir:" + Setting_Api.ironPdfEngineWorkingDirectory
                                 .toAbsolutePath());
                 if (tryAgain) {
                     downloadIronPdfEngine();
@@ -231,7 +234,8 @@ final class Access {
                 } else {
                     throw new RuntimeException(String.format("Cannot locate IronPdfEngine. at %1$s",
                             Setting_Api.getIronPdfEngineExecutablePath(ironPdfEngineWorkingDirectory)
-                                    .toAbsolutePath()));
+                                    .toAbsolutePath())
+                            + " An alternative approach is to install one of ironpdf-engine packages https://search.maven.org/search?q=ironpdf%20engine, more information: https://github.com/iron-software/IronPDF-for-Java#install-ironpdf-engine-as-a-maven-dependency");
                 }
 
             }
@@ -338,7 +342,7 @@ final class Access {
             }
         } catch (Exception ignored) {
         }
-        logger.info("IronPdfEngine not found at IronPdfEngine working directory: " + binFromWorkingDir.toAbsolutePath());
+        logger.debug("IronPdfEngine not found at IronPdfEngine working directory: " + binFromWorkingDir.toAbsolutePath());
 
         //check for ironpdf-engine package
         try {
@@ -378,7 +382,7 @@ final class Access {
             }
         } catch (Exception ignored) {
         }
-        logger.info("IronPdfEngine not found at: " + "(System.getProperty(\"user.dir\")): " + binFromUserDir.toAbsolutePath());
+        logger.debug("IronPdfEngine not found at: " + "(System.getProperty(\"user.dir\")): " + binFromUserDir.toAbsolutePath());
 
         //backup by look at current dir
         Path binFromCurrentDir = getIronPdfEngineExecutablePath(Paths.get("."));
@@ -389,7 +393,7 @@ final class Access {
             }
         } catch (Exception ignored) {
         }
-        logger.info("IronPdfEngine not found at current dir: " + binFromCurrentDir.toAbsolutePath());
+        logger.debug("IronPdfEngine not found at current dir: " + binFromCurrentDir.toAbsolutePath());
 
 
         return Optional.empty();

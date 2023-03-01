@@ -77,7 +77,7 @@ public class PageApiTests extends TestBase {
         List<PageInfo> pageInfoBefore = Page_Api.getPagesInfo(doc);
         Assertions.assertEquals(PageRotation.NONE, pageInfoBefore.get(0).getPageRotation());
 
-        Page_Api.rotatePage(doc, PageRotation.CLOCKWISE_90);
+        Page_Api.setPageRotation(doc, PageRotation.CLOCKWISE_90);
 
         List<PageInfo> pageInfoAfter = Page_Api.getPagesInfo(doc);
         Assertions.assertEquals(PageRotation.CLOCKWISE_90, pageInfoAfter.get(0).getPageRotation());
