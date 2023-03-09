@@ -173,7 +173,7 @@ public final class Page_Api {
 
     /**
      Resize a page to the specified dimensions (in millimeters)
-
+     @param internalPdfDocument the internal pdf document
      @param pageWidth Desired page width, in millimeters
      @param pageHeight Desired page height, in millimeters
      @param pageIndex Selected page indexes.

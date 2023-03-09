@@ -44,6 +44,7 @@ public class FormManager {
 
     /**
      * Get a collection of the user-editable form fields within a PDF document
+     * @return FormFieldsSet
      */
     public FormFieldsSet getFields() {
 

@@ -30,6 +30,7 @@ public class BookmarkManager {
 
     /**
      * Total number of bookmarks, including all nested bookmarks
+     * @return Bookmarks count
      */
     public final int getCount() {
         return this.getBookmarks().size();
@@ -117,6 +118,7 @@ public class BookmarkManager {
      *
      * @param text      The display text for the link.
      * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param parentBookmarkText bookmark parent text, set empty if bookmark does not have parent.
      * @return a new child bookmark
      */
     public final com.ironsoftware.ironpdf.bookmark.Bookmark addChildBookmark(String text,

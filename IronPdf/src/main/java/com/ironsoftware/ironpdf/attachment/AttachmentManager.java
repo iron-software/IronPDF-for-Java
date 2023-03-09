@@ -25,6 +25,7 @@ public class AttachmentManager {
 
     /**
      * A Collection of file attachment names (keys) contained within this PdfDocument.
+     * @return A list of attachments names
      */
     public final List<String> getAttachments() {
         return Attachment_Api.getPdfAttachmentCollection(
@@ -54,6 +55,7 @@ public class AttachmentManager {
      * Gets attachment data from attachment name
      *
      * @param name Attachment name
+     * @return a attachment data
      */
     public final byte[] getAttachmentData(String name) {
         return Attachment_Api.getPdfAttachmentData(this.internalPdfDocument, name);
