@@ -1498,9 +1498,10 @@ public class PdfDocument implements Printable {
 
 
     /**
-     Creates a copy of this document at the specified revision number. {@link PdfDocument#saveAsRevision}/>
+     Creates a copy of this document at the specified revision number. {@link PdfDocument#saveAsRevision}
 
      @return a {@link PdfDocument} document
+     @param index revision index
      */
     public final PdfDocument getRevision(int index) {
         return new PdfDocument(PdfDocument_Api.getRevision(internalPdfDocument, index));
@@ -1979,6 +1980,7 @@ public class PdfDocument implements Printable {
      *@param renderOptions Rendering options
      *@return
      *A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile, ChromePdfRenderOptions renderOptions) throws IOException {
         return new PdfDocument(Render_Api.renderZipAsPdf(zipFilePath, mainFile, renderOptions, new ChromeHttpLoginCredentials()));
@@ -1994,6 +1996,7 @@ public class PdfDocument implements Printable {
      *@param mainFile Name of the primary HTML file.
      *@return
      *A {@link PdfDocument}
+     * @throws IOException the io exception
      */
     public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile) throws IOException {
         return new PdfDocument(Render_Api.renderZipAsPdf(zipFilePath, mainFile, new ChromePdfRenderOptions(), new ChromeHttpLoginCredentials()));

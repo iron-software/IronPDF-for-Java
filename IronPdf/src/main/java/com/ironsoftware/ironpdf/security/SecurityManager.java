@@ -26,6 +26,7 @@ public class SecurityManager {
      * <p>An owner password enables other security settings. <br>OwnerPassword must be set to a non-empty
      * string value for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
      * AllowUserPrinting, AllowUserEdits to be restricted.</p>
+     * @return owner password
      */
     public final String getOwnerPassword() {
         return Security_Api.getPdfSecurityOptions(internalPdfDocument).getOwnerPassword();
@@ -36,14 +37,16 @@ public class SecurityManager {
      * <p>An owner password enables other security settings. <br>OwnerPassword must be set to a non-empty
      * string value for AllowUserCopyPasteContent, AllowUserAnnotation, AllowUserFormData,
      * AllowUserPrinting, AllowUserEdits to be restricted.</p>
+     * @param ownerPassword
      */
-    public final void setOwnerPassword(String value) {
-        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(value);
+    public final void setOwnerPassword(String ownerPassword) {
+        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(ownerPassword);
     }
 
     /**
      * Gets a Password used to protect and encrypt the PDF File.
      * <p>Setting a password will cause IronPDF to automatically protect the PDF file content using strong 128-bit encryption. </p>
+     * @return password
      */
     public final String getPassword() {
         return Security_Api.getPdfSecurityOptions(internalPdfDocument).getOwnerPassword();
@@ -53,9 +56,10 @@ public class SecurityManager {
      * Sets a Password used to protect and encrypt the PDF File.
      * <p>Setting a password will cause IronPDF to automatically protect the PDF file content using strong 128-bit encryption. </p>
      * <p>Setting the password to null will remove any existing password.</p>
+     * @param password
      */
-    public final void setPassword(String value) {
-        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(value);
+    public final void setPassword(String password) {
+        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(password);
     }
 
     /**
@@ -93,6 +97,7 @@ public class SecurityManager {
     /**
      * Gets the advanced security settings for this PDF document.
      * <p>Allows the developer to control: user access passwords, encryption, and also who may edit, print and copy content from the PDF document</p>
+     * @return SecurityOptions
      */
     public SecurityOptions getCurrentSecurityOptions() {
         return Security_Api.getPdfSecurityOptions(internalPdfDocument);

@@ -58,7 +58,7 @@ public class SignatureManager {
     }
 
     /**
-     * Verifies all the PDF signatures for this PDF document and returns <c>true</c> if there are no invalid
+     * Verifies all the PDF signatures for this PDF document and returns true if there are no invalid
      * signatures.
      * @return true if all digital signatures for this PDF document are currently valid. Editing a PDF document in
      * any way will invalidate signatures.
