@@ -332,6 +332,9 @@ public final class HeaderFooter_Api {
         if(textHeaderFooter.getRightText() != null)
             req.setRightText(textHeaderFooter.getRightText());
 
+        if(textHeaderFooter.getDividerLineColor() != null)
+            req.setDividerLineColor(textHeaderFooter.getDividerLineColor());
+
         req.setDrawDividerLine(textHeaderFooter.isDrawDividerLine());
         req.setFont(FontTypes_Converter.toProto(textHeaderFooter.getFont()));
         req.setFontSize(textHeaderFooter.getFontSize());
@@ -756,6 +759,10 @@ public final class HeaderFooter_Api {
             info.setPdfTitle(pdfTitle);
         if (htmlTitle != null)
             info.setHtmlTitle(htmlTitle);
+
+        if(htmlHeaderFooter.getDividerLineColor() != null)
+            info.setDividerLineColor(htmlHeaderFooter.getDividerLineColor());
+
         info.setDrawDividerLine(htmlHeaderFooter.isDrawDividerLine());
 
         if (pageIndexesToAddFootersTo != null) {

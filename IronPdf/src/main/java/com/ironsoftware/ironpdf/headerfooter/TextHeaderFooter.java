@@ -21,6 +21,9 @@ public class TextHeaderFooter implements Cloneable {
      * of the PDF document.
      */
     private boolean drawDividerLine = false;
+
+    private String dividerLineColorCode = "#b1b1b1";
+
     private FontTypes Font = FontTypes.getArial();
     /**
      * Font size in px.
@@ -82,6 +85,25 @@ public class TextHeaderFooter implements Cloneable {
     public void setDrawDividerLine(boolean value) {
         drawDividerLine = value;
     }
+
+    /**
+     * Gets divider line color code.
+     *
+     * @return the color code
+     */
+    public String getDividerLineColor() {
+        return dividerLineColorCode;
+    }
+
+    /**
+     * Sets divider line color.
+     *
+     * @param colorCode color code
+     */
+    public void setDividerLineColor(String colorCode) {
+        dividerLineColorCode = colorCode;
+    }
+
 
     /**
      * Gets font.

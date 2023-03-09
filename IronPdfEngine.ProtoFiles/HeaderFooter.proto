@@ -28,6 +28,7 @@ message AddTextHeaderFooterRequest{
   optional bool draw_divider_line = 15;
   optional FontType font = 16;
   optional double font_size = 17;
+  optional string divider_line_color = 18;
 }
 
 //we get rid of HtmlHeaderFooter proto msg because it not fully working with stream when steaming html
@@ -52,6 +53,7 @@ message AddHtmlHeaderFooterRequestStream{
     optional string pdfTitle = 12; 
     optional string htmlTitle = 13;
     optional bool draw_divider_line = 14;
+    optional string divider_line_color = 15;
   }
 }
 
