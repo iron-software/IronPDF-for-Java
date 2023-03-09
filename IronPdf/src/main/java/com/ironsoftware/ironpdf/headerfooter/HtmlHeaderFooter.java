@@ -11,6 +11,7 @@ import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
  */
 public class HtmlHeaderFooter implements Cloneable {
 
+    private String dividerLineColorCode = "#b1b1b1";
     private boolean drawDividerLine = false;
     private String baseUrl = null;
     private Integer maxHeight = null;
@@ -55,6 +56,24 @@ public class HtmlHeaderFooter implements Cloneable {
      */
     public void setDrawDividerLine(boolean value) {
         drawDividerLine = value;
+    }
+
+    /**
+     * Gets divider line color code.
+     *
+     * @return the color code
+     */
+    public String getDividerLineColor() {
+        return dividerLineColorCode;
+    }
+
+    /**
+     * Sets divider line color.
+     *
+     * @param colorCode color code
+     */
+    public void setDividerLineColor(String colorCode) {
+        dividerLineColorCode = colorCode;
     }
 
     /**
