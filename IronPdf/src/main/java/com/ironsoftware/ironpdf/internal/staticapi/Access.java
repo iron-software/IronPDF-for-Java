@@ -41,8 +41,9 @@ final class Access {
             return client;
         }
 
-        if (!isIronPdfEngineDocker)
+        if (!isIronPdfEngineDocker) {
             startServer();
+        }
 
         if (channel == null) {
             channel = ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
@@ -68,20 +69,21 @@ final class Access {
         switch (res_firstTry.getResultOrExceptionCase()) {
             case SUCCESS:
                 client = newClient;
+                setLicenseKey();
                 return client;
             case REQUIREDVERSION:
-                //skiped due to known issue in v2022.2.4
-//                logger.error("Mismatch IronPdfEngine version expected: "
-//                        + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
+                logger.error("Mismatch IronPdfEngine version expected: "
+                        + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
 //                //todo download new Binary
-//                if (!isIronPdfEngineDocker && tryAgain) {
-//                    tryAgain = false;
-//                    stopIronPdfEngine();
-//                    downloadIronPdfEngine();
-//                    Setting_Api.subProcessPort = Setting_Api.getDefaultPort();
-//                    return ensureConnection();
-//                }
+                if (!isIronPdfEngineDocker && tryAgain) {
+                    tryAgain = false;
+                    stopIronPdfEngine();
+                    downloadIronPdfEngine();
+                    Setting_Api.subProcessPort = Setting_Api.getDefaultPort();
+                    return ensureConnection();
+                }
                 client = newClient;
+                setLicenseKey();
                 return client;
 
             case EXCEPTION:
@@ -89,6 +91,14 @@ final class Access {
             default:
                 throw new RuntimeException("Unexpected result from handshake");
         }
+    }
+
+    static void setLicenseKey(){
+        //Set License
+        String lk = Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey) ?
+                new ConfigLoader().getProperty("IRONPDF_LICENSE_KEY") : Setting_Api.licenseKey;
+        if(!Utils_StringHelper.isNullOrWhiteSpace(lk))
+            License_Api.SetLicensed(lk);
     }
 
     static synchronized void downloadIronPdfEngine() {
