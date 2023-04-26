@@ -4,7 +4,7 @@ on:
     types: [created]
 jobs:
   publish-ironpdf:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - name: Replace credentials
@@ -47,7 +47,7 @@ jobs:
             IronPdf/target/*.jar      
   publish-ironpdf-engine-pack:
     needs: publish-ironpdf
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - name: Replace linux-x64 version with release tag
