@@ -87,7 +87,7 @@ jobs:
     - name: Install Linux packages
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y fontconfig libturbojpeg libx11-6 libxext6 libxrender1 libglib2.0-dev libnss3 atk1.0 qt-at-spi libatk-bridge2.0-dev libx11-xcb-dev libxcb-dri3-dev libxcomposite-dev libxdamage1 libdrm-dev libxrandr2 libgbm-dev libasound2-dev libpango1.0-dev
+        sudo apt-get install -y fontconfig libturbojpeg libx11-6 libxext6 libxrender1 libglib2.0-dev libnss3 atk1.0 libatk-bridge2.0-dev libx11-xcb-dev libxcb-dri3-dev libxcomposite-dev libxdamage1 libdrm-dev libxrandr2 libgbm-dev libasound2-dev libpango1.0-dev
         sudo apt-get install -y software-properties-common fonts-noto fonts-ancient-scripts gsfonts
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get install -y gcc-9 g++-9
