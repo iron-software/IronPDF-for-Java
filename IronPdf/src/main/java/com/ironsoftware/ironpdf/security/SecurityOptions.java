@@ -250,7 +250,7 @@ public class SecurityOptions {
     }
 
     /**
-     * Gets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password if a
+     * Gets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      *
      * @return the user password
@@ -260,7 +260,7 @@ public class SecurityOptions {
     }
 
     /**
-     * Sets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password if a
+     * Sets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      *
      * @param value the value

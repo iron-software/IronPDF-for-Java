@@ -379,7 +379,7 @@ public class PdfDocument implements Printable {
     /**
      * Creates a new PDF by copying a page from this PdfDocument into a new blank document.
      *
-     * @param PageIndexes An IEnumerable of page indexes to copy into the new PDF.
+     * @param PageIndexes An Iterable of page indexes to copy into the new PDF.
      * @return A new {@link PdfDocument}
      */
     public final PdfDocument copyPages(java.lang.Iterable<Integer> PageIndexes) {

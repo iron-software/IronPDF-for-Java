@@ -33,7 +33,7 @@ public final class Page_Api {
      * document. If the PDF contains form fields the form field in the resulting PDF's name will be
      * appended with '_{index}' e.g. 'Name' will be 'Name_0'
      *
-     * @param pdfDocuments A IEnumerable of PdfDocument.  To merge existing PDF files you may use the                     PdfDocument.FromFile static method in conjunction with Merge.
+     * @param pdfDocuments A List of PdfDocument.  To merge existing PDF files you may use the                     PdfDocument.FromFile static method in conjunction with Merge.
      * @return A new, merged {@link InternalPdfDocument}
      */
     public static InternalPdfDocument mergePage(List<InternalPdfDocument> pdfDocuments) {
@@ -155,7 +155,7 @@ public final class Page_Api {
      * Creates a new PDF by copying a range of pages from this PdfDocument.
      *
      * @param internalPdfDocument the internal pdf document
-     * @param pageIndexes         An IEnumerable of page indexes to copy into the new PDF.
+     * @param pageIndexes         An Iterable of page indexes to copy into the new PDF.
      * @return A new {@link InternalPdfDocument}
      */
     public static InternalPdfDocument copyPage(InternalPdfDocument internalPdfDocument,
