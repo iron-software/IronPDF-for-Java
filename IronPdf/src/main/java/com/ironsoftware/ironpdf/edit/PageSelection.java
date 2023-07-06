@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.edit;
 
 import com.google.common.collect.Lists;
+import com.ironsoftware.ironpdf.internal.staticapi.InternalPageSelection;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Page_Api;
 
@@ -14,9 +15,9 @@ import java.util.stream.IntStream;
  * <p>PageSelection can be used to perform operations on a subset of pages from a PDF document.</p>
  * <p>See: {@link com.ironsoftware.ironpdf.PdfDocument}</p>
  */
-public class PageSelection {
+public class PageSelection extends InternalPageSelection {
 
-    private List<Integer> pagesList = new ArrayList<>();
+
 
     /**
      * Every page of the PDF.
@@ -86,20 +87,7 @@ public class PageSelection {
         return ps;
     }
 
-    /**
-     * Gets page list.
-     *
-     * @param internalPdfDocument the internal pdf document
-     * @return the page list
-     */
-    public List<Integer> getPageList(InternalPdfDocument internalPdfDocument) {
-        return pagesList.stream().map(i->{
-            if(i == -1){
-                return Page_Api.getPagesInfo(internalPdfDocument).size() - 1;
-            }
-            return i;
-        }).collect(Collectors.toList());
-    }
+
 
     /**
      * Sets page list.

@@ -32,7 +32,7 @@ public abstract class Stamper {
      */
     private Length horizontalOffset = new Length();
     /**
-     * The horizontal offset. Default value is 0, and default unit is
+     * The vertical offset. Default value is 0, and default unit is
      * {@link MeasurementUnit#PERCENTAGE}. Value of 0 has no effect. Positive indicates an
      * offset in the downward direction. Negative indicates an offset in the upward direction.
      */

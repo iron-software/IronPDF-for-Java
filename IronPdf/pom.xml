@@ -175,6 +175,8 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <configuration>
+                    <createSourcesJar>true</createSourcesJar>
+                    <shadeSourcesContent>true</shadeSourcesContent>
                     <createDependencyReducedPom>true</createDependencyReducedPom>
                     <filters>
                         <filter>
