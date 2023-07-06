@@ -39,12 +39,12 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          
       - name: Upload JARs to GitHub Release
-        uses: echapmanFromBunnings/upload-release-assets@1.2
+        uses: AButler/upload-release-assets@v2.0
         with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            IronPdf/target/*.jar      
+          files: 'IronPdf/target/*.jar'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}    
   publish-ironpdf-engine-pack:
     needs: publish-ironpdf
     runs-on: ubuntu-20.04
