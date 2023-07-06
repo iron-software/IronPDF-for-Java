@@ -458,8 +458,7 @@ public class PdfDocument implements Printable {
      * @return Returns this PdfDocument object, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument removePages(PageSelection pageSelection) {
-        Page_Api.removePage(internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument));
+        Page_Api.removePage(internalPdfDocument, internalPdfDocument.getPageList(pageSelection));
         return this;
     }
 
@@ -481,7 +480,7 @@ public class PdfDocument implements Printable {
     public final Map<Integer, PageInfo> getPagesInfo(PageSelection pageSelection) {
         List<PageInfo> pagesInfo = Page_Api.getPagesInfo(
                 internalPdfDocument);
-        return pageSelection.getPageList(internalPdfDocument).stream().collect(Collectors.toMap(x -> x, pagesInfo::get));
+        return internalPdfDocument.getPageList(pageSelection).stream().collect(Collectors.toMap(x -> x, pagesInfo::get));
     }
 
     /**
@@ -501,7 +500,7 @@ public class PdfDocument implements Printable {
      */
     public final void rotatePage(PageRotation pageRotation, PageSelection pageSelection) {
         Page_Api.setPageRotation(internalPdfDocument, pageRotation,
-                pageSelection.getPageList(internalPdfDocument));
+                internalPdfDocument.getPageList(pageSelection));
     }
 
     /**
@@ -512,7 +511,7 @@ public class PdfDocument implements Printable {
      @param pageSelection Selected page indexes.
      */
     public final void resizePage(double pageWidth, double pageHeight, PageSelection pageSelection){
-        pageSelection.getPageList(internalPdfDocument).forEach(x->{
+        internalPdfDocument.getPageList(pageSelection).forEach(x->{
             Page_Api.resizePage(internalPdfDocument, pageWidth, pageHeight, x);
         });
     }
@@ -556,7 +555,7 @@ public class PdfDocument implements Printable {
         BackgroundForeground_Api.addBackground(
                 this.internalPdfDocument,
                 backgroundPdf.internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument));
+                internalPdfDocument.getPageList(pageSelection));
         return this;
     }
 
@@ -575,7 +574,7 @@ public class PdfDocument implements Printable {
         BackgroundForeground_Api.addBackground(
                 this.internalPdfDocument,
                 backgroundPdf.internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 backgroundPdfPageIndex);
         return this;
     }
@@ -630,7 +629,7 @@ public class PdfDocument implements Printable {
         BackgroundForeground_Api.addForeground(
                 this.internalPdfDocument,
                 foregroundPdf.internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 foregroundPdfPageIndex);
         return this;
     }
@@ -649,7 +648,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -667,7 +666,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -684,7 +683,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -702,7 +701,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addTextHeader(TextHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addTextHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -719,7 +718,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -737,7 +736,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -754,7 +753,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -772,7 +771,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addTextFooter(TextHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addTextFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getPdfTitle());
@@ -789,7 +788,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -808,7 +807,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -826,7 +825,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -845,7 +844,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addHtmlHeader(HtmlHeaderFooter header, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, header,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -864,7 +863,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -883,7 +882,7 @@ public class PdfDocument implements Printable {
         HeaderFooterOptions headerFooterOptions = new HeaderFooterOptions();
         HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -901,7 +900,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                PageSelection.allPages().getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -920,7 +919,7 @@ public class PdfDocument implements Printable {
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
         HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
-                pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
                 headerFooterOptions.getMarginTopMm(), headerFooterOptions.getMarginBottomMm(),
                 headerFooterOptions.getRenderPdfCssMediaType(), headerFooterOptions.getPdfTitle(),
@@ -940,7 +939,7 @@ public class PdfDocument implements Printable {
      */
     public final void drawImage(Path imagePath, DrawImageOptions option) throws IOException {
         Image_Api.drawImage(internalPdfDocument,
-                Files.readAllBytes(imagePath), option.getPageSelection().getPageList(internalPdfDocument), option.getX(),
+                Files.readAllBytes(imagePath), internalPdfDocument.getPageList(option.getPageSelection()), option.getX(),
                 option.getY(),
                 option.getWidth(), option.getHeight());
     }
@@ -953,7 +952,7 @@ public class PdfDocument implements Printable {
      */
     public final void drawImage(byte[] imageBytes, DrawImageOptions option) {
         Image_Api.drawImage(internalPdfDocument,
-                imageBytes, option.getPageSelection().getPageList(internalPdfDocument), option.getX(), option.getY(),
+                imageBytes, internalPdfDocument.getPageList(option.getPageSelection()), option.getX(), option.getY(),
                 option.getWidth(), option.getHeight());
     }
 
@@ -999,7 +998,7 @@ public class PdfDocument implements Printable {
      */
     public final List<BufferedImage> toBufferedImages(ToImageOptions options, PageSelection pageSelection) throws IOException {
         return Image_Api.pdfToImage(internalPdfDocument,
-                        pageSelection.getPageList(internalPdfDocument),
+                        internalPdfDocument.getPageList(pageSelection),
                         options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight()).stream()
                 .map(bytes -> {
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
@@ -1143,7 +1142,7 @@ public class PdfDocument implements Printable {
             throws IOException {
 
         List<byte[]> dataList = Image_Api.pdfToImage(
-                internalPdfDocument, pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument, internalPdfDocument.getPageList(pageSelection),
                 options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight());
 
         List<String> paths = new ArrayList<>();
@@ -1317,7 +1316,7 @@ public class PdfDocument implements Printable {
             throws IOException {
 
         byte[] tifData = Image_Api.toMultiPageTiff(
-                internalPdfDocument, pageSelection.getPageList(internalPdfDocument),
+                internalPdfDocument, internalPdfDocument.getPageList(pageSelection),
                 options.getDpi(), options.getImageMaxWidth(), options.getImageMaxHeight());
 
         return Files.write(filePath, tifData).toAbsolutePath().toString();
@@ -1418,7 +1417,7 @@ public class PdfDocument implements Printable {
             return new ArrayList<>();
         }
         return Image_Api.extractAllImages(internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument));
+                internalPdfDocument.getPageList(pageSelection));
     }
 
     //endregion
@@ -1618,7 +1617,7 @@ public class PdfDocument implements Printable {
      * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyStamp(Stamper stamper, PageSelection pageSelection) {
-        Stamp_Api.applyStamp(internalPdfDocument, stamper, pageSelection.getPageList(internalPdfDocument));
+        Stamp_Api.applyStamp(internalPdfDocument, stamper, internalPdfDocument.getPageList(pageSelection));
         return this;
     }
 
@@ -1644,7 +1643,7 @@ public class PdfDocument implements Printable {
      */
     public final String extractTextFromPage(PageSelection pageSelection) {
         return Text_Api.extractAllText(internalPdfDocument,
-                pageSelection.getPageList(internalPdfDocument));
+                internalPdfDocument.getPageList(pageSelection));
     }
 
     /**
@@ -1655,7 +1654,7 @@ public class PdfDocument implements Printable {
      * @param newText       New text to add
      */
     public final void replaceText(PageSelection pageSelection, String oldText, String newText) {
-        pageSelection.getPageList(internalPdfDocument).forEach(page -> {
+        internalPdfDocument.getPageList(pageSelection).forEach(page -> {
             Text_Api.replaceTextOnPage(internalPdfDocument, page,
                     oldText, newText);
         });

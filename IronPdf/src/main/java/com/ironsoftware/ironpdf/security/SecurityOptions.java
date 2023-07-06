@@ -63,7 +63,7 @@ public class SecurityOptions {
      */
     private String ownerPassword;
     /**
-     * Sets the user password and enables 128Bit encryption of PDF content. <p>A user password if a
+     * Sets the user password and enables 128Bit encryption of PDF content. <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      */
     private String userPassword;

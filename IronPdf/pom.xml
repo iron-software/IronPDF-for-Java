@@ -109,7 +109,7 @@
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
-                        ${project.basedir}/../IronPdfEngine.ProtoFiles
+                        ${project.basedir}/../../IronPdfEngine.ProtoFiles
                     </protoSourceRoot>
                     <protocArtifact>com.google.protobuf:protoc:3.21.9:exe:${os.detected.classifier}
                     </protocArtifact>
@@ -175,6 +175,8 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <configuration>
+                    <createSourcesJar>true</createSourcesJar>
+                    <shadeSourcesContent>true</shadeSourcesContent>
                     <createDependencyReducedPom>true</createDependencyReducedPom>
                     <filters>
                         <filter>

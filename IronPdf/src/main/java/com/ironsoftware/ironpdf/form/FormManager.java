@@ -39,7 +39,7 @@ public class FormManager {
      * @param pageSelection Selected page indexes. Default is all pages.
      */
     public final void flatten(PageSelection pageSelection) {
-        Form_Api.flattenPdfFrom(internalPdfDocument, pageSelection.getPageList(internalPdfDocument));
+        Form_Api.flattenPdfFrom(internalPdfDocument, internalPdfDocument.getPageList(pageSelection));
     }
 
     /**

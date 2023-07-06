@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 
+import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
 import com.ironsoftware.ironpdf.page.PageInfo;
 
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type Internal pdf document. For users, please use {@link com.ironsoftware.ironpdf.PdfDocument} instead.
@@ -82,5 +84,19 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
         } catch (IOException e) {
             throw new PrinterException(e.getMessage());
         }
+    }
+
+    /**
+     * Gets page list.
+     * @param pageSelection PageSelection
+     * @return the page list
+     */
+    public List<Integer> getPageList(PageSelection pageSelection) {
+        return pageSelection.pagesList.stream().map(i->{
+            if(i == -1){
+                return Page_Api.getPagesInfo(this).size() - 1;
+            }
+            return i;
+        }).collect(Collectors.toList());
     }
 }
