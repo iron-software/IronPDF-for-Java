@@ -91,6 +91,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4.0.0
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3.12.0
+        with:
+          distribution: 'temurin'
+          java-version: '11'
       - name: Replace version with release tag
         run: |
           sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' IronPdf/pom.xml
@@ -105,7 +110,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Build Java doc .jar
-        run: mvn javadoc:jar -Pjavadoc-java11
+        run: mvn javadoc:jar -Pjavadoc-java11 --file IronPdf/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
