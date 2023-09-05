@@ -1,0 +1,151 @@
+﻿syntax = "proto3";
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message EmptyP {}
+
+message HandshakeRequestP {
+  string expectedVersion = 1;
+  optional string prog_lang = 2;
+}
+
+message HandshakeResponseP {
+  oneof result_or_exception {
+    EmptyP success = 1;
+    string requiredVersion = 2;
+    RemoteExceptionP exception = 3;
+  }
+}
+
+// Exceptions
+message RemoteExceptionP {
+  string exception_type = 1;
+  string message = 2;
+  string remote_stack_trace = 3;
+  optional RemoteExceptionP root_exception = 4;
+}
+
+message EmptyResultP {
+  oneof result_or_exception {
+    EmptyP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message BooleanResultP {
+  oneof result_or_exception {
+    bool result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message BytesResultStreamP {
+  oneof result_or_exception {
+    bytes result_chunk = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message IntResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message StringResultP {
+  oneof result_or_exception {
+    string result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message StringDictionaryEntryP {
+  string key = 1;
+  string value = 2;
+}
+
+message StringDictionaryP {
+  repeated StringDictionaryEntryP items = 1;
+}
+
+message StringDictionaryResultP {
+  oneof result_or_exception {
+    StringDictionaryP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message ListStringP {
+  repeated string items = 1;
+}
+
+message ListStringResultP {
+  oneof result_or_exception {
+    ListStringP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message LengthP {
+  double value = 1;
+  MeasurementUnitP unit = 2;
+}
+
+message MeasurementUnitP {
+  int32 enum_value = 1;
+}
+
+message VerticalAlignmentP {
+  int32 enum_value = 1;
+}
+
+message HorizontalAlignmentP {
+  int32 enum_value = 1;
+}
+
+message FontTypeP {
+  int32 id = 1;
+  string name = 2;
+  optional string font_file_path = 3;
+}
+
+message PdfDocumentP {
+  string document_id = 1;
+}
+
+message PdfDocumentResultP {
+  oneof result_or_exception {
+    PdfDocumentP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message RawImageChunkWithIndexAndFileTypeP {
+  int32 image_index = 1;
+  bytes raw_image_chunk = 2;
+  string file_type = 3;
+}
+
+message ImageResultStreamP {
+  oneof result_or_exception {
+    bytes raw_image_chunk = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message ImagesResultStreamP {
+  oneof result_or_exception {
+    RawImageChunkWithIndexP raw_images_chunk = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+//this will contain a part of image data with index of the image.
+//for using this message, you must combine raw_image_chunk with another raw_image_chunk with the same index
+message RawImageChunkWithIndexP {
+  int32 image_index = 1;
+  bytes raw_image_chunk = 2;
+}

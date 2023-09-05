@@ -1,0 +1,73 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumPdfAttachmentCollectionP {
+  repeated string names = 1;
+}
+
+message PdfiumGetPdfAttachmentCountRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetPdfAttachmentCountResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetPdfAttachmentNameRequestP {
+  PdfDocumentP document = 1;
+  int32 index = 2;
+}
+
+message PdfiumGetPdfAttachmentNameResultP {
+  oneof result_or_exception {
+    string result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetPdfAttachmentDataRequestP {
+  PdfDocumentP document = 1;
+  int32 index = 2;
+}
+
+message PdfiumGetPdfAttachmentDataResultStreamP {
+  oneof result_or_exception {
+    bytes result_chunk = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumAddPdfAttachmentRequestP {
+  PdfDocumentP document = 1;
+  string name = 2;
+}
+
+message PdfiumAddPdfAttachmentResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumRemovePdfAttachmentRequestP {
+  PdfDocumentP document = 1;
+  int32 index = 2;
+}
+
+message PdfiumSetPdfAttachmentDataRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes attachment_chunk = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+    int32 index = 2;
+  }
+}

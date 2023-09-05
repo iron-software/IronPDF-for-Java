@@ -1,9 +1,14 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
-import com.ironsoftware.ironpdf.internal.proto.ExtractAllTextRequest;
-import com.ironsoftware.ironpdf.internal.proto.ReplaceTextRequest;
-import com.ironsoftware.ironpdf.internal.proto.StringResult;
+import com.ironsoftware.ironpdf.edit.PageSelection;
+import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumExtractAllTextRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumReplaceTextRequestP;
+import com.ironsoftware.ironpdf.internal.proto.StringResultP;
+import com.ironsoftware.ironpdf.page.PageInfo;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type Text api.
@@ -18,7 +23,7 @@ public final class Text_Api {
      * @return All text in the PDF as a string.
      */
     public static String extractAllText(InternalPdfDocument internalPdfDocument) {
-        return extractAllText(internalPdfDocument, null);
+        return extractAllText(internalPdfDocument, internalPdfDocument.getPageList(PageSelection.allPages()));
     }
 
 
@@ -31,19 +36,20 @@ public final class Text_Api {
      * @return All text in the PDF as a string.
      */
     public static String extractAllText(InternalPdfDocument internalPdfDocument,
-                                        Iterable<Integer> pageIndexes) {
+                                        List<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
 
-        ExtractAllTextRequest.Builder req = ExtractAllTextRequest.newBuilder();
+        PdfiumExtractAllTextRequestP.Builder req = PdfiumExtractAllTextRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        if (pageIndexes != null) {
-            req.addAllPageIndexes(pageIndexes);
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
         }
+        req.addAllPageIndexes(pageIndexes);
 
-        StringResult res = client.blockingStub.pdfDocumentTextExtractAllText(req.build());
+        StringResultP res = client.blockingStub.pdfiumTextExtractAllText(req.build());
 
-        if (res.getResultOrExceptionCase() == StringResult.ResultOrExceptionCase.EXCEPTION) {
+        if (res.getResultOrExceptionCase() == StringResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
         }
 
@@ -62,13 +68,13 @@ public final class Text_Api {
                                          String oldText, String newText) {
         RpcClient client = Access.ensureConnection();
 
-        ReplaceTextRequest.Builder req = ReplaceTextRequest.newBuilder();
+        PdfiumReplaceTextRequestP.Builder req = PdfiumReplaceTextRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageIndex(pageIndex);
         req.setCurrentText(oldText);
         req.setNewText(newText);
 
-        EmptyResult res = client.blockingStub.pdfDocumentTextReplaceText(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumTextReplaceText(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

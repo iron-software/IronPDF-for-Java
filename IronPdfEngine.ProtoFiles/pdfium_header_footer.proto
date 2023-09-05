@@ -1,0 +1,18 @@
+syntax = "proto3";
+package ironpdfengineproto;
+
+import "chrome_render.proto";
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumAddTextHeaderFooterRequestP {
+  PdfDocumentP document = 1;
+  ChromePdfRenderOptionsP options = 2;
+  repeated int32 page_indexes = 3;
+  string url = 4;
+  string html_title = 5;
+  string pdf_title = 6;
+}
+

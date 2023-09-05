@@ -49,7 +49,7 @@ public class FormApiTests extends TestBase {
     @Test
     public final void SetFieldValueTest() throws IOException {
         InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
-        Form_Api.setFieldValue(doc, "fname", "myFirstName");
+        Form_Api.setFieldValue(doc, 0, "myFirstName");
         List<FormField> form = Form_Api.getFields(doc);
         Assertions.assertEquals(2, form.size());
         Assertions.assertTrue(

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The type Attachment api.
@@ -23,18 +24,25 @@ public final class Attachment_Api {
     public static List<String> getPdfAttachmentCollection(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
-        GetPdfAttachmentCollectionRequest.Builder req = GetPdfAttachmentCollectionRequest.newBuilder();
-        req.setDocument(internalPdfDocument.remoteDocument);
+        PdfiumGetPdfAttachmentCountResultP countResultP = client.blockingStub.pdfiumAttachmentGetPdfAttachmentCount(PdfiumGetPdfAttachmentCountRequestP.newBuilder().setDocument(internalPdfDocument.remoteDocument).build());
 
-        GetPdfAttachmentCollectionResult res = client.blockingStub.pdfDocumentAttachmentGetPdfAttachmentCollection(
-                req.build());
-
-        if (res.getResultOrExceptionCase()
-                == GetPdfAttachmentCollectionResult.ResultOrExceptionCase.EXCEPTION) {
-            throw Exception_Converter.fromProto(res.getException());
+        if (countResultP.hasException()) {
+            throw Exception_Converter.fromProto(countResultP.getException());
         }
 
-        return res.getResult().getNamesList();
+        return IntStream.range(0, countResultP.getResult()).mapToObj(attachmentIndex -> {
+            PdfiumGetPdfAttachmentNameRequestP.Builder req = PdfiumGetPdfAttachmentNameRequestP.newBuilder();
+            req.setDocument(internalPdfDocument.remoteDocument);
+            req.setIndex(attachmentIndex);
+            PdfiumGetPdfAttachmentNameResultP res = client.blockingStub.pdfiumAttachmentGetPdfAttachmentName(
+                    req.build());
+
+            if (res.getResultOrExceptionCase()
+                    == PdfiumGetPdfAttachmentNameResultP.ResultOrExceptionCase.EXCEPTION) {
+                throw Exception_Converter.fromProto(res.getException());
+            }
+            return res.getResult();
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -45,16 +53,34 @@ public final class Attachment_Api {
      * @return the byte [ ]
      */
     public static byte[] getPdfAttachmentData(InternalPdfDocument internalPdfDocument, String name) {
+
+        int index = getPdfAttachmentCollection(internalPdfDocument).indexOf(name);
+
+        if (index == -1) {
+            throw new RuntimeException(String.format("not found Attachment name: %s", name));
+        }
+
+        return getPdfAttachmentData(internalPdfDocument, index);
+    }
+
+    /**
+     * Gets attachment data from attachment index
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param index               Attachment index
+     * @return the byte [ ]
+     */
+    public static byte[] getPdfAttachmentData(InternalPdfDocument internalPdfDocument, int index) {
         RpcClient client = Access.ensureConnection();
 
-        GetPdfAttachmentDataRequest.Builder req = GetPdfAttachmentDataRequest.newBuilder();
+        PdfiumGetPdfAttachmentDataRequestP.Builder req = PdfiumGetPdfAttachmentDataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
-        req.setName(name);
+        req.setIndex(index);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        List<GetPdfAttachmentDataResultStream> msgChunks = new ArrayList<>();
+        List<PdfiumGetPdfAttachmentDataResultStreamP> msgChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentAttachmentGetPdfAttachmentData(req.build(),
+        client.stub.pdfiumAttachmentGetPdfAttachmentData(req.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch,
                         msgChunks));
 
@@ -62,7 +88,7 @@ public final class Attachment_Api {
 
         List<byte[]> bytesChunks = msgChunks.stream().map(res -> {
                     if (res.getResultOrExceptionCase()
-                            == GetPdfAttachmentDataResultStream.ResultOrExceptionCase.EXCEPTION) {
+                            == PdfiumGetPdfAttachmentDataResultStreamP.ResultOrExceptionCase.EXCEPTION) {
                         throw Exception_Converter.fromProto(res.getException());
                     }
                     return res.getResultChunk().toByteArray();
@@ -83,28 +109,36 @@ public final class Attachment_Api {
                                         byte[] attachmentBytes) {
         RpcClient client = Access.ensureConnection();
 
+        PdfiumAddPdfAttachmentResultP addPdfAttachmentResultP = client.blockingStub.pdfiumAttachmentAddPdfAttachment(PdfiumAddPdfAttachmentRequestP.newBuilder().setDocument(internalPdfDocument.remoteDocument).setName(name).build());
+
+        if (addPdfAttachmentResultP.hasException()) {
+            throw Exception_Converter.fromProto(addPdfAttachmentResultP.getException());
+        }
+
+        int attachmentIndex = addPdfAttachmentResultP.getResult();
+
         //for checking that the response stream is finished
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
+        ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<AddPdfAttachmentRequestStream> requestStream =
-                client.stub.pdfDocumentAttachmentAddPdfAttachment(
+        io.grpc.stub.StreamObserver<PdfiumSetPdfAttachmentDataRequestStreamP> requestStream =
+                client.stub.pdfiumAttachmentSetPdfAttachmentData(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        AddPdfAttachmentRequestStream.Info.Builder info = AddPdfAttachmentRequestStream.Info.newBuilder();
+        PdfiumSetPdfAttachmentDataRequestStreamP.InfoP.Builder info = PdfiumSetPdfAttachmentDataRequestStreamP.InfoP.newBuilder();
         info.setDocument(internalPdfDocument.remoteDocument);
-        info.setName(name);
+        info.setIndex(attachmentIndex);
 
         // sending request
-        AddPdfAttachmentRequestStream.Builder infoMsg = AddPdfAttachmentRequestStream.newBuilder();
+        PdfiumSetPdfAttachmentDataRequestStreamP.Builder infoMsg = PdfiumSetPdfAttachmentDataRequestStreamP.newBuilder();
 
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
         for (Iterator<byte[]> it = Utils_Util.chunk(attachmentBytes); it.hasNext(); ) {
             byte[] bytes = it.next();
-            AddPdfAttachmentRequestStream.Builder attachmentDataMsg = AddPdfAttachmentRequestStream.newBuilder();
+            PdfiumSetPdfAttachmentDataRequestStreamP.Builder attachmentDataMsg = PdfiumSetPdfAttachmentDataRequestStreamP.newBuilder();
 
             attachmentDataMsg.setAttachmentChunk(ByteString.copyFrom(bytes));
             requestStream.onNext(attachmentDataMsg.build());
@@ -118,6 +152,7 @@ public final class Attachment_Api {
         Utils_Util.handleEmptyResultChunks(resultChunks);
     }
 
+
     /**
      * Remove attachment by attachment name
      *
@@ -125,13 +160,29 @@ public final class Attachment_Api {
      * @param name                Attachment name
      */
     public static void removePdfAttachment(InternalPdfDocument internalPdfDocument, String name) {
+        int index = getPdfAttachmentCollection(internalPdfDocument).indexOf(name);
+
+        if (index == -1) {
+            throw new RuntimeException(String.format("not found Attachment name: %s", name));
+        }
+
+        removePdfAttachment(internalPdfDocument, index);
+    }
+
+    /**
+     * Remove attachment by attachment index
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param index               Attachment index
+     */
+    public static void removePdfAttachment(InternalPdfDocument internalPdfDocument, int index) {
         RpcClient client = Access.ensureConnection();
 
-        RemovePdfAttachmentRequest.Builder req = RemovePdfAttachmentRequest.newBuilder();
+        PdfiumRemovePdfAttachmentRequestP.Builder req = PdfiumRemovePdfAttachmentRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
-        req.setName(name);
+        req.setIndex(index);
 
-        EmptyResult res = client.blockingStub.pdfDocumentAttachmentRemovePdfAttachment(
+        EmptyResultP res = client.blockingStub.pdfiumAttachmentRemovePdfAttachment(
                 req.build());
 
         Utils_Util.handleEmptyResult(res);

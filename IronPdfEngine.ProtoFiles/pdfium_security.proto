@@ -1,0 +1,47 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumRemovePasswordsAndEncryptionRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumPdfSecuritySettingsP
+{
+  PdfiumPdfDocumentPermissionsP permissions = 1;
+  string owner_password = 2;
+  string user_password = 3;
+}
+
+message PdfiumSetPdfSecuritySettingsRequestP {
+  PdfDocumentP document = 1;
+  PdfiumPdfSecuritySettingsP settings = 2;
+}
+
+message PdfiumGetPdfSecuritySettingsRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetPdfSecuritySettingsResultP {
+  oneof result_or_exception{
+    PdfiumPdfSecuritySettingsP security_settings = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumPdfEditSecurityP {
+  int32 enum_value = 1;
+}
+    
+message PdfiumPdfPrintSecurityP {
+  int32 enum_value = 1;
+}
+
+message PdfiumPdfDocumentPermissionsP {
+  int32 enum_value = 1;
+}
+
+

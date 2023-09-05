@@ -3,8 +3,10 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.form.FormField;
 import com.ironsoftware.ironpdf.internal.proto.*;
+import com.ironsoftware.ironpdf.page.PageInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type Form api.
@@ -20,11 +22,11 @@ public final class Form_Api {
     public static List<FormField> getFields(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
-        GetFormRequest.Builder request = GetFormRequest.newBuilder();
+        PdfiumGetFormRequestP.Builder request = PdfiumGetFormRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
 
-        GetFormResult response = client.blockingStub.pdfDocumentFormGetForm(request.build());
-        if (response.getResultOrExceptionCase() == GetFormResult.ResultOrExceptionCase.EXCEPTION) {
+        PdfiumGetFormResultP response = client.blockingStub.pdfiumFormGetForm(request.build());
+        if (response.getResultOrExceptionCase() == PdfiumGetFormResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(response.getException());
         }
 
@@ -36,36 +38,42 @@ public final class Form_Api {
      *
      * @param internalPdfDocument the internal pdf document
      * @param currentFieldName    current fully qualified field name
-     * @param newFieldName        new partial field name Please use a fully qualified field name for                         CurrentFieldName, and a partial field name for NewFieldName
+     * @param newFieldName        new partial field name Please use a fully qualified field name for
+     *                            CurrentFieldName, and a partial field name for NewFieldName
+     * @return newFieldName;
      */
-    public static void renameField(InternalPdfDocument internalPdfDocument, String currentFieldName,
+    public static String renameField(InternalPdfDocument internalPdfDocument, String currentFieldName,
                                    String newFieldName) {
         RpcClient client = Access.ensureConnection();
 
-        RenameFieldRequest.Builder request = RenameFieldRequest.newBuilder();
+        PdfiumRenameFieldRequestP.Builder request = PdfiumRenameFieldRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setCurrentFieldName(currentFieldName);
         request.setNewFieldName(newFieldName);
-        EmptyResult response = client.blockingStub.pdfDocumentFormRenameField(
+        PdfiumRenameFormFieldResultP response = client.blockingStub.pdfiumFormRenameField(
                 request.build());
-        Utils_Util.handleEmptyResult(response);
+        if (response.getResultOrExceptionCase() == PdfiumRenameFormFieldResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(response.getException());
+        }
+
+        return response.getResult();
     }
 
     /**
      * Set the value of a {@link FormField}
      *
      * @param internalPdfDocument the internal pdf document
-     * @param fieldName           fully qualified field name
+     * @param annotationIndex     fully qualified field annotationIndex
      * @param value               new value
      */
-    public static void setFieldValue(InternalPdfDocument internalPdfDocument, String fieldName, String value) {
+    public static void setFieldValue(InternalPdfDocument internalPdfDocument, int annotationIndex, String value) {
         RpcClient client = Access.ensureConnection();
 
-        SetFromFieldValueRequest.Builder request = SetFromFieldValueRequest.newBuilder();
+        PdfiumSetFormFieldValueRequestP.Builder request = PdfiumSetFormFieldValueRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
-        request.setFieldName(fieldName);
+        request.setAnnotationIndex(annotationIndex);
         request.setFormFieldValue(value);
-        EmptyResult response = client.blockingStub.pdfDocumentFormSetFieldValue(
+        EmptyResultP response = client.blockingStub.pdfiumFormSetFieldValue(
                 request.build());
         Utils_Util.handleEmptyResult(response);
     }
@@ -83,12 +91,12 @@ public final class Form_Api {
                                         FontTypes font, int fontSize) {
         RpcClient client = Access.ensureConnection();
 
-        SetFromFieldFontRequest.Builder request = SetFromFieldFontRequest.newBuilder();
+        PdfiumSetFormFieldFontRequestP.Builder request = PdfiumSetFormFieldFontRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setFieldName(textFieldName);
         request.setFontType(FontTypes_Converter.toProto(font));
         request.setFontSize(fontSize);
-        EmptyResult response = client.blockingStub.pdfDocumentFormSetFieldFont(
+        EmptyResultP response = client.blockingStub.pdfiumFormSetFieldFont(
                 request.build());
         Utils_Util.handleEmptyResult(response);
     }
@@ -109,16 +117,18 @@ public final class Form_Api {
      * @param internalPdfDocument the internal pdf document
      * @param pageIndexes         page indexes to flatten (defaults to all pages)
      */
-    public static void flattenPdfFrom(InternalPdfDocument internalPdfDocument, Iterable<Integer> pageIndexes) {
+    public static void flattenPdfFrom(InternalPdfDocument internalPdfDocument, List<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
 
-        FlattenFormRequest.Builder req = FlattenFormRequest.newBuilder();
+        PdfiumFlattenFormRequestP.Builder req = PdfiumFlattenFormRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
-        if (pageIndexes != null) {
-            req.addAllPageIndexes(pageIndexes);
-        }
 
-        EmptyResult res = client.blockingStub.pdfDocumentFormFlattenForm(req.build());
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
+        }
+        req.addAllPageIndexes(pageIndexes);
+
+        EmptyResultP res = client.blockingStub.pdfiumFormFlattenForm(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -126,18 +136,18 @@ public final class Form_Api {
      * Sets text field font.
      *
      * @param internalPdfDocument the internal pdf document
-     * @param formFieldName       the form field name
+     * @param annotationIndex      the form field annotation Index
      * @param isReadOnly          the read only value
      */
-    public static void setFormFieldIsReadOnly(InternalPdfDocument internalPdfDocument, String formFieldName,
+    public static void setFormFieldIsReadOnly(InternalPdfDocument internalPdfDocument, int annotationIndex,
                                         boolean isReadOnly) {
         RpcClient client = Access.ensureConnection();
 
-        SetFormFieldIsReadOnlyRequest.Builder request = SetFormFieldIsReadOnlyRequest.newBuilder();
+        PdfiumSetFormFieldIsReadOnlyRequestP.Builder request = PdfiumSetFormFieldIsReadOnlyRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
-        request.setFieldName(formFieldName);
+        request.setAnnotationIndex(annotationIndex);
         request.setIsReadOnly(isReadOnly);
-        EmptyResult response = client.blockingStub.pdfDocumentFormSetFormFieldIsReadOnly(
+        EmptyResultP response = client.blockingStub.pdfiumFormSetFormFieldIsReadOnly(
                 request.build());
         Utils_Util.handleEmptyResult(response);
     }

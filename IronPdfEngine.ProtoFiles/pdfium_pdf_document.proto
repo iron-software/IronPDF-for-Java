@@ -1,0 +1,95 @@
+﻿syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumFontNamesP
+{
+  repeated string value = 1;
+}
+
+message PdfiumGetFontNamesResultP {
+  oneof result_or_exception {
+    PdfiumFontNamesP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetFontNamesRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumPdfDocumentConstructorStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+  message InfoP {
+    optional string user_password = 1;
+    optional string owner_password = 2;
+    optional bool track_changes = 3;
+  }
+}
+message PdfiumConvertToPdfARequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes icc_bytes_chunk = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+  }
+}
+message PdfiumConvertToPdfUARequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetPaperSizePresetRequestP {
+  string name = 1;
+}
+
+message PdfiumPaperSizePresetP {
+  double width = 1;
+  double height = 2;
+}
+
+message PdfiumGetPaperSizePresetResultP {
+  oneof result_or_exception {
+    PdfiumPaperSizePresetP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumRawSignatureChunkWithIndexP {
+  int32 signature_index = 1;
+  bytes raw_signature_chunk = 2;
+}
+
+message PdfiumPdfSignatureP {
+  int32 index = 1;
+  string timestamp_url = 2;
+  string password = 3;
+}
+
+message PdfiumPdfSignatureCollectionP {
+  repeated PdfiumPdfSignatureP signature = 1;
+}
+
+message PdfiumGetBinaryDataRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    PdfiumPdfSignatureCollectionP signatures = 2;
+    PdfiumRawSignatureChunkWithIndexP raw_signatures_chunk = 3;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+    bool isIncremental = 2;
+    bool isWatermarked = 3;
+  }
+}
+
+message PdfiumGetRevisionRequestP {
+  PdfDocumentP document = 1;
+  int32 index = 2;
+}

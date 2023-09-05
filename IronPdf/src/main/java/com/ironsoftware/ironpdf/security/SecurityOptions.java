@@ -61,12 +61,12 @@ public class SecurityOptions {
      * {@link SecurityOptions#setAllowUserFormData(Boolean)} and
      * {@link SecurityOptions#setAllowUserEdits(PdfEditSecurity)} to be restricted.</p>
      */
-    private String ownerPassword;
+    private String ownerPassword = "";
     /**
      * Sets the user password and enables 128Bit encryption of PDF content. <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      */
-    private String userPassword;
+    private String userPassword = "";
 
     /**
      * Instantiates a new Security options. A class defining user security settings for a PDF document. <p>Allows the developer to control

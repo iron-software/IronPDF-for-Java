@@ -73,6 +73,29 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>javadoc-java11</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <configuration>
+                            <source>11</source>
+                            <finalName>ironpdf-please-replace-version-javadoc-java11</finalName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -105,13 +128,13 @@
             <plugin>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <configuration>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.56.1:exe:${os.detected.classifier}
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.57.2:exe:${os.detected.classifier}
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
                         ${project.basedir}/../IronPdfEngine.ProtoFiles
                     </protoSourceRoot>
-                    <protocArtifact>com.google.protobuf:protoc:3.21.9:exe:${os.detected.classifier}
+                    <protocArtifact>com.google.protobuf:protoc:3.22.3:exe:${os.detected.classifier}
                     </protocArtifact>
                 </configuration>
                 <executions>
@@ -233,18 +256,20 @@
         <dependency>
             <artifactId>grpc-netty-shaded</artifactId>
             <groupId>io.grpc</groupId>
-            <scope>runtime</scope>
-            <version>1.56.1</version>
+            <version>1.57.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>grpc-protobuf</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.56.1</version>
+            <version>1.57.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>grpc-stub</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.56.1</version>
+            <version>1.57.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>javax.annotation-api</artifactId>

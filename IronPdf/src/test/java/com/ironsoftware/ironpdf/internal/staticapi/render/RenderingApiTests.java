@@ -32,8 +32,7 @@ public class RenderingApiTests extends TestBase {
         ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
         tempVar.setPaperSize(PaperSize.A2);
 
-        InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", "",
-                tempVar);
+        InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", tempVar);
         List<PageInfo> info = Page_Api.getPagesInfo(doc);
         Assertions.assertEquals(1, info.size());
         Assertions.assertEquals(420, info.get(0).getWidth(), 1);

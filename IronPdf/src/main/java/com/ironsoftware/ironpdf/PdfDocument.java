@@ -373,18 +373,18 @@ public class PdfDocument implements Printable {
      * @return A new {@link PdfDocument}
      */
     public final PdfDocument copyPage(int PageIndex) {
-        return copyPages(new ArrayList<>(Collections.singletonList(PageIndex)));
+        return copyPages(PageSelection.singlePage(PageIndex));
     }
 
     /**
      * Creates a new PDF by copying a page from this PdfDocument into a new blank document.
      *
-     * @param PageIndexes An Iterable of page indexes to copy into the new PDF.
+     * @param pageSelection The selected page index(es). Default is all pages.
      * @return A new {@link PdfDocument}
      */
-    public final PdfDocument copyPages(java.lang.Iterable<Integer> PageIndexes) {
+    public final PdfDocument copyPages(PageSelection pageSelection) {
         return new PdfDocument(
-                Page_Api.copyPage(internalPdfDocument, PageIndexes));
+                Page_Api.copyPage(internalPdfDocument, internalPdfDocument.getPageList(pageSelection)));
     }
 
     /**
@@ -395,12 +395,7 @@ public class PdfDocument implements Printable {
      * @return A new {@link PdfDocument}
      */
     public final PdfDocument copyPages(int StartIndex, int EndIndex) {
-        ArrayList<Integer> pageIndexes = new ArrayList<>();
-        for (int i = StartIndex; i <= EndIndex; i++) {
-            pageIndexes.add(i);
-        }
-
-        return copyPages(pageIndexes);
+        return copyPages(PageSelection.pageRange(StartIndex, EndIndex));
     }
 
     /**
@@ -1497,13 +1492,13 @@ public class PdfDocument implements Printable {
 
 
     /**
-     Creates a copy of this document at the specified revision number. {@link PdfDocument#saveAsRevision}
+     Saves the PDF as byte array at the specified revision number. {@link PdfDocument#saveAsRevision}
 
      @return a {@link PdfDocument} document
      @param index revision index
      */
-    public final PdfDocument getRevision(int index) {
-        return new PdfDocument(PdfDocument_Api.getRevision(internalPdfDocument, index));
+    public final byte[] getRevision(int index) {
+        return PdfDocument_Api.getRevision(internalPdfDocument, index);
     }
 
     //endregion
@@ -1617,7 +1612,7 @@ public class PdfDocument implements Printable {
      * @return Returns this {@link PdfDocument}, allowing for a 'fluent'  chained in-line code style
      */
     public final PdfDocument applyStamp(Stamper stamper, PageSelection pageSelection) {
-        Stamp_Api.applyStamp(internalPdfDocument, stamper, internalPdfDocument.getPageList(pageSelection));
+        Stamp_Api.applyStamp(internalPdfDocument, stamper, internalPdfDocument.getPageInfoList(pageSelection));
         return this;
     }
 
@@ -1717,7 +1712,7 @@ public class PdfDocument implements Printable {
                                                   String baseUrl,
                                                   ChromePdfRenderOptions renderOptions,
                                                   ChromeHttpLoginCredentials loginCredentials) throws IOException {
-        return new PdfDocument(Render_Api.renderHtmlFileAsPdf(htmlFilePath, baseUrl, renderOptions, loginCredentials));
+        return new PdfDocument(Render_Api.renderHtmlFileAsPdf(htmlFilePath, renderOptions, loginCredentials));
     }
 
     /**
@@ -1835,55 +1830,35 @@ public class PdfDocument implements Printable {
     /**
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
-     * @param html             The Html to be rendered as a PDF.
-     * @param renderOptions    Rendering options
-     * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
-     * @return A {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdf(String html,
-                                              ChromePdfRenderOptions renderOptions,
-                                              ChromeHttpLoginCredentials loginCredentials,
-                                              String baseUrl) {
-        return new PdfDocument(Render_Api.renderHtmlAsPdf(html, renderOptions, loginCredentials, baseUrl));
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
-     *
      * @param html The Html to be rendered as a PDF.
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html) {
-        return renderHtmlAsPdf(html, null, null, null);
+        return renderHtmlAsPdf(html, null, null);
     }
 
     /**
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html             The Html to be rendered as a PDF.
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
-                                              String baseUrl,
                                               ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, null, loginCredentials, baseUrl);
+        return renderHtmlAsPdf(html, null, loginCredentials);
     }
 
     /**
      * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
      *
      * @param html          The Html to be rendered as a PDF.
-     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL                      context for hyperlinks, images, CSS and JavaScript files.
      * @param renderOptions Rendering options
      * @return A {@link PdfDocument}
      */
     public static PdfDocument renderHtmlAsPdf(String html,
-                                              String baseUrl,
                                               ChromePdfRenderOptions renderOptions) {
-        return renderHtmlAsPdf(html, renderOptions, null, baseUrl);
+        return renderHtmlAsPdf(html, renderOptions, null);
     }
 
     /**
@@ -1897,43 +1872,7 @@ public class PdfDocument implements Printable {
     public static PdfDocument renderHtmlAsPdf(String html,
                                               ChromePdfRenderOptions renderOptions,
                                               ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, renderOptions, loginCredentials, null);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
-     *
-     * @param html    The Html to be rendered as a PDF.
-     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL                context for hyperlinks, images, CSS and JavaScript files.
-     * @return A {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdf(String html,
-                                              String baseUrl) {
-        return renderHtmlAsPdf(html, null, null, baseUrl);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
-     *
-     * @param html             The Html to be rendered as a PDF.
-     * @param loginCredentials Http login credentials
-     * @return A {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdf(String html,
-                                              ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, null, loginCredentials, null);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link PdfDocument}.
-     *
-     * @param html          The Html to be rendered as a PDF.
-     * @param renderOptions Rendering options
-     * @return A {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdf(String html,
-                                              ChromePdfRenderOptions renderOptions) {
-        return renderHtmlAsPdf(html, renderOptions, null, null);
+        return new PdfDocument(Render_Api.renderHtmlAsPdf(html, renderOptions, loginCredentials));
     }
 
     /**

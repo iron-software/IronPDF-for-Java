@@ -1,0 +1,18 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumLayerModesP {
+  int32 enum_value = 1;
+}
+
+message PdfiumAddBackgroundForegroundRequestP {
+  PdfDocumentP destination_pdf = 1;
+  PdfDocumentP source_pdf = 2;
+  PdfiumLayerModesP layer_mode = 3;
+  repeated int32 dest_page_indices = 4;
+  int32 src_page_index = 5;
+}

@@ -29,7 +29,7 @@ public class ImageApiTests extends TestBase {
     @Test
     public final void DrawBitmapTest() throws IOException {
         InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
-        Image_Api.drawImage(doc, Files.readAllBytes(Paths.get(getTestFile("/Data/iron.jpg"))),
+        Image_Api.drawImage(doc, Files.readAllBytes(Paths.get(getTestFile("/Data/deer.bmp"))),
                 Collections.singletonList(0), 10, 10, 10, 10);
         byte[] image = Image_Api.extractAllImages(doc, Collections.singletonList(0)).get(0);
         Assertions.assertNotEquals(Color.WHITE, GetAvgColor(image));

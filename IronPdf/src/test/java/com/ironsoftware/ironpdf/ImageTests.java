@@ -25,8 +25,8 @@ public class ImageTests extends TestBase {
     public final void DrawBitmapTest() throws IOException {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
 
-        DrawImageOptions options = new DrawImageOptions(10, 10, 10, 10, PageSelection.firstPage());
-        doc.drawImage(getTestPath("/Data/iron.jpg"), options);
+        DrawImageOptions options = new DrawImageOptions(10, 10, 10, 10, PageSelection.firstPage());;
+        doc.drawImage(getTestPath("/Data/deer.bmp"), options);
         byte[] image = toByteArray(doc.extractAllImages().get(0));
         Assertions.assertNotEquals(Color.WHITE, GetAvgColor(image));
     }

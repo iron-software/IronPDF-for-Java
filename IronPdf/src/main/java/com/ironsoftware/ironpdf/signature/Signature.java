@@ -12,6 +12,8 @@ import java.time.Instant;
  */
 public class Signature {
 
+    int internalIndex = -1;
+
     private byte[] certificateRawData;
 
     /**
@@ -256,6 +258,13 @@ public class Signature {
      */
     public void setTimeStampUrl(String timeStampUrl) {
         this.timeStampUrl = timeStampUrl;
+    }
+
+    /**
+     * Internal using only
+     */
+    public int getInternalIndex() {
+        return internalIndex;
     }
 
 }

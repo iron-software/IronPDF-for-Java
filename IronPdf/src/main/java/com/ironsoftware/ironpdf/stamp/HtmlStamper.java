@@ -1,5 +1,7 @@
 package com.ironsoftware.ironpdf.stamp;
 
+import com.ironsoftware.ironpdf.render.WaitFor;
+
 import java.nio.file.Path;
 
 /**
@@ -9,12 +11,9 @@ import java.nio.file.Path;
  */
 public class HtmlStamper extends Stamper {
 
-    /**
-     * Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, WebFonts, Ajax or animations.
-     * <p>Default value is 0.</p>
-     */
+    @Deprecated
     private int renderDelay = 0;
+
     /**
      * Render timeout in seconds <p>Default value is 60.</p>
      */
@@ -85,26 +84,21 @@ public class HtmlStamper extends Stamper {
     }
 
     /**
-     * Gets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, WebFonts, Ajax or animations.
-     * <p>Default value is 0.</p>
-     *
-     * @return the render delay
+     * @deprecated use {@link #getWaitFor} instead
      */
+    @Deprecated
     public final int getRenderDelay() {
         return renderDelay;
     }
 
     /**
-     * Sets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, WebFonts, Ajax or animations.
-     * <p>Default value is 0.</p>
-     *
-     * @param value the value
+     * @deprecated use {@link #setWaitFor} instead
      */
+    @Deprecated
     public final void setRenderDelay(int value) {
         renderDelay = value;
     }
+
 
     /**
      * Gets timeout. Render timeout in seconds <p>Default value is 60.</p>
@@ -147,7 +141,6 @@ public class HtmlStamper extends Stamper {
     public final void setCssMediaType(com.ironsoftware.ironpdf.render.CssMediaType value) {
         cssMediaType = value;
     }
-
 }
 
 

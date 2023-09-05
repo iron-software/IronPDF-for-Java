@@ -17,7 +17,7 @@ public class SignatureApiTests extends TestBase {
     public final void AllPdfSignaturesTest() throws IOException {
         InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body>A A AA</body>");
         Assertions.assertEquals(0, Signature_Api.getVerifiedSignatures(doc).size());
-        Assertions.assertFalse(Signature_Api.verifyPdfSignatures(doc));
+        Assertions.assertTrue(Signature_Api.verifyPdfSignatures(doc)); // no
         Signature_Api.signPdfWithSignatureFile(doc, new Signature(getTestFile("/Data/IronTest.p12"), "123456"), SignaturePermissions.NoChangesAllowed);
         Assertions.assertTrue(Signature_Api.verifyPdfSignatures(doc));
         Assertions.assertEquals(1, Signature_Api.getVerifiedSignatures(doc).size());

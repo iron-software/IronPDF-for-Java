@@ -1,0 +1,51 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message  PdfiumBookmarkDescriptorCollectionP {
+  repeated PdfiumBookmarkDescriptorP bookmark_descriptors = 1;
+}
+
+message  PdfBookmarkCollectionP {
+  repeated PdfiumBookmarkP bookmarks = 1;
+}
+message PdfiumBookmarkDescriptorP {
+  string text = 1;
+  int32 page_index = 2;
+  string hierarchy = 3;
+}
+message PdfiumBookmarkP {
+  int32 page_index = 2;
+  string text = 3;
+  optional string parent_text = 4;
+  optional string previous_text = 5;
+}
+
+message PdfiumInsertBookmarkRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  string text = 3;
+  optional string parent_text = 4;
+  optional string previous_text = 5;
+}
+message PdfiumRemoveBookmarksRequestP {
+  PdfDocumentP document = 1;
+  optional PdfBookmarkCollectionP bookmarks = 2;
+}
+
+message PdfiumGetBookmarksDescriptorRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetBookmarksDescriptorResultP {
+  oneof result_or_exception {
+    PdfiumBookmarkDescriptorCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+
+

@@ -3,6 +3,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.image.ImageBehavior;
 import com.ironsoftware.ironpdf.internal.proto.*;
+import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import com.ironsoftware.ironpdf.render.PaperSize;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -42,20 +44,20 @@ public final class Image_Api {
                                                  ImageBehavior imageBehavior, ChromePdfRenderOptions renderOptions) {
         RpcClient client = Access.ensureConnection();
 
-        ImageFilesToPdfRequestStream.Info.Builder info = ImageFilesToPdfRequestStream.Info.newBuilder();
+        ChromeImageFilesToPdfRequestStreamP.InfoP.Builder info = ChromeImageFilesToPdfRequestStreamP.InfoP.newBuilder();
         info.setRenderOptions(
                 Render_Converter.toProto((renderOptions != null ? renderOptions : new ChromePdfRenderOptions())));
         info.setImageBehavior(Image_Converter.toProto(imageBehavior));
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<ImageFilesToPdfRequestStream> requestStream =
-                client.stub.pdfDocumentImageImageFilesToPdf(
+        io.grpc.stub.StreamObserver<ChromeImageFilesToPdfRequestStreamP> requestStream =
+                client.stub.chromeImageImageFilesToPdf(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        ImageFilesToPdfRequestStream.Builder infoMsg =
-                ImageFilesToPdfRequestStream.newBuilder();
+        ChromeImageFilesToPdfRequestStreamP.Builder infoMsg =
+                ChromeImageFilesToPdfRequestStreamP.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
@@ -63,8 +65,8 @@ public final class Image_Api {
             ImageData imageData = imagesData.get(imageIndex);
             for (Iterator<byte[]> it = Utils_Util.chunk(imageData.data); it.hasNext(); ) {
                 byte[] chunk = it.next();
-                ImageFilesToPdfRequestStream.Builder msg = ImageFilesToPdfRequestStream.newBuilder();
-                RawImageChunkWithIndexAndFileType.Builder rawImageFilesChunkWithIndex = RawImageChunkWithIndexAndFileType.newBuilder();
+                ChromeImageFilesToPdfRequestStreamP.Builder msg = ChromeImageFilesToPdfRequestStreamP.newBuilder();
+                RawImageChunkWithIndexAndFileTypeP.Builder rawImageFilesChunkWithIndex = RawImageChunkWithIndexAndFileTypeP.newBuilder();
                 rawImageFilesChunkWithIndex.setRawImageChunk(ByteString.copyFrom(chunk));
                 rawImageFilesChunkWithIndex.setImageIndex(imageIndex);
                 rawImageFilesChunkWithIndex.setFileType(imageData.fileExtension);
@@ -93,11 +95,11 @@ public final class Image_Api {
      * @param desiredHeight       Desired heights
      */
     public static void drawImage(InternalPdfDocument internalPdfDocument, byte[] imageBytes,
-                                 Iterable<Integer> pageIndexes, double x,
+                                 List<Integer> pageIndexes, double x,
                                  double y, double desiredWidth, double desiredHeight) {
         RpcClient client = Access.ensureConnection();
 
-        DrawBitmapRequestStream.Info.Builder info = DrawBitmapRequestStream.Info.newBuilder();
+        PdfiumDrawBitmapRequestStreamP.InfoP.Builder info = PdfiumDrawBitmapRequestStreamP.InfoP.newBuilder();
         info.setDocument(internalPdfDocument.remoteDocument);
         info.setX(x);
         info.setY(y);
@@ -106,16 +108,16 @@ public final class Image_Api {
         info.addAllPageIndexes(pageIndexes);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
+        ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<DrawBitmapRequestStream> requestStream = client.stub.pdfDocumentImageDrawBitmap(
+        io.grpc.stub.StreamObserver<PdfiumDrawBitmapRequestStreamP> requestStream = client.stub.pdfiumImageDrawBitmap(
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        requestStream.onNext(DrawBitmapRequestStream.newBuilder().setInfo(info).build());
+        requestStream.onNext(PdfiumDrawBitmapRequestStreamP.newBuilder().setInfo(info).build());
 
         for (Iterator<byte[]> it = Utils_Util.chunk(imageBytes); it.hasNext(); ) {
             byte[] bytes = it.next();
-            DrawBitmapRequestStream.Builder msg = DrawBitmapRequestStream.newBuilder();
+            PdfiumDrawBitmapRequestStreamP.Builder msg = PdfiumDrawBitmapRequestStreamP.newBuilder();
             msg.setRawImageChunk(ByteString.copyFrom(bytes));
             requestStream.onNext(msg.build());
         }
@@ -146,19 +148,21 @@ public final class Image_Api {
      * @throws IOException the io exception
      */
     public static List<byte[]> extractAllImages(InternalPdfDocument internalPdfDocument,
-                                                Iterable<Integer> pageIndexes) throws IOException {
+                                                List<Integer> pageIndexes) throws IOException {
         RpcClient client = Access.ensureConnection();
 
-        ExtractAllRawImagesRequest.Builder request = ExtractAllRawImagesRequest.newBuilder();
-        request.setDocument(internalPdfDocument.remoteDocument);
-        if (pageIndexes != null) {
-            request.addAllPageIndexes(pageIndexes);
+        PdfiumExtractAllRawImagesRequestP.Builder req = PdfiumExtractAllRawImagesRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
         }
+        req.addAllPageIndexes(pageIndexes);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<ImagesResultStream> resultChunks = new ArrayList<>();
+        ArrayList<ImagesResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentImageExtractAllRawImages(request.build(),
+        client.stub.pdfiumImageExtractAllRawImages(req.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
@@ -179,7 +183,7 @@ public final class Image_Api {
      * @throws IOException the io exception
      */
     public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
-                                          Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth) throws IOException {
+                                          List<Integer> pageIndexes, int dpi, Integer imageMaxWidth) throws IOException {
         return pdfToImage(internalPdfDocument, pageIndexes, dpi, imageMaxWidth, null);
     }
 
@@ -197,17 +201,18 @@ public final class Image_Api {
      * @throws IOException the io exception
      */
     public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
-                                          Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight)
+                                          List<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight)
             throws IOException {
         RpcClient client = Access.ensureConnection();
 
-        PdfToImagesRequest.Builder request = PdfToImagesRequest.newBuilder();
+        PdfiumPdfToImagesRequestP.Builder request = PdfiumPdfToImagesRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setDpi(dpi);
 
-        if (pageIndexes != null) {
-            request.addAllPageIndexes(pageIndexes);
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
         }
+        request.addAllPageIndexes(pageIndexes);
 
         if (imageMaxWidth != null) {
             request.setMaxWidth(imageMaxWidth);
@@ -218,9 +223,9 @@ public final class Image_Api {
         }
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<ImagesResultStream> resultChunks = new ArrayList<>();
+        ArrayList<ImagesResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentImagePdfToImages(request.build(),
+        client.stub.pdfiumImagePdfToImages(request.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
@@ -240,7 +245,7 @@ public final class Image_Api {
      * @throws IOException the io exception
      */
     public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
-                                          Iterable<Integer> pageIndexes, int dpi) throws IOException {
+                                          List<Integer> pageIndexes, int dpi) throws IOException {
         return pdfToImage(internalPdfDocument, pageIndexes, dpi, null, null);
     }
 
@@ -255,7 +260,7 @@ public final class Image_Api {
      * @throws IOException the io exception
      */
     public static List<byte[]> pdfToImage(InternalPdfDocument internalPdfDocument,
-                                          Iterable<Integer> pageIndexes) throws IOException {
+                                          List<Integer> pageIndexes) throws IOException {
         return pdfToImage(internalPdfDocument, pageIndexes, 92, null, null);
     }
 
@@ -273,16 +278,17 @@ public final class Image_Api {
     }
 
     public static byte[] toMultiPageTiff(InternalPdfDocument internalPdfDocument,
-                                          Iterable<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight) throws IOException {
+                                          List<Integer> pageIndexes, int dpi, Integer imageMaxWidth, Integer imageMaxHeight) throws IOException {
         RpcClient client = Access.ensureConnection();
 
-        PdfToMultiPageTiffImageRequest.Builder request = PdfToMultiPageTiffImageRequest.newBuilder();
+        PdfiumPdfToMultiPageTiffImageRequestP.Builder request = PdfiumPdfToMultiPageTiffImageRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setDpi(dpi);
 
-        if (pageIndexes != null) {
-            request.addAllPageIndexes(pageIndexes);
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
         }
+        request.addAllPageIndexes(pageIndexes);
 
         if (imageMaxWidth != null) {
             request.setMaxWidth(imageMaxWidth);
@@ -293,9 +299,9 @@ public final class Image_Api {
         }
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<ImageResultStream> resultChunks = new ArrayList<>();
+        ArrayList<ImageResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentImagePdfToMultiPageTiffImage(request.build(),
+        client.stub.pdfiumImagePdfToMultiPageTiffImage(request.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);

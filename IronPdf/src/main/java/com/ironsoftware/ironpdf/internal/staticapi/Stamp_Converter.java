@@ -8,44 +8,44 @@ import com.ironsoftware.ironpdf.stamp.VerticalAlignment;
 
 public final class Stamp_Converter {
 
-    public static com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding enumToProto(
+    public static com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP enumToProto(
             BarcodeEncoding input) {
-        com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.newBuilder();
         tempVar.setEnumValue(input.ordinal());
         return tempVar.build();
     }
 
-    public static com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding toProto(
+    public static com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP toProto(
             BarcodeEncoding input) {
-        com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.BarcodeEncoding.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.newBuilder();
         tempVar.setEnumValue(input.ordinal());
         return tempVar.build();
     }
 
-    public static com.ironsoftware.ironpdf.internal.proto.VerticalAlignment toProto(
+    public static com.ironsoftware.ironpdf.internal.proto.VerticalAlignmentP toProto(
             VerticalAlignment input) {
-        com.ironsoftware.ironpdf.internal.proto.VerticalAlignment.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.VerticalAlignment.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.VerticalAlignmentP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.VerticalAlignmentP.newBuilder();
         tempVar.setEnumValue(input.ordinal());
         return tempVar.build();
     }
 
-    public static com.ironsoftware.ironpdf.internal.proto.HorizontalAlignment toProto(
+    public static com.ironsoftware.ironpdf.internal.proto.HorizontalAlignmentP toProto(
             HorizontalAlignment input) {
-        com.ironsoftware.ironpdf.internal.proto.HorizontalAlignment.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.HorizontalAlignment.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.HorizontalAlignmentP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.HorizontalAlignmentP.newBuilder();
         tempVar.setEnumValue(input.ordinal());
         return tempVar.build();
     }
 
-    public static com.ironsoftware.ironpdf.internal.proto.Length toProto(Length input) {
-        com.ironsoftware.ironpdf.internal.proto.Length.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.Length.newBuilder();
+    public static com.ironsoftware.ironpdf.internal.proto.LengthP toProto(Length input) {
+        com.ironsoftware.ironpdf.internal.proto.LengthP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.LengthP.newBuilder();
         tempVar.setUnit(Stamp_Converter.toProto(input.getUnit()));
         tempVar.setValue(input.getValue());
         return tempVar.build();
     }
 
-    public static com.ironsoftware.ironpdf.internal.proto.MeasurementUnit toProto(
+    public static com.ironsoftware.ironpdf.internal.proto.MeasurementUnitP toProto(
             MeasurementUnit input) {
-        com.ironsoftware.ironpdf.internal.proto.MeasurementUnit.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.MeasurementUnit.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.MeasurementUnitP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.MeasurementUnitP.newBuilder();
         tempVar.setEnumValue(input.ordinal());
         return tempVar.build();
     }

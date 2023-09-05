@@ -35,7 +35,7 @@ public class SecurityApiTests extends TestBase {
 
         SecurityOptions secInfoAfter = Security_Api.getPdfSecurityOptions(doc);
         AssertNullOrEmpty(secInfoAfter.getOwnerPassword());
-        Assertions.assertEquals("123123", secInfoAfter.getUserPassword());
+        Assertions.assertEquals("", secInfoAfter.getUserPassword());
         Assertions.assertTrue(secInfoAfter.isAllowUserAnnotations());
         Assertions.assertTrue(secInfoAfter.isAllowUserCopyPasteContent());
         Assertions.assertTrue(secInfoAfter.isAllowUserCopyPasteContentForAccessibility());

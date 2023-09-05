@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.CompressImagesRequest;
-import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumCompressImagesRequestP;
+import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
 
 /**
  * The type Compress api.
@@ -19,12 +19,12 @@ public final class Compress_Api {
                                       boolean scaleToVisibleSize) {
         RpcClient client = Access.ensureConnection();
 
-        CompressImagesRequest.Builder req = CompressImagesRequest.newBuilder();
+        PdfiumCompressImagesRequestP.Builder req = PdfiumCompressImagesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setQuality(quality);
         req.setScaleToVisibleSize(scaleToVisibleSize);
 
-        EmptyResult res = client.blockingStub.pdfDocumentCompressCompressImages(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumCompressCompressImages(req.build());
 
         Utils_Util.handleEmptyResult(res);
     }

@@ -1,0 +1,54 @@
+﻿syntax = "proto3";
+import "basic.proto";
+
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+
+message PdfiumDrawBitmapRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes raw_image_chunk = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+    repeated int32 page_indexes = 2 ;
+    double x = 3; //different API: this will draw at same x,y for every page
+    double y = 4;
+    double desired_width = 5;
+    double desired_height = 6;
+    optional PdfiumPixelFormatP pixelFormat = 7;
+  }
+}
+
+message PdfiumPixelFormatP {
+  int32 enum_value = 1;
+}
+
+message PdfiumExtractAllRawImagesRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+}
+message PdfiumExtractAllImagesRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+}
+
+message PdfiumPdfToImagesRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+  optional int32 dpi = 3;
+  optional int32 max_width = 4;
+  optional int32 max_height = 5;
+}
+
+message PdfiumPdfToMultiPageTiffImageRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+  optional int32 dpi = 3;
+  optional int32 max_width = 4;
+  optional int32 max_height = 5;
+}
+

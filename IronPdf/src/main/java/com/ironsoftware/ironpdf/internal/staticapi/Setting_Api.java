@@ -69,7 +69,6 @@ public final class Setting_Api {
         } else if (SystemUtils.IS_OS_LINUX) {
             return "Linux";
         } else if (SystemUtils.IS_OS_MAC) {
-            //todo also check for M1
             return "MacOS";
         }
         throw new RuntimeException("unknown OS:" + SystemUtils.OS_NAME);
@@ -90,7 +89,8 @@ public final class Setting_Api {
         } else if (SystemUtils.IS_OS_LINUX) {
             return "x64";
         } else if (SystemUtils.IS_OS_MAC) {
-            //todo also check for M1
+            if(System.getProperty("os.arch").toLowerCase().contains("arm") )
+                return "arm64";
             return "x64";
         }
         throw new RuntimeException("unknown OS:" + SystemUtils.OS_NAME);
@@ -111,15 +111,15 @@ public final class Setting_Api {
 
     public static String getIronPdfEngineExecutableFileName() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            return "IronPdfEngine.exe";
+            return "IronPdfEngineConsole.exe";
         } else if (SystemUtils.IS_OS_LINUX) {
-            return "IronPdfEngine";
+            return "IronPdfEngineConsole";
         } else if (SystemUtils.IS_OS_MAC) {
             //todo also check for M1
-            return "IronPdfEngine";
+            return "IronPdfEngineConsole";
         } else {
             //default, should not reach
-            return "IronPdfEngine";
+            return "IronPdfEngineConsole";
         }
     }
 
@@ -144,6 +144,6 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2023.5.1";
+    public static final String IRON_PDF_ENGINE_VERSION = "2023.9.1";
 
 }

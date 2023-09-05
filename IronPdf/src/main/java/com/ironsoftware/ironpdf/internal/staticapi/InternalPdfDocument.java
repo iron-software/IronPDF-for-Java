@@ -2,8 +2,9 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 
 import com.ironsoftware.ironpdf.edit.PageSelection;
-import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
+import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
 import com.ironsoftware.ironpdf.page.PageInfo;
+import com.ironsoftware.ironpdf.signature.Signature;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -25,7 +26,7 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
     /**
      * The Remote document.
      */
-    final com.ironsoftware.ironpdf.internal.proto.PdfDocument remoteDocument;
+    final com.ironsoftware.ironpdf.internal.proto.PdfDocumentP remoteDocument;
     /**
      * The Temp pages info.
      */
@@ -33,12 +34,17 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
     List<PageInfo> tempPagesInfo = Collections.emptyList();
     private boolean disposed = false;
 
+    public List<Signature> signatures = Collections.emptyList();
+
+    public String userPassword = "";
+    public String ownerPassword = "";
+
     /**
      * Instantiates a new Internal pdf document.
      *
      * @param remoteDocument the remote document
      */
-    InternalPdfDocument(com.ironsoftware.ironpdf.internal.proto.PdfDocument remoteDocument) {
+    InternalPdfDocument(com.ironsoftware.ironpdf.internal.proto.PdfDocumentP remoteDocument) {
         this.remoteDocument = remoteDocument;
     }
 
@@ -51,7 +57,7 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
 
             RpcClient client = Access.ensureConnection();
 
-            EmptyResult res = client.blockingStub.pdfDocumentDispose(remoteDocument);
+            EmptyResultP res = client.blockingStub.pdfiumDispose(remoteDocument);
 
             Utils_Util.handleEmptyResult(res);
 
@@ -92,11 +98,34 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
      * @return the page list
      */
     public List<Integer> getPageList(PageSelection pageSelection) {
+        List<PageInfo> pageInfos =  Page_Api.getPagesInfo(this);
+
+        if(pageSelection.pagesList.isEmpty()){
+            //default to all pages
+            return pageInfos.stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
+        }
+
         return pageSelection.pagesList.stream().map(i->{
             if(i == -1){
-                return Page_Api.getPagesInfo(this).size() - 1;
+                return pageInfos.size() - 1;
             }
             return i;
+        }).collect(Collectors.toList());
+    }
+
+    public List<PageInfo> getPageInfoList(PageSelection pageSelection) {
+        List<PageInfo> pageInfos =  Page_Api.getPagesInfo(this);
+
+        if(pageSelection.pagesList.isEmpty()){
+            //default to all pages
+            return pageInfos;
+        }
+
+        return pageSelection.pagesList.stream().map(i->{
+            if(i == -1){
+                return pageInfos.get(pageInfos.size() - 1);
+            }
+            return pageInfos.get(i);
         }).collect(Collectors.toList());
     }
 }

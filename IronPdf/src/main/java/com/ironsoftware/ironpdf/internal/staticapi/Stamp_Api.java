@@ -2,22 +2,25 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.internal.proto.*;
+import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.stamp.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 public final class Stamp_Api {
 
     public static void applyStamp(InternalPdfDocument internalPdfDocument, Stamper stamper,
-                                  Iterable<Integer> pageIndexesToStamp) {
+                                  List<PageInfo> pageInfosToStamp) {
         RpcClient client = Access.ensureConnection();
 
         String stampValue = "";
         byte[] stampImageBytes = {};
 
-        ApplyStampRequestStream.Info.Builder info = ApplyStampRequestStream.Info.newBuilder();
+        ChromeApplyStampRequestStreamP.InfoP.Builder info = ChromeApplyStampRequestStreamP.InfoP.newBuilder();
 
         info.setDocument(internalPdfDocument.remoteDocument);
         info.setOpacity(stamper.getOpacity());
@@ -48,37 +51,39 @@ public final class Stamp_Api {
         if (stamper.getHyperlink() != null) {
             info.setHyperlink(stamper.getHyperlink());
         }
-        if (pageIndexesToStamp != null) {
-            info.addAllTargetPagesIndexes(pageIndexesToStamp);
+
+        if (pageInfosToStamp != null) {
+            info.addAllTargetPages(pageInfosToStamp.stream().map(Page_Converter::toProto).collect(Collectors.toList()));
         }
+
+        info.setTimeout(stamper.getWaitFor().getTimeout());
+        info.setRenderDelay(stamper.getWaitFor().getRenderDelayDuration());
 
         if (stamper instanceof HtmlStamper) {
             HtmlStamper htmlStamper = (HtmlStamper) stamper;
-            HtmlStamperInfo.Builder htmlStamperInfo = HtmlStamperInfo.newBuilder();
-            htmlStamperInfo.setCssMediaType(Render_Converter.toProto(htmlStamper.getCssMediaType()));
-            htmlStamperInfo.setTimeout(htmlStamper.getTimeout());
-            htmlStamperInfo.setRenderDelay(htmlStamper.getRenderDelay());
+            ChromeHtmlStamperInfoP.Builder chromeHtmlStamperInfoP = ChromeHtmlStamperInfoP.newBuilder();
+            chromeHtmlStamperInfoP.setCssMediaType(Render_Converter.toProto(htmlStamper.getCssMediaType()));
             if (htmlStamper.getHtmlBaseUrl() != null) {
-                htmlStamperInfo.setBaseUrl(htmlStamper.getHtmlBaseUrl());
+                chromeHtmlStamperInfoP.setBaseUrl(htmlStamper.getHtmlBaseUrl());
             }
-            info.setHtmlStamper(htmlStamperInfo);
+            info.setHtmlStamper(chromeHtmlStamperInfoP);
             stampValue = htmlStamper.getHtml();
         } else if (stamper instanceof TextStamper) {
-            TextStamperInfo.Builder textStamperInfo = TextStamperInfo.newBuilder();
-            textStamperInfo.setFontFamily(((TextStamper) stamper).getFontFamily());
-            textStamperInfo.setFontSize(((TextStamper) stamper).getFontSize());
-            textStamperInfo.setIsBold(((TextStamper) stamper).isBold());
-            textStamperInfo.setIsItalic(((TextStamper) stamper).isItalic());
-            textStamperInfo.setIsUnderline(((TextStamper) stamper).isUnderline());
-            textStamperInfo.setIsStrikethrough(((TextStamper) stamper).isStrikethrough());
-            textStamperInfo.setUseGoogleFont(((TextStamper) stamper).isUseGoogleFont());
-            textStamperInfo.setTextColor(((TextStamper) stamper).getFontColorCode());
-            textStamperInfo.setBackgroundColor(((TextStamper) stamper).getBackgroundColorCode());
+            ChromeTextStamperInfoP.Builder textStamperInfoP = ChromeTextStamperInfoP.newBuilder();
+            textStamperInfoP.setFontFamily(((TextStamper) stamper).getFontFamily());
+            textStamperInfoP.setFontSize(((TextStamper) stamper).getFontSize());
+            textStamperInfoP.setIsBold(((TextStamper) stamper).isBold());
+            textStamperInfoP.setIsItalic(((TextStamper) stamper).isItalic());
+            textStamperInfoP.setIsUnderline(((TextStamper) stamper).isUnderline());
+            textStamperInfoP.setIsStrikethrough(((TextStamper) stamper).isStrikethrough());
+            textStamperInfoP.setUseGoogleFont(((TextStamper) stamper).isUseGoogleFont());
+            textStamperInfoP.setTextColor(((TextStamper) stamper).getFontColorCode());
+            textStamperInfoP.setBackgroundColor(((TextStamper) stamper).getBackgroundColorCode());
 
-            info.setTextStamper(textStamperInfo);
+            info.setTextStamper(textStamperInfoP);
             stampValue = ((TextStamper) stamper).getText();
         } else if (stamper instanceof BarcodeStamper) {
-            BarcodeStamperInfo.Builder barcodeStamperInfo = BarcodeStamperInfo.newBuilder();
+            ChromeBarcodeStamperInfoP.Builder barcodeStamperInfo = ChromeBarcodeStamperInfoP.newBuilder();
             barcodeStamperInfo.setBarcodeType(
                     Stamp_Converter.toProto(((BarcodeStamper) stamper).getBarcodeType()));
             barcodeStamperInfo.setWidthPx(((BarcodeStamper) stamper).getWidth());
@@ -86,32 +91,32 @@ public final class Stamp_Api {
             info.setBarcodeStamper(barcodeStamperInfo);
             stampValue = (((BarcodeStamper) stamper).getValue());
         } else if (stamper instanceof ImageStamper) {
-            ImageStamperInfo.Builder imageStamperInfo = ImageStamperInfo.newBuilder();
-            info.setImageStamper(imageStamperInfo);
+            ChromeImageStamperInfoP.Builder imageStamperInfoP = ChromeImageStamperInfoP.newBuilder();
+            info.setImageStamper(imageStamperInfoP);
             stampImageBytes = ((ImageStamper) stamper).getImageData();
         }
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
-        io.grpc.stub.StreamObserver<ApplyStampRequestStream> requestStream =
-                client.stub.pdfDocumentStampApplyStamp(
+        ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
+        io.grpc.stub.StreamObserver<ChromeApplyStampRequestStreamP> requestStream =
+                client.stub.chromeStampApplyStamp(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        ApplyStampRequestStream.Builder infoMsg =
-                ApplyStampRequestStream.newBuilder();
+        ChromeApplyStampRequestStreamP.Builder infoMsg =
+                ChromeApplyStampRequestStreamP.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
         for (Iterator<char[]> it = Utils_Util.chunk(stampValue.toCharArray()); it.hasNext(); ) {
             char[] chars = it.next();
-            ApplyStampRequestStream.Builder msg = ApplyStampRequestStream.newBuilder();
+            ChromeApplyStampRequestStreamP.Builder msg = ChromeApplyStampRequestStreamP.newBuilder();
             msg.setStampValue(String.valueOf(chars));
             requestStream.onNext(msg.build());
         }
 
         for (Iterator<byte[]> it = Utils_Util.chunk(stampImageBytes); it.hasNext(); ) {
             byte[] bytes = it.next();
-            ApplyStampRequestStream.Builder msg = ApplyStampRequestStream.newBuilder();
+            ChromeApplyStampRequestStreamP.Builder msg = ChromeApplyStampRequestStreamP.newBuilder();
             msg.setStampImageBytes(ByteString.copyFrom(bytes));
             requestStream.onNext(msg.build());
         }
