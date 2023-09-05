@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.0.0
     - name: Replace IronPdf LicenseKey
       run: |
         sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf.SmokeTests/src/test/resources/config.properties
@@ -45,7 +45,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.0.0
     - name: Replace IronPdf LicenseKey
       run: |
         sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf.SmokeTests/src/test/resources/config.properties
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.0.0
     - name: Replace IronPdf LicenseKey
       run: |
         sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf.SmokeTests/src/test/resources/config.properties

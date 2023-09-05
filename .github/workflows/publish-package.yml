@@ -6,7 +6,7 @@ jobs:
   publish-ironpdf:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.0.0
       - name: Replace credentials
         run: |
           sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf/src/test/resources/config.properties
@@ -49,7 +49,7 @@ jobs:
     needs: publish-ironpdf
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.0.0
       - name: Replace linux-x64 version with release tag
         run: |
           sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-linux-x64/pom.xml
@@ -90,7 +90,7 @@ jobs:
   publish-javadoc-from-java11:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.0.0
       - name: Replace version with release tag
         run: |
           sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' IronPdf/pom.xml
