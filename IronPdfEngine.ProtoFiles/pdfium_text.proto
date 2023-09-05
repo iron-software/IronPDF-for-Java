@@ -1,0 +1,32 @@
+syntax = "proto3";
+import "basic.proto";
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumExtractAllTextRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+  optional bool is_license = 3;
+}
+
+message PdfiumReplaceTextRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  string current_text = 3;
+  string new_text = 4;
+}
+
+message PdfiumDrawTextRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  string text = 3;
+  string font_name = 4;
+  double font_size = 5;
+  double x = 6;
+  double y = 7;
+  double scale = 8;
+  double rotation = 9;
+  string color = 10;
+}

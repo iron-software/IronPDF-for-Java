@@ -6,6 +6,7 @@ import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.signature.Signature;
 import com.ironsoftware.ironpdf.signature.SignaturePermissions;
 import com.ironsoftware.ironpdf.signature.VerifiedSignature;
+import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,14 +18,18 @@ public final class Signature_Api {
     public static List<VerifiedSignature> getVerifiedSignatures(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
-        GetVerifiedSignatureRequest.Builder req = GetVerifiedSignatureRequest.newBuilder();
-        req.setDocument(internalPdfDocument.remoteDocument);
-
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<GetVerifySignatureResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfiumGetVerifySignatureResultP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentSignatureGetVerifiedSignature(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+        PdfiumGetVerifiedSignatureRequestStreamP.InfoP.Builder infoP = PdfiumGetVerifiedSignatureRequestStreamP.InfoP.newBuilder();
+        infoP.setDocument(internalPdfDocument.remoteDocument);
+        StreamObserver<PdfiumGetVerifiedSignatureRequestStreamP> requestStream = client.stub.pdfiumSignatureGetVerifiedSignature(new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
+        requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder().setInfo(infoP).build());
+
+        //don't send DataChunk (pdf byte[]) and let Server get the pdf byte[] inside the server to prevent too much grpc call
+
+        requestStream.onCompleted();
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
@@ -32,15 +37,15 @@ public final class Signature_Api {
             throw new RuntimeException("No response from IronPdf.");
         }
 
-        GetVerifySignatureResult res = resultChunks.stream().findFirst().get();
+        PdfiumGetVerifySignatureResultP res = resultChunks.stream().findFirst().get();
 
         return Signature_Converter.fromProto(res);
     }
 
-    public static void signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions) {
+    public static int signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions) {
         RpcClient client = Access.ensureConnection();
 
-        SignRequestStream.Info.Builder info = SignRequestStream.Info.newBuilder();
+        PdfiumSignRequestStreamP.InfoP.Builder info = PdfiumSignRequestStreamP.InfoP.newBuilder();
         info.setDocument(internalPdfDocument.remoteDocument);
 
         if (signature.getSigningContact() != null) {
@@ -72,19 +77,19 @@ public final class Signature_Api {
         }
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
-        io.grpc.stub.StreamObserver<SignRequestStream> requestStream =
-                client.stub.pdfDocumentSignatureSign(
+        ArrayList<PdfiumSignResultP> resultChunks = new ArrayList<>();
+        io.grpc.stub.StreamObserver<PdfiumSignRequestStreamP> requestStream =
+                client.stub.pdfiumSignatureSign(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        SignRequestStream.Builder infoMsg =
-                SignRequestStream.newBuilder();
+        PdfiumSignRequestStreamP.Builder infoMsg =
+                PdfiumSignRequestStreamP.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
         for (Iterator<byte[]> it = Utils_Util.chunk(signature.getCertificateRawData()); it.hasNext(); ) {
             byte[] bytes = it.next();
-            SignRequestStream.Builder msg = SignRequestStream.newBuilder();
+            PdfiumSignRequestStreamP.Builder msg = PdfiumSignRequestStreamP.newBuilder();
             msg.setCertificateFileBytesChunk(ByteString.copyFrom(bytes));
             requestStream.onNext(msg.build());
         }
@@ -92,7 +97,7 @@ public final class Signature_Api {
         if(signature.getSignatureImage() != null){
             for (Iterator<byte[]> it = Utils_Util.chunk(signature.getSignatureImage()); it.hasNext(); ) {
                 byte[] bytes = it.next();
-                SignRequestStream.Builder msg = SignRequestStream.newBuilder();
+                PdfiumSignRequestStreamP.Builder msg = PdfiumSignRequestStreamP.newBuilder();
                 msg.setSignatureImageChunk(ByteString.copyFrom(bytes));
                 requestStream.onNext(msg.build());
             }
@@ -102,41 +107,35 @@ public final class Signature_Api {
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
-        Utils_Util.handleEmptyResultChunks(resultChunks);
-    }
 
-    public static boolean verifyPdfSignatures(InternalPdfDocument internalPdfDocument){
-        RpcClient client = Access.ensureConnection();
-
-        VerifyPdfSignaturesRequest.Builder req = VerifyPdfSignaturesRequest.newBuilder();
-        req.setDocument(internalPdfDocument.remoteDocument);
-
-        final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<BooleanResult> resultChunks = new ArrayList<>();
-
-        client.stub.pdfDocumentSignatureVerifiedSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
-
-        Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
         if (resultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdf.");
         }
+        PdfiumSignResultP res = resultChunks.stream().findFirst().get();
 
-        BooleanResult res = resultChunks.stream().findFirst().get();
+        if (res.getResultOrExceptionCase() == PdfiumSignResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(res.getException());
+        }
+        return res.getResult();
+    }
 
-        return Utils_Util.handleBooleanResult(res);
+    public static boolean verifyPdfSignatures(InternalPdfDocument internalPdfDocument){
+        List<VerifiedSignature> sig = getVerifiedSignatures(internalPdfDocument);
+        boolean result = sig.stream().allMatch(VerifiedSignature::isValid);
+        return result;
     }
 
     public static void removeSignature(InternalPdfDocument internalPdfDocument){
         RpcClient client = Access.ensureConnection();
 
-        RemoveSignaturesRequest.Builder req = RemoveSignaturesRequest.newBuilder();
+        PdfiumRemoveSignaturesRequestP.Builder req = PdfiumRemoveSignaturesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
-        ArrayList<EmptyResult> resultChunks = new ArrayList<>();
+        ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfDocumentSignatureRemoveSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+        client.stub.pdfiumSignatureRemoveSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
@@ -144,7 +143,7 @@ public final class Signature_Api {
             throw new RuntimeException("No response from IronPdf.");
         }
 
-        EmptyResult res = resultChunks.stream().findFirst().get();
+        EmptyResultP res = resultChunks.stream().findFirst().get();
 
         Utils_Util.handleEmptyResultChunks(resultChunks);
     }

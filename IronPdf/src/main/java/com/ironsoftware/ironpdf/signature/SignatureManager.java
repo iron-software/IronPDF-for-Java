@@ -6,6 +6,7 @@ import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Signature_Api;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -54,13 +55,16 @@ public class SignatureManager {
      * @param permissions Permissions regarding modifications to the document after the digital signature is applied
      */
     public void SignPdfWithSignature(Signature signature, SignaturePermissions permissions){
-        Signature_Api.signPdfWithSignatureFile(internalPdfDocument,signature, permissions);
+
+        int index = Signature_Api.signPdfWithSignatureFile(internalPdfDocument, signature, permissions);
+        signature.internalIndex = index;
+        internalPdfDocument.signatures.add(signature);
     }
 
     /**
      * Verifies all the PDF signatures for this PDF document and returns true if there are no invalid
      * signatures.
-     * @return true if all digital signatures for this PDF document are currently valid. Editing a PDF document in
+     * @return true if no digital signatures or all digital signatures are currently valid. Editing a PDF document in
      * any way will invalidate signatures.
      */
     public boolean VerifyPdfSignatures(){
@@ -71,6 +75,7 @@ public class SignatureManager {
      *
      */
     public void RemoveSignature(){
+        internalPdfDocument.signatures = new ArrayList<>();
         Signature_Api.removeSignature(internalPdfDocument);
     }
 }

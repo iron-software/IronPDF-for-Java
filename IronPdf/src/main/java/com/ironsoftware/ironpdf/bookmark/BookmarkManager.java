@@ -1,9 +1,11 @@
 package com.ironsoftware.ironpdf.bookmark;
 
 import com.ironsoftware.ironpdf.PdfDocument;
+import com.ironsoftware.ironpdf.internal.staticapi.BookmarkDescriptor;
 import com.ironsoftware.ironpdf.internal.staticapi.Bookmark_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ public class BookmarkManager {
 
     /**
      * Total number of bookmarks, including all nested bookmarks
+     *
      * @return Bookmarks count
      */
     public final int getCount() {
@@ -75,11 +78,6 @@ public class BookmarkManager {
      * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
      */
     public final void addBookMarkAtStart(String text, int pageIndex) {
-
-        List<com.ironsoftware.ironpdf.bookmark.Bookmark> bookmarks = this.getBookmarks();
-        com.ironsoftware.ironpdf.bookmark.Bookmark firstBookmarks =
-                bookmarks.size() == 0 ? null : bookmarks.get(0);
-
         Bookmark_Api.insertBookmarkAtStart(internalPdfDocument,
                 pageIndex, text);
     }
@@ -88,12 +86,12 @@ public class BookmarkManager {
     /**
      * Insert a new bookmark
      *
-     * @param text                 The display text for the link.
-     * @param pageIndex            The zero based page number to link to.  E.g.  Page 1 has a
-     *                             PageIndex of 0
+     * @param text         The display text for the link.
+     * @param pageIndex    The zero based page number to link to.  E.g.  Page 1 has a
+     *                     PageIndex of 0
      * @param parentText   parent bookmark text. set to null for insert at the top
      * @param previousText previous bookmark text. set to null for insert at first of its
-     *                             siblings
+     *                     siblings
      */
     public final void insertBookmark(String text, int pageIndex, String parentText,
                                      String previousText) {
@@ -116,8 +114,8 @@ public class BookmarkManager {
      * Add a new bookmark as a first child of this bookmark. To add a bookmark as a second child,
      * please navigate to the childBookmark object and call AddNextBookmark.
      *
-     * @param text      The display text for the link.
-     * @param pageIndex The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
+     * @param text               The display text for the link.
+     * @param pageIndex          The zero based page number to link to.  E.g.  Page 1 has a PageIndex of 0
      * @param parentBookmarkText bookmark parent text, set empty if bookmark does not have parent.
      * @return a new child bookmark
      */

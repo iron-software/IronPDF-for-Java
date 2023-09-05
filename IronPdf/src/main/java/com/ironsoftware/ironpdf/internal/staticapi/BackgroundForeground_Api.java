@@ -1,7 +1,12 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.AddBackgroundForegroundRequest;
-import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumAddBackgroundForegroundRequestP;
+import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumLayerModesP;
+import com.ironsoftware.ironpdf.page.PageInfo;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type Background foreground api.
@@ -17,7 +22,7 @@ public final class BackgroundForeground_Api {
      * @param basePdfPageIndexes A list of Indexes (zero-based page numbers) of pages in this PDF to                           which the background will be applied to.
      */
     public static void addBackground(InternalPdfDocument baseDocument,
-                                     InternalPdfDocument backgroundDocument, Iterable<Integer> basePdfPageIndexes) {
+                                     InternalPdfDocument backgroundDocument, List<Integer> basePdfPageIndexes) {
         addBackground(baseDocument, backgroundDocument, basePdfPageIndexes, 0);
     }
 
@@ -31,19 +36,22 @@ public final class BackgroundForeground_Api {
      * @param backgroundPdfPageIndex Index (zero-based page number) to copy from the BackgroundPdf.
      */
     public static void addBackground(InternalPdfDocument baseDocument,
-                                     InternalPdfDocument backgroundDocument, Iterable<Integer> basePdfPageIndexes,
+                                     InternalPdfDocument backgroundDocument, List<Integer> basePdfPageIndexes,
                                      int backgroundPdfPageIndex) {
         RpcClient client = Access.ensureConnection();
 
-        AddBackgroundForegroundRequest.Builder req = AddBackgroundForegroundRequest.newBuilder();
-        req.setBackgroundPdf(backgroundDocument.remoteDocument);
-        req.setBasePdf(baseDocument.remoteDocument);
-        req.setLayerPdfPageIndex(backgroundPdfPageIndex);
-        if (basePdfPageIndexes != null) {
-            req.addAllBasePdfPages(basePdfPageIndexes);
-        }
+        PdfiumAddBackgroundForegroundRequestP.Builder req = PdfiumAddBackgroundForegroundRequestP.newBuilder();
+        req.setSourcePdf(backgroundDocument.remoteDocument);
+        req.setDestinationPdf(baseDocument.remoteDocument);
+        req.setSrcPageIndex(backgroundPdfPageIndex);
 
-        EmptyResult res = client.blockingStub.pdfDocumentBackgroundForegroundAddBackgroundForeground(
+        if(basePdfPageIndexes == null || basePdfPageIndexes.isEmpty()){
+            basePdfPageIndexes = Page_Api.getPagesInfo(baseDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
+        }
+        req.addAllDestPageIndices(basePdfPageIndexes);
+        req.setLayerMode(PdfiumLayerModesP.newBuilder().setEnumValue(1).build()); // Background = 1
+
+        EmptyResultP res = client.blockingStub.pdfiumBackgroundForegroundAddBackgroundForeground(
                 req.build());
         Utils_Util.handleEmptyResult(res);
     }
@@ -69,7 +77,7 @@ public final class BackgroundForeground_Api {
      * @param basePdfPageIndexes A list of Indexes (zero-based page numbers) of pages in this PDF to                           which the overlay will be applied to.
      */
     public static void addForeground(InternalPdfDocument baseDocument,
-                                     InternalPdfDocument foregroundDocument, Iterable<Integer> basePdfPageIndexes) {
+                                     InternalPdfDocument foregroundDocument, List<Integer> basePdfPageIndexes) {
         addForeground(baseDocument, foregroundDocument, basePdfPageIndexes, 0);
     }
 
@@ -83,20 +91,23 @@ public final class BackgroundForeground_Api {
      * @param foregroundPdfPageIndex Index (zero-based page number) to copy from the Overlay PDF.
      */
     public static void addForeground(InternalPdfDocument baseDocument,
-                                     InternalPdfDocument foregroundDocument, Iterable<Integer> basePdfPageIndexes,
+                                     InternalPdfDocument foregroundDocument, List<Integer> basePdfPageIndexes,
                                      int foregroundPdfPageIndex) {
         RpcClient client = Access.ensureConnection();
 
-        AddBackgroundForegroundRequest.Builder req = AddBackgroundForegroundRequest.newBuilder();
-        req.setForegroundPdf(foregroundDocument.remoteDocument);
-        req.setBasePdf(baseDocument.remoteDocument);
-        req.setLayerPdfPageIndex(foregroundPdfPageIndex);
+        PdfiumAddBackgroundForegroundRequestP.Builder req = PdfiumAddBackgroundForegroundRequestP.newBuilder();
+        req.setSourcePdf(foregroundDocument.remoteDocument);
+        req.setDestinationPdf(baseDocument.remoteDocument);
+        req.setSrcPageIndex(foregroundPdfPageIndex);
 
-        if (basePdfPageIndexes != null) {
-            req.addAllBasePdfPages(basePdfPageIndexes);
+        if(basePdfPageIndexes == null || basePdfPageIndexes.isEmpty()){
+            basePdfPageIndexes = Page_Api.getPagesInfo(baseDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
         }
 
-        EmptyResult res = client.blockingStub.pdfDocumentBackgroundForegroundAddBackgroundForeground(
+        req.addAllDestPageIndices(basePdfPageIndexes);
+        req.setLayerMode(PdfiumLayerModesP.newBuilder().setEnumValue(0).build()); // Foreground = 0
+
+        EmptyResultP res = client.blockingStub.pdfiumBackgroundForegroundAddBackgroundForeground(
                 req.build());
         Utils_Util.handleEmptyResult(res);
     }

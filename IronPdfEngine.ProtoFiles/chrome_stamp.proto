@@ -1,0 +1,74 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "chrome_render.proto";
+import "basic.proto";
+import "pdfium_page.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message ChromeApplyStampRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    string stamp_value = 2;
+    bytes  stamp_image_bytes = 3; //only for image_stamper
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+    repeated PdfiumPageP target_pages = 2;
+    optional int32 opacity = 3;
+    optional int32 rotation = 4;
+    optional HorizontalAlignmentP horizontal_alignment = 5;
+    optional VerticalAlignmentP vertical_alignment = 6;
+    optional LengthP horizontal_offset = 7;
+    optional LengthP vertical_offset = 8;
+    optional LengthP max_width = 9;
+    optional LengthP max_height = 10;
+    optional LengthP min_width = 11;
+    optional LengthP min_height = 12;
+    optional string hyperlink = 13;
+    optional double scale = 14;
+    optional bool is_stamp_behind_content = 15;
+    optional string owner_password = 16;
+    optional string user_password = 17;
+    optional int32 timeout = 22;
+    optional int32 render_delay = 23;
+    oneof stamper_type_info {
+      ChromeHtmlStamperInfoP html_stamper = 18;
+      ChromeImageStamperInfoP image_stamper = 19;
+      ChromeTextStamperInfoP text_stamper = 20;
+      ChromeBarcodeStamperInfoP barcode_stamper = 21;
+    }
+  }
+}
+
+message ChromeHtmlStamperInfoP {
+  optional string base_url = 1;
+  optional ChromePdfCssMediaTypeP css_media_type = 4;
+}
+
+message ChromeTextStamperInfoP {
+  optional bool is_bold = 1;
+  optional bool is_italic = 2;
+  optional bool is_underline = 3;
+  optional bool is_strikethrough = 4;
+  optional string font_family = 5;
+  optional int32 font_size = 6;
+  optional bool use_google_font = 7;
+  optional string text_color = 8;
+  optional string background_color = 9;
+}
+
+message ChromeImageStamperInfoP {
+
+}
+
+message ChromeBarcodeStamperInfoP {
+  optional ChromeBarcodeEncodingP barcode_type = 1;
+  optional int32 width_px = 2;
+  optional int32 height_px = 3;
+}
+
+message ChromeBarcodeEncodingP {
+  int32 enum_value = 1;
+}

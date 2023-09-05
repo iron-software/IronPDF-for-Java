@@ -1,0 +1,20 @@
+syntax = "proto3";
+package ironpdfengineproto;
+
+import "chrome_render.proto";
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message ChromeAddHtmlHeaderFooterRequestP {
+  PdfDocumentP document = 1;
+  string owner_password = 2;
+  string user_password = 3;
+  ChromePdfRenderOptionsP options = 4;
+  repeated int32 page_indexes = 5;
+  string url = 6;
+  string html_title = 7;
+  string pdf_title = 8;
+}
+

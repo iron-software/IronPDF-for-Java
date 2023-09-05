@@ -17,10 +17,10 @@ public final class License_Api {
     public static Boolean isValidLicensed(String licenseKey) {
         RpcClient client = Access.ensureConnection();
 
-        IsValidLicenseRequest.Builder req = IsValidLicenseRequest.newBuilder();
+        SystemIsValidLicenseRequestP.Builder req = SystemIsValidLicenseRequestP.newBuilder();
         req.setLicenseKey(licenseKey);
 
-        BooleanResult res = client.blockingStub.pdfDocumentLicenseIsValidLicense(req.build());
+        BooleanResultP res = client.blockingStub.systemLicenseIsValidLicense(req.build());
 
         return Utils_Util.handleBooleanResult(res);
     }
@@ -36,9 +36,9 @@ public final class License_Api {
     public static Boolean isLicensed() {
         RpcClient client = Access.ensureConnection();
 
-        IsLicensedRequest.Builder req = IsLicensedRequest.newBuilder();
+        SystemIsLicensedRequestP.Builder req = SystemIsLicensedRequestP.newBuilder();
 
-        BooleanResult res = client.blockingStub.pdfDocumentLicenseIsLicensed(req.build());
+        BooleanResultP res = client.blockingStub.systemLicenseIsLicensed(req.build());
 
         return Utils_Util.handleBooleanResult(res);
     }
@@ -49,10 +49,10 @@ public final class License_Api {
 
         RpcClient client = Access.ensureConnection();
 
-        SetLicenseKeyRequest.Builder req = SetLicenseKeyRequest.newBuilder();
+        SystemSetLicenseKeyRequestP.Builder req = SystemSetLicenseKeyRequestP.newBuilder();
         req.setLicenseKey(licenseKey);
 
-        EmptyResult res = client.blockingStub.pdfDocumentLicenseSetLicenseKey(req.build());
+        EmptyResultP res = client.blockingStub.systemLicenseSetLicenseKey(req.build());
 
         Utils_Util.handleEmptyResult(res);
     }

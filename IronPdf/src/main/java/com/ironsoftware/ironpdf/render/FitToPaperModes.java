@@ -7,41 +7,30 @@ package com.ironsoftware.ironpdf.render;
 public enum FitToPaperModes {
     /**
      * Do nothing.
-     * Default Chrome PDF printing behavior. Uses {@link ChromePdfRenderOptions#setZoom(int)} to specify zoom level.
-     * {@link ChromePdfRenderOptions#setViewPortWidth(int)} has no effect.
-     * Instead, Chrome will automatically set the view port based on {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}.
-     * Use {@link ChromePdfRenderOptions#setCssMediaType(CssMediaType)} to specify CSS media style.
-     *
-     * <p> Useful when using 'print' CSS media style or printing documents to match the Chrome browser print preview.
-     */
-
+    */
     Zoom,
 
     /**
      * Fit an exact number of pixels onto each PDF page.
-     * Uses {@link ChromePdfRenderOptions#setViewPortWidth(int)} to specify the pixel width to fit on each PDF page.
-     * {@link ChromePdfRenderOptions#setZoom(int)} has no effect. Instead, IronPdf will calculate the zoom level based on
-     * {@link ChromePdfRenderOptions#setViewPortWidth(int)} and {@link ChromePdfRenderOptions#setPaperSize(PaperSize)}
-     *
-     * <p> Useful when an optimal pixel width is known or printing documents to match a Chrome browser window display
+     * Useful when an optimal pixel width is known or printing documents to match a Chrome browser window display
      */
     FixedPixelWidth,
 
     /**
-     * Measures minimum HTML content width after it is rendered by the browser and calculates {@link ChromePdfRenderOptions#setZoom(int)}
+     * Measures minimum HTML content width after it is rendered by the browser and calculates zoom
      * based on the width of the content.
-     * {@link ChromePdfRenderOptions#setZoom(int)} and {@link ChromePdfRenderOptions#setViewPortWidth(int)} have no effect and are calculated automatically by IronPdf.
      *
-     * <p> Useful when fitting a wide content or content of unknown width onto a PDF page
+     * Useful when fitting a wide content or content of unknown width onto a PDF page
      */
     Automatic,
     /**
-     * Measures minimum HTML content width after it is rendered by the browser using the smallest view port possible, and calculates
-     * {@link ChromePdfRenderOptions#setZoom(int)} based on the width of the content.
-     * Use {@link ChromePdfRenderOptions#setViewPortWidth(int)} to specify the minimum number of pixels to be fit on each PDF page.
-     * {@link ChromePdfRenderOptions#setZoom(int)} has no effect and is calculated automatically by IronPdf.
-     *
-     * <p> Useful when fitting smaller content onto a wide page
+     * Measures minimum HTML content width after it is rendered by the browser using the smallest view port possible
+     * Useful when fitting smaller content onto a wide page
      */
-    AutomaticFit
+    AutomaticFit,
+    /**
+     * Creates a single page PDF which will force its entire content's width and height to fit into one page. Can be used for a consumer bill or receipt.
+     * Useful when printing bill or receipt
+     */
+    ContinuousFeed
 }

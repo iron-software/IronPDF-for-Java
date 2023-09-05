@@ -23,9 +23,10 @@ public class BookmarkTests extends TestBase {
         PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
         BookmarkManager bookmarkManager = doc.getBookmark();
         bookmarkManager.addBookMarkAtStart("B1", 0);
-        bookmarkManager.addChildBookmark("B2", 0, "B1");
+
         bookmarkManager.addChildBookmark("B3", 0, "B1");
         bookmarkManager.insertBookmark("B4", 0, "B1", "B3");
+        bookmarkManager.insertBookmark("B2", 0, "B1", "B4");
         bookmarkManager.addBookMarkAtStart("B5", 0);
         //todo check addBookMarkAtEnd
 

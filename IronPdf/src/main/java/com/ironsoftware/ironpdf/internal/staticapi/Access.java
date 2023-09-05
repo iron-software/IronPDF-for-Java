@@ -1,7 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.internal.proto.HandshakeRequest;
-import com.ironsoftware.ironpdf.internal.proto.HandshakeResponse;
+import com.ironsoftware.ironpdf.internal.proto.HandshakeRequestP;
+import com.ironsoftware.ironpdf.internal.proto.HandshakeResponseP;
 import com.ironsoftware.ironpdf.internal.proto.IronPdfServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -57,11 +57,11 @@ final class Access {
 
         logger.debug("Handshaking, Expected IronPdfEngine Version : " + Setting_Api.IRON_PDF_ENGINE_VERSION);
 
-        HandshakeRequest.Builder handshakeRequest = HandshakeRequest.newBuilder();
+        HandshakeRequestP.Builder handshakeRequest = HandshakeRequestP.newBuilder();
         handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
         handshakeRequest.setProgLang("java");
 
-        HandshakeResponse res_firstTry = newClient.blockingStub.handshake(
+        HandshakeResponseP res_firstTry = newClient.blockingStub.handshake(
                 handshakeRequest.build());
 
         logger.debug("Handshake result:" + res_firstTry);
@@ -110,6 +110,7 @@ final class Access {
                     Setting_Api.getIronPdfEngineZipName());
 
             logInfoOrSystemOut(logger, "Download IronPdfEngine to working dir: " + zipFilePath.toAbsolutePath());
+            logInfoOrSystemOut(logger, "You can skip this downloading step by adding IronPdfEngine as a Maven dependency. see: https://github.com/iron-software/IronPDF-for-Java#install-ironpdf-engine-as-a-maven-dependency");
             isTryDownloaded = true;
 
             URL downloadUrl = new URL("https://ironpdfengine.azurewebsites.net/api/IronPdfEngineDownload?version="
@@ -195,6 +196,11 @@ final class Access {
                 cmdList.add(String.format("enable_debug=%1$s", Setting_Api.enableDebug));
                 cmdList.add(String.format("log_path=%1$s", Setting_Api.logPath));
                 cmdList.add(String.format("programming_language=%1$s", "java"));
+                cmdList.add(String.format("single_process=%1$s", currentOsFullName().equalsIgnoreCase("MacOS")));
+                cmdList.add("docker_build=false");
+                cmdList.add("linux_and_docker_auto_config=false");
+                cmdList.add("skip_initialization=false");
+
                 if (Setting_Api.tempFolderPath != null)
                     cmdList.add(String.format("temp_folder_path=%1$s", Setting_Api.tempFolderPath.toAbsolutePath()));
 
@@ -208,6 +214,9 @@ final class Access {
                 ProcessBuilder pb = new ProcessBuilder(cmdList);
 
                 logger.info("Start IronPdfEngine");
+                if(enableDebug){
+                    logger.debug("options: "+ cmdList);
+                }
 
                 Process proc = pb.start();
                 catchServerMessage(proc);

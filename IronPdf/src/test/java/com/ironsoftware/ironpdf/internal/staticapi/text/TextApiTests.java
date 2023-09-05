@@ -12,7 +12,8 @@ public class TextApiTests extends TestBase {
     @Test
     public final void ExtractAllTextTest() {
         InternalPdfDocument doc = Render_Api.renderHtmlAsPdf("<body>A A AA</body>");
-        Assertions.assertTrue(Text_Api.extractAllText(doc).replace(" ","").contains("AAAA"));
+        String text = Text_Api.extractAllText(doc);
+        Assertions.assertTrue(text.replace(" ","").contains("AAAA"));
     }
 
     @Test

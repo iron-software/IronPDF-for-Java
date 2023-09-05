@@ -23,12 +23,14 @@ public final class Security_Api {
      */
     public static void removePasswordsAndEncryption(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
-        RemovePasswordsAndEncryptionRequest.Builder req = RemovePasswordsAndEncryptionRequest.newBuilder();
+        PdfiumRemovePasswordsAndEncryptionRequestP.Builder req = PdfiumRemovePasswordsAndEncryptionRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        EmptyResult res = client.blockingStub.pdfDocumentSecurityRemovePasswordsAndEncryption(
+        EmptyResultP res = client.blockingStub.pdfiumSecurityRemovePasswordsAndEncryption(
                 req.buildPartial());
         Utils_Util.handleEmptyResult(res);
+        internalPdfDocument.userPassword = "";
+        internalPdfDocument.ownerPassword = "";
     }
 
     /**
@@ -41,17 +43,20 @@ public final class Security_Api {
      */
     public static SecurityOptions getPdfSecurityOptions(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
-        GetPdfSecuritySettingsRequest.Builder req = GetPdfSecuritySettingsRequest.newBuilder();
+        PdfiumGetPdfSecuritySettingsRequestP.Builder req = PdfiumGetPdfSecuritySettingsRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        GetPdfSecuritySettingsResult res = client.blockingStub.pdfDocumentSecurityGetPdfSecuritySettings(
+        PdfiumGetPdfSecuritySettingsResultP res = client.blockingStub.pdfiumSecurityGetPdfSecuritySettings(
                 req.build());
         if (res.getResultOrExceptionCase()
-                == GetPdfSecuritySettingsResult.ResultOrExceptionCase.EXCEPTION) {
+                == PdfiumGetPdfSecuritySettingsResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
         }
 
-        return Security_Converter.fromProto(res.getSecuritySettings());
+        SecurityOptions opt = Security_Converter.fromProto(res.getSecuritySettings());
+        opt.setOwnerPassword(internalPdfDocument.ownerPassword);
+        opt.setUserPassword(internalPdfDocument.userPassword);
+        return opt;
     }
 
     /**
@@ -69,19 +74,30 @@ public final class Security_Api {
                     "MakePdfDocumentReadOnly :: A string for owner password is required to enable PDF encryption and all document security options.");
         }
 
-        com.ironsoftware.ironpdf.internal.proto.PdfSecuritySettings.Builder iron = com.ironsoftware.ironpdf.internal.proto.PdfSecuritySettings.newBuilder();
+        com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSecuritySettingsP.Builder iron = com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSecuritySettingsP.newBuilder();
 
-        if (!Utils_StringHelper.isNullOrWhiteSpace(ownerPassword)) {
-            iron.setOwnerPassword(ownerPassword);
-        }
+        SecurityOptions securityOptions = new SecurityOptions();
+        securityOptions.setAllowUserCopyPasteContent(false);
+        securityOptions.setAllowUserCopyPasteContentForAccessibility(false);
+        securityOptions.setAllowUserAnnotations(false);
+        securityOptions.setAllowUserEdits(PdfEditSecurity.NO_EDIT);
+        securityOptions.setAllowUserFormData(false);
+        securityOptions.setAllowUserPrinting(PdfPrintSecurity.FULL_PRINT_RIGHTS);
+        securityOptions.setOwnerPassword(ownerPassword);
 
-        iron.setAllowUserCopyPasteContent(false);
-        iron.setAllowUserCopyPasteContentForAccessibility(false);
-        iron.setAllowUserAnnotations(false);
-        iron.setAllowUserEdits(Security_Converter.toProto(PdfEditSecurity.NO_EDIT));
-        iron.setAllowUserFormData(false);
-        iron.setAllowUserPrinting(toProto(PdfPrintSecurity.FULL_PRINT_RIGHTS));
-        setPdfSecuritySettings(internalPdfDocument, Security_Converter.fromProto(iron.build()));
+
+
+//        PdfiumPdfSecuritySettingsP proto = Security_Converter.toProto(securityOptions);
+//        iron.setAllowUserCopyPasteContent(false);
+//        iron.setAllowUserCopyPasteContentForAccessibility(false);
+//        iron.setAllowUserAnnotations(false);
+//        iron.setAllowUserEdits(Security_Converter.toProto(PdfEditSecurity.NO_EDIT));
+//        iron.setAllowUserFormData(false);
+//        iron.setAllowUserPrinting(toProto(PdfPrintSecurity.FULL_PRINT_RIGHTS));
+        setPdfSecuritySettings(internalPdfDocument, securityOptions);
+
+        internalPdfDocument.userPassword = securityOptions.getUserPassword();
+        internalPdfDocument.ownerPassword = securityOptions.getOwnerPassword();
     }
 
     /**
@@ -95,12 +111,18 @@ public final class Security_Api {
     public static void setPdfSecuritySettings(InternalPdfDocument internalPdfDocument,
                                               SecurityOptions securityOptions) {
         RpcClient client = Access.ensureConnection();
-        SetPdfSecuritySettingsRequest.Builder req = SetPdfSecuritySettingsRequest.newBuilder();
+        PdfiumSetPdfSecuritySettingsRequestP.Builder req = PdfiumSetPdfSecuritySettingsRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
-        req.setSecuritySettings(Security_Converter.toProto(securityOptions));
+        req.setSettings(Security_Converter.toProto(securityOptions));
 
-        EmptyResult res = client.blockingStub.pdfDocumentSecuritySetPdfSecuritySettings(
+        PdfDocumentResultP res = client.blockingStub.pdfiumSecuritySetPdfSecuritySettings(
                 req.buildPartial());
-        Utils_Util.handleEmptyResult(res);
+
+        if (res.getResultOrExceptionCase() == PdfDocumentResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(res.getException());
+        }
+
+        internalPdfDocument.userPassword = securityOptions.getUserPassword();
+        internalPdfDocument.ownerPassword = securityOptions.getOwnerPassword();
     }
 }

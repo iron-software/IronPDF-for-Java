@@ -13,7 +13,7 @@ public class HeaderFooterTests extends TestBase {
 
     @Test
     public final void AddTextHeaderTest() throws IOException {
-        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
@@ -41,7 +41,7 @@ public class HeaderFooterTests extends TestBase {
 
     @Test
     public final void AddOnlyLeftTextHeaderTest() throws IOException {
-        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
@@ -62,9 +62,10 @@ public class HeaderFooterTests extends TestBase {
 
         Assertions.assertTrue(allText.contains(textHF.getLeftText()));
     }
+
     @Test
     public final void AddTextFooterTest() throws IOException {
-        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
@@ -84,7 +85,6 @@ public class HeaderFooterTests extends TestBase {
         Assertions.assertNotEquals(Color.WHITE, avgColorAfter);
 
         String allText = doc.extractAllText();
-
         Assertions.assertTrue(allText.contains(textHF.getCenterText()));
         Assertions.assertTrue(allText.contains(textHF.getLeftText()));
         Assertions.assertTrue(allText.contains(textHF.getRightText()));
@@ -92,7 +92,7 @@ public class HeaderFooterTests extends TestBase {
 
     @Test
     public final void AddHtmlHeaderTest() throws IOException {
-        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 
@@ -118,7 +118,7 @@ public class HeaderFooterTests extends TestBase {
 
     @Test
     public final void AddHtmlFooterTest() throws IOException {
-        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = toByteArray(doc.toBufferedImages().get(0));
 

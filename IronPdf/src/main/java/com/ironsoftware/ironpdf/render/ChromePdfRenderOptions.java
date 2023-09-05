@@ -27,19 +27,18 @@ public class ChromePdfRenderOptions implements Cloneable {
     private double customPaperWidth = 210;
     /**
      * Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
-     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
+     * from Ajax / Angular Applications. <p>Also see {@link #waitFor}</p>
      */
     private boolean enableJavaScript = true;
 
-    /**
-     * Behavior when fitting HTML content to a physical paper size.
-     * Determines {@link #getZoom()} and  {@link #getViewPortWidth()}.
-     * <p>See {@link FitToPaperModes} for a detailed description of each mode.</p>
-     * <p>{@link FitToPaperModes#Zoom} disables automatic fitting behavior.</p>
-     * <p>{@link FitToPaperModes#Automatic} automatically measures and fits HTML content onto each PDF page.</p>
-     * <p>Default value is FitToPaperModes.None.</p>
-     */
     private FitToPaperModes fitToPaperMode = FitToPaperModes.Zoom;
+
+    private int viewPortWidth = 1024;
+
+    private int viewPortHeight = 1280;
+
+    private int zoom = 100;
+
     /**
      * Outputs a black-and-white PDF
      */
@@ -81,48 +80,19 @@ public class ChromePdfRenderOptions implements Cloneable {
      * Prints background-colors and images from Html.
      */
     private boolean printHtmlBackgrounds = true;
-    /**
-     * Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, Ajax or animations.
-     */
-    private int renderDelay = 0;
-
-    /**
-     * Render timeout in seconds
-     */
-    private int timeout = 60;
-    /**
-     * PDF Document Name and Title meta-data.  Not required.  Useful for mail-merge and file naming
-     */
 
     private String title;
-    /**
-     * Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p> <p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many websites.</p>
-     */
-    private int viewPortHeight = 1280;
-    /**
-     * Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p><p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many website</p>
-     */
-    private int viewPortWidth = 1024;
-    /**
-     * The zoom level in %. Enlarges the rendering size of Html documents.
-     */
-    private int zoom = 100;
 
     /**
      * A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
      */
     private String javascript;
+
+    /**
+     * A wrapper object that holds configuration for wait-for mechanism for user to wait for certain events before rendering.
+     * By default, it will wait for nothing.
+     */
+    private WaitFor waitFor = new WaitFor();
 
     /**
      * Is create pdf forms from html. Turns all Html forms elements into editable PDF forms.
@@ -222,7 +192,7 @@ public class ChromePdfRenderOptions implements Cloneable {
 
     /**
      * Is enable JavaScript. Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
-     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
+     * from Ajax / Angular Applications. <p>Also see {@link #waitFor}</p>
      *
      * @return the boolean
      */
@@ -232,7 +202,7 @@ public class ChromePdfRenderOptions implements Cloneable {
 
     /**
      * Sets enable JavaScript. Enables JavaScript and Json to be executed  before the page is rendered.  Ideal for printing
-     * from Ajax / Angular Applications. <p>Also see {@link #renderDelay}</p>
+     * from Ajax / Angular Applications. <p>Also see {@link #waitFor}</p>
      *
      * @param value the value
      */
@@ -241,20 +211,22 @@ public class ChromePdfRenderOptions implements Cloneable {
     }
 
     /**
-     * Behavior when fitting HTML content to a physical paper size.
-     * Determines {@link #getZoom()} and {@link #getViewPortWidth()}.
-     *
-     * @return the boolean
+     * use one of these method instead
+     * {@link #UseChromeDefaultRendering()}
+     * {@link #UseScaledRendering()}
+     * {@link #UseResponsiveCssRendering()}
+     * {@link #UseFitToPageRendering()}
      */
     public FitToPaperModes getFitToPaperMode() {
         return fitToPaperMode;
     }
 
     /**
-     * Behavior when fitting HTML content to a physical paper size.
-     * Determines {@link #setZoom(int)} and {@link #setViewPortWidth(int)}.
-     *
-     * @param value the value
+     * @deprecated use one of these method instead
+     * {@link #UseChromeDefaultRendering()}
+     * {@link #UseScaledRendering()}
+     * {@link #UseResponsiveCssRendering()}
+     * {@link #UseFitToPageRendering()}
      */
     public void setFitToPaperMode(FitToPaperModes value) {
         fitToPaperMode = value;
@@ -426,44 +398,6 @@ public class ChromePdfRenderOptions implements Cloneable {
     }
 
     /**
-     * Gets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, Ajax or animations.
-     *
-     * @return the render delay
-     */
-    public int getRenderDelay() {
-        return renderDelay;
-    }
-
-    /**
-     * Sets render delay. Milliseconds to wait after Html is rendered before printing.  This can use useful when
-     * considering the rendering of JavaScript, Ajax or animations.
-     *
-     * @param value the value
-     */
-    public void setRenderDelay(int value) {
-        renderDelay = value;
-    }
-
-    /**
-     * Gets timeout. Render timeout in seconds.
-     *
-     * @return the timeout
-     */
-    public int getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * Sets timeout. Render timeout in seconds.
-     *
-     * @param value the value
-     */
-    public void setTimeout(int value) {
-        timeout = value;
-    }
-
-    /**
      * Gets title. PDF Document Name and Title meta-data.  Not required.  Useful for mail-merge and file naming.
      *
      * @return the title
@@ -482,85 +416,12 @@ public class ChromePdfRenderOptions implements Cloneable {
     }
 
     /**
-     * Gets view port height. Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p> <p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many websites.</p>
-     *
-     * @return the view port height
-     */
-    public int getViewPortHeight() {
-        return viewPortHeight;
-    }
-
-    /**
-     * Sets view port height. Defines a virtual screen height used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p> <p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many websites.</p>
-     *
-     * @param value the value
-     */
-    public void setViewPortHeight(int value) {
-        viewPortHeight = value;
-    }
-
-    /**
-     * Gets view port width. Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p><p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many website</p>
-     *
-     * @return the view port width
-     */
-    public int getViewPortWidth() {
-        return viewPortWidth;
-    }
-
-    /**
-     * Sets view port width. Defines a virtual screen width used to render HTML to PDF in IronPdf. Measured in pixels.
-     * <p>Viewport size is important in modern responsive HTML5 + CSS3 websites (e.g. Bootstrap
-     * framework websites) because the rendering and order of elements on the screen is dependent on
-     * viewport size.</p><p>The default viewport is 1280px wide by 1024px high to ensure the desktop
-     * version of a website is rendered unless otherwise specified.   Smaller sizes (particularly
-     * width) will render responsive versions of many website</p>
-     *
-     * @param value the value
-     */
-    public void setViewPortWidth(int value) {
-        viewPortWidth = value;
-    }
-
-    /**
      * Get A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
+     *
      * @return the javascript string
      */
     public String getJavascript() {
         return javascript;
-    }
-
-    /**
-     * Gets zoom. The zoom level in %. Enlarges the rendering size of Html documents.
-     *
-     * @return the zoom
-     */
-    public int getZoom() {
-        return zoom;
-    }
-
-    /**
-     * Sets zoom. The zoom level in %. Enlarges the rendering size of Html documents.
-     *
-     * @param value the value
-     */
-    public void setZoom(int value) {
-        zoom = value;
     }
 
     /**
@@ -632,9 +493,162 @@ public class ChromePdfRenderOptions implements Cloneable {
 
     /**
      * Set A custom javascript string to be executed after all HTML has loaded but before PDf rendering.
+     *
      * @param javascript a javascript string.
      */
     public void setJavascript(String javascript) {
         this.javascript = javascript;
+    }
+
+    /**
+     * Gets a wrapper object that holds configuration for wait-for mechanism for user to wait for certain events before rendering.
+     * By default, it will wait for nothing.
+     */
+    public WaitFor getWaitFor() {
+        return waitFor;
+    }
+
+    /**
+     * Sets a wrapper object that holds configuration for wait-for mechanism for user to wait for certain events before rendering.
+     * By default, it will wait for nothing.
+     */
+    public void setWaitFor(WaitFor waitFor) {
+        this.waitFor = waitFor;
+    }
+
+    /**
+     * internal use
+     */
+    public int getViewPortWidth() {
+        return viewPortWidth;
+    }
+
+    /**
+     * internal use
+     */
+    public int getViewPortHeight() {
+        return viewPortHeight;
+    }
+
+    /**
+     * internal use
+     */
+    public int getZoom() {
+        return zoom;
+    }
+
+    /**
+     * Lays out PDF pages in the same way as when viewed from Google Chrome's print preview.
+     * Responsive CSS viewport is interpreted based on the width of the Specified Paper Size {@link #setPaperSize(PaperSize)}.
+     * To change this responsive behavior use {@link #UseResponsiveCssRendering}
+     */
+    public void UseChromeDefaultRendering() {
+        fitToPaperMode = FitToPaperModes.Zoom;
+        zoom = 100;
+    }
+
+
+    /**
+     * Adopts a layout which behaves in the same way the 'Chrome Print Preview' does for a given paper size, with an additional zoom level applied to allow content to be manually scaled by the developer.
+     * Responsive CSS is interpreted based on the width of the {@link ChromePdfRenderOptions#setPaperSize(PaperSize)} Specified Paper Size
+     **/
+    public void UseScaledRendering() {
+        UseScaledRendering(100);
+    }
+
+    /**
+     * Adopts a layout which behaves in the same way the 'Chrome Print Preview' does for a given paper size, with an additional zoom level applied to allow content to be manually scaled by the developer.
+     * Responsive CSS is interpreted based on the width of the {@link ChromePdfRenderOptions#setPaperSize(PaperSize)} Specified Paper Size
+     *
+     * @param zoomPercentage A percentage based scale factor on the HTML document.
+     **/
+    public void UseScaledRendering(int zoomPercentage) {
+        fitToPaperMode = FitToPaperModes.Zoom;
+        zoom = zoomPercentage;
+    }
+
+
+    /**
+     * Uses Responsive CSS to define the rendering of the HTML based on the ViewPortWidth parameter.
+     * Content will attempt to scale the rendered content to fill the width of the {@link #setPaperSize(PaperSize)} Specified Paper Size
+     * Set {@link #setCssMediaType} to choose between paper and screen CSS interpretations.
+     **/
+    public void UseResponsiveCssRendering() {
+        UseResponsiveCssRendering(1280);
+    }
+
+    /**
+     * Uses Responsive CSS to define the rendering of the HTML based on the ViewPortWidth parameter.
+     * Content will attempt to scale the rendered content to fill the width of the {@link #setPaperSize(PaperSize)} Specified Paper Size
+     * Set {@link #setCssMediaType} to choose between paper and screen CSS interpretations.
+     *
+     * @param viewPortWidthValue A pixel based virtual browser viewport for responsive CSS designs.
+     **/
+    public void UseResponsiveCssRendering(int viewPortWidthValue) {
+        fitToPaperMode = FitToPaperModes.FixedPixelWidth;
+        zoom = 100;
+        viewPortWidth = viewPortWidthValue;
+    }
+
+
+    /**
+     * Scales content to fit the specified {@link #setPaperSize(PaperSize)}. This mode measures minimum HTML content width after it is rendered by the browser, and then scales that content to fit to 1 sheet of paper wide where possible.
+     * A minimum width can be set to control scaling and also to ensure that responsive CSS rules are correctly applied.
+     **/
+    public void UseFitToPageRendering() {
+        UseFitToPageRendering(0);
+    }
+
+    /**
+     * Scales content to fit the specified {@link #setPaperSize(PaperSize)}. This mode measures minimum HTML content width after it is rendered by the browser, and then scales that content to fit to 1 sheet of paper wide where possible.
+     * A minimum width can be set to control scaling and also to ensure that responsive CSS rules are correctly applied.
+     *
+     * @param minimumPixelWidth A pixel based minimum with for the document.  Can help HTML elements to display correctly and respond appropriately to CSS3 responsive layout rules.
+     **/
+    public void UseFitToPageRendering(int minimumPixelWidth) {
+        fitToPaperMode = FitToPaperModes.FixedPixelWidth;
+        zoom = 100;
+        viewPortWidth = minimumPixelWidth;
+    }
+
+    /**
+     * Creates a single page PDF which will force its entire content's width and height to fit into one page. Can be used for a consumer bill or receipt.
+     */
+    public void UseContinuousFeedRendering() {
+        UseContinuousFeedRendering(80, 5);
+    }
+
+    /**
+     * Creates a single page PDF which will force its entire content's width and height to fit into one page. Can be used for a consumer bill or receipt.
+     *
+     * @param margin The margin in millimeters to apply to the PDF page. Default is 5
+     */
+    public void UseContinuousFeedRendering(int margin) {
+        UseContinuousFeedRendering(80, margin);
+    }
+
+    /**
+     * Creates a single page PDF which will force its entire content's width and height to fit into one page. Can be used for a consumer bill or receipt.
+     *
+     * @param width The width in millimeters to apply to the PDF page. Default is 80
+     */
+    public void UseContinuousFeedRendering(double width) {
+        UseContinuousFeedRendering(width, 5);
+    }
+
+    /**
+     * Creates a single page PDF which will force its entire content's width and height to fit into one page. Can be used for a consumer bill or receipt.
+     *
+     * @param width  The width in millimeters to apply to the PDF page. Default is 80
+     * @param margin The margin in millimeters to apply to the PDF page. Default is 5
+     */
+    public void UseContinuousFeedRendering(double width, int margin) {
+        fitToPaperMode = FitToPaperModes.ContinuousFeed;
+        paperSize = PaperSize.Custom;
+        customPaperWidth = width;
+        marginTop = 0;
+        marginBottom = 0;
+        marginLeft = margin;
+        marginRight = margin;
     }
 }

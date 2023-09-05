@@ -1,11 +1,11 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.exception.*;
-import com.ironsoftware.ironpdf.internal.proto.RemoteException;
+import com.ironsoftware.ironpdf.internal.proto.RemoteExceptionP;
 
 final class Exception_Converter {
 
-    static RuntimeException fromProto(RemoteException exception) {
+    static RuntimeException fromProto(RemoteExceptionP exception) {
         Exception_RemoteException ex = new Exception_RemoteException(exception.getMessage(),
                 Utils_Util.nullIfEmpty(exception.getRemoteStackTrace()),
                 Utils_Util.nullIfEmpty(exception.getExceptionType()));

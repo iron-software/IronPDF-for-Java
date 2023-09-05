@@ -140,8 +140,8 @@ final class Utils_Util {
      *
      * @param emptyResult the empty result
      */
-    static void handleEmptyResult(EmptyResult emptyResult) {
-        if (emptyResult.getResultOrExceptionCase() == EmptyResult.ResultOrExceptionCase.EXCEPTION) {
+    static void handleEmptyResult(EmptyResultP emptyResult) {
+        if (emptyResult.getResultOrExceptionCase() == EmptyResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(emptyResult.getException());
         }
     }
@@ -151,12 +151,12 @@ final class Utils_Util {
      *
      * @param emptyResultChunks the empty result chunks
      */
-    static void handleEmptyResultChunks(List<EmptyResult> emptyResultChunks) {
+    static void handleEmptyResultChunks(List<EmptyResultP> emptyResultChunks) {
         if (emptyResultChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdf.");
         }
 
-        EmptyResult res = emptyResultChunks.stream().findFirst().get();
+        EmptyResultP res = emptyResultChunks.stream().findFirst().get();
 
         handleEmptyResult(res);
     }
@@ -167,8 +167,8 @@ final class Utils_Util {
      * @param booleanResult the boolean result
      * @return the boolean
      */
-    static boolean handleBooleanResult(BooleanResult booleanResult) {
-        if (booleanResult.getResultOrExceptionCase() == BooleanResult.ResultOrExceptionCase.EXCEPTION) {
+    static boolean handleBooleanResult(BooleanResultP booleanResult) {
+        if (booleanResult.getResultOrExceptionCase() == BooleanResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(booleanResult.getException());
         }
         return booleanResult.getResult();
@@ -181,17 +181,17 @@ final class Utils_Util {
      * @return the list
      * @throws IOException the io exception
      */
-    static List<byte[]> handleImagesResult(List<ImagesResultStream> resultChunks) throws IOException {
+    static List<byte[]> handleImagesResult(List<ImagesResultStreamP> resultChunks) throws IOException {
         if (resultChunks.size() == 0) {
             throw new IOException("No response from IronPdf.");
         }
-        resultChunks.stream().filter(ImagesResultStream::hasException).findFirst().ifPresent(x -> {
+        resultChunks.stream().filter(ImagesResultStreamP::hasException).findFirst().ifPresent(x -> {
             throw Exception_Converter.fromProto(x.getException());
         });
 
         java.util.Map<Integer, List<byte[]>> grouped = resultChunks.stream()
-                .map(ImagesResultStream::getRawImagesChunk)
-                .collect(Collectors.groupingBy(RawImageChunkWithIndex::getImageIndex,
+                .map(ImagesResultStreamP::getRawImagesChunk)
+                .collect(Collectors.groupingBy(RawImageChunkWithIndexP::getImageIndex,
                         Collectors.mapping(c -> c.getRawImageChunk().toByteArray(), Collectors.toList())));
 
         return grouped.values().stream().map(Utils_Util::combineChunk).collect(Collectors.toList());
@@ -204,11 +204,11 @@ final class Utils_Util {
      * @return the list
      * @throws IOException the io exception
      */
-    static byte[] handleImageResult(List<ImageResultStream> resultChunks) throws IOException {
+    static byte[] handleImageResult(List<ImageResultStreamP> resultChunks) throws IOException {
         if (resultChunks.size() == 0) {
             throw new IOException("No response from IronPdf.");
         }
-        resultChunks.stream().filter(ImageResultStream::hasException).findFirst().ifPresent(x -> {
+        resultChunks.stream().filter(ImageResultStreamP::hasException).findFirst().ifPresent(x -> {
             throw Exception_Converter.fromProto(x.getException());
         });
         List<byte[]> chunks = resultChunks.stream()
@@ -242,8 +242,8 @@ final class Utils_Util {
      * @param res the res
      * @return the internal pdf document
      */
-    static InternalPdfDocument handlePdfDocumentResult(PdfDocumentResult res) {
-        if (res.getResultOrExceptionCase() == PdfDocumentResult.ResultOrExceptionCase.EXCEPTION) {
+    static InternalPdfDocument handlePdfDocumentResult(PdfDocumentResultP res) {
+        if (res.getResultOrExceptionCase() == PdfDocumentResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
         }
 
@@ -256,14 +256,26 @@ final class Utils_Util {
      * @param resChunks the res chunks
      * @return the internal pdf document
      */
-    static InternalPdfDocument handlePdfDocumentChunks(List<PdfDocumentResult> resChunks) {
+    static InternalPdfDocument handlePdfDocumentChunks(List<PdfDocumentResultP> resChunks) {
         if (resChunks.size() == 0) {
             throw new RuntimeException("No response from IronPdf.");
         }
 
-        PdfDocumentResult res = resChunks.stream().findFirst().get();
+        PdfDocumentResultP res = resChunks.stream().findFirst().get();
 
         return handlePdfDocumentResult(res);
+    }
+
+    static byte[] handleByteChunks(List<BytesResultStreamP> resultChunks){
+        List<byte[]> bytesChunks = resultChunks.stream().map(res -> {
+                    if (res.getResultOrExceptionCase() == BytesResultStreamP.ResultOrExceptionCase.EXCEPTION) {
+                        throw Exception_Converter.fromProto(res.getException());
+                    }
+                    return res.getResultChunk().toByteArray();
+                }
+        ).collect(Collectors.toList());
+
+        return Utils_Util.combineChunk(bytesChunks);
     }
 
     /**

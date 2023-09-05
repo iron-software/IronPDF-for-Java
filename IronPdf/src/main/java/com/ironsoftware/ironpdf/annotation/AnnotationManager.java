@@ -36,7 +36,7 @@ public class AnnotationManager {
         textAnnotation1.setOpenByDefault(options.isOpen());
         textAnnotation1.setPrintable(options.isPrintable());
         textAnnotation1.setReadOnly(options.isReadonly());
-        textAnnotation1.setRotateable(options.isRotateable());
+        textAnnotation1.setRotatable(options.isRotateable());
         textAnnotation1.setSubject(options.getSubject());
         textAnnotation1.setTitle(options.getTitle());
         textAnnotation1.setIcon(options.getIcon());
@@ -56,4 +56,6 @@ public class AnnotationManager {
         return Annotation_Api.getAnnotationCount(internalPdfDocument,
                 pageIndex);
     }
+
+
 }

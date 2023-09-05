@@ -18,14 +18,17 @@ public final class Page_Api {
      * @param internalPdfDocument the internal pdf document
      * @param pageIndexes         A list of pages indexes to remove.
      */
-    public static void removePage(InternalPdfDocument internalPdfDocument, Iterable<Integer> pageIndexes) {
+    public static void removePage(InternalPdfDocument internalPdfDocument, List<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
-        RemovePagesRequest.Builder req = RemovePagesRequest.newBuilder();
+        PdfiumRemovePagesRequestP.Builder req = PdfiumRemovePagesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.addAllPageIndexes(pageIndexes);
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageRemovePages(req.build());
-        Utils_Util.handleEmptyResult(res);
+        PdfiumRemovePagesResultP res = client.blockingStub.pdfiumPageRemovePages(req.build());
+
+        if (res.getResultOrExceptionCase() == PdfiumRemovePagesResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(res.getException());
+        }
     }
 
     /**
@@ -38,12 +41,12 @@ public final class Page_Api {
      */
     public static InternalPdfDocument mergePage(List<InternalPdfDocument> pdfDocuments) {
         RpcClient client = Access.ensureConnection();
-        PdfDocumentMergeRequest.Builder req = PdfDocumentMergeRequest.newBuilder();
+        PdfiumPdfDocumentMergeRequestP.Builder req = PdfiumPdfDocumentMergeRequestP.newBuilder();
 
         req.addAllDocuments(
                 pdfDocuments.stream().map(x -> x.remoteDocument).collect(Collectors.toList()));
 
-        PdfDocumentResult res = client.blockingStub.pdfDocumentPageMerge(req.build());
+        PdfDocumentResultP res = client.blockingStub.pdfiumPageMerge(req.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -72,12 +75,12 @@ public final class Page_Api {
     public static void insertPage(InternalPdfDocument internalPdfDocument, InternalPdfDocument anotherPdf,
                                   int atIndex) {
         RpcClient client = Access.ensureConnection();
-        PdfDocumentInsertRequest.Builder req = PdfDocumentInsertRequest.newBuilder();
+        PdfiumPdfDocumentInsertRequestP.Builder req = PdfiumPdfDocumentInsertRequestP.newBuilder();
         req.setMainDocument(internalPdfDocument.remoteDocument);
         req.setInsertionIndex(atIndex);
         req.setInsertedDocument(anotherPdf.remoteDocument);
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageInsertPdf(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumPageInsertPdf(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -91,12 +94,12 @@ public final class Page_Api {
      */
     public static void appendPdf(InternalPdfDocument mainPdfDocument, InternalPdfDocument anotherPdf) {
         RpcClient client = Access.ensureConnection();
-        PdfDocumentInsertRequest.Builder req = PdfDocumentInsertRequest.newBuilder();
+        PdfiumPdfDocumentInsertRequestP.Builder req = PdfiumPdfDocumentInsertRequestP.newBuilder();
         req.setMainDocument(mainPdfDocument.remoteDocument);
         req.setInsertionIndex(getPagesInfo(mainPdfDocument).size());
         req.setInsertedDocument(anotherPdf.remoteDocument);
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageInsertPdf(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumPageInsertPdf(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -108,12 +111,12 @@ public final class Page_Api {
      */
     public static List<PageInfo> getPagesInfo(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
-        GetPagesRequest.Builder req = GetPagesRequest.newBuilder();
+        PdfiumGetPagesRequestP.Builder req = PdfiumGetPagesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        GetPagesResult res = client.blockingStub.pdfDocumentPageGetPages(req.build());
+        PdfiumGetPagesResultP res = client.blockingStub.pdfiumPageGetPages(req.build());
 
-        if (res.getResultOrExceptionCase() == GetPagesResult.ResultOrExceptionCase.EXCEPTION) {
+        if (res.getResultOrExceptionCase() == PdfiumGetPagesResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
         }
         return res.getResult().getPagesList().stream()
@@ -138,16 +141,18 @@ public final class Page_Api {
      * @param pageIndexes         Indexes of the pages to rotate in an IEnumerable, list or array. PageIndex                     is a 'Zero based' page number, the first page being 0
      */
     public static void setPageRotation(InternalPdfDocument internalPdfDocument, PageRotation pageRotation,
-                                       Iterable<Integer> pageIndexes) {
+                                       List<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
-        SetPagesRotationRequest.Builder req = SetPagesRotationRequest.newBuilder();
+        PdfiumSetPagesRotationRequestP.Builder req = PdfiumSetPagesRotationRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageRotation(Page_Converter.toProto(pageRotation));
-        if (pageIndexes != null) {
-            req.addAllPageIndexes(pageIndexes);
-        }
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageSetPagesRotation(req.build());
+        if(pageIndexes == null || pageIndexes.isEmpty()){
+            pageIndexes = Page_Api.getPagesInfo(internalPdfDocument).stream().map(PageInfo::getPageIndex).collect(Collectors.toList());
+        }
+        req.addAllPageIndexes(pageIndexes);
+
+        EmptyResultP res = client.blockingStub.pdfiumPageSetPagesRotation(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -159,14 +164,14 @@ public final class Page_Api {
      * @return A new {@link InternalPdfDocument}
      */
     public static InternalPdfDocument copyPage(InternalPdfDocument internalPdfDocument,
-                                               Iterable<Integer> pageIndexes) {
+                                               List<Integer> pageIndexes) {
         RpcClient client = Access.ensureConnection();
-        CopyPagesRequest.Builder req = CopyPagesRequest.newBuilder();
+        PdfiumCopyPagesRequestP.Builder req = PdfiumCopyPagesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
         req.addAllPageIndexes(pageIndexes);
 
-        PdfDocumentResult res = client.blockingStub.pdfDocumentPageCopyPages(req.build());
+        PdfDocumentResultP res = client.blockingStub.pdfiumPageCopyPages(req.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -181,13 +186,13 @@ public final class Page_Api {
     public static void resizePage(InternalPdfDocument internalPdfDocument, double pageWidth, double pageHeight,
                                        Integer pageIndex) {
         RpcClient client = Access.ensureConnection();
-        ResizePageRequest.Builder req = ResizePageRequest.newBuilder();
+        PdfiumResizePageRequestP.Builder req = PdfiumResizePageRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageHeight(pageHeight);
         req.setPageWidth(pageWidth);
         req.setPageIndex(pageIndex);
 
-        EmptyResult res = client.blockingStub.pdfDocumentPageResizePage(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumPageResizePage(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

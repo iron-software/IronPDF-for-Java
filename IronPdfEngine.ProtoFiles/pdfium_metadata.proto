@@ -1,0 +1,59 @@
+﻿syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumMetadataFieldP {
+	string key =1;
+	optional string value =2;
+}
+
+message PdfiumMetadataFieldResultP {
+	oneof result_or_exception {
+		PdfiumMetadataFieldP result = 1;
+		RemoteExceptionP exception =2;
+	}
+}
+
+message PdfiumMetadataDictResultP {
+	oneof result_or_exception {
+		PdfiumMetadataDictP result = 1;
+		RemoteExceptionP exception =2;
+	}
+}
+
+message PdfiumMetadataDictP {
+	repeated PdfiumMetadataFieldP dict =1;
+}
+
+message PdfiumSetMetadataRequestP {
+	PdfDocumentP document = 1;
+	string key =2;
+	string value =3;
+}
+
+message PdfiumGetMetadataRequestP {
+	PdfDocumentP document = 1;
+	string key =2;
+}
+
+message PdfiumRemoveMetadataRequestP {
+	PdfDocumentP document = 1;
+	string key =2;
+}
+
+message PdfiumGetMetadataKeysRequestP {
+	PdfDocumentP document = 1;
+}
+
+message PdfiumGetMetadataDictRequestP {
+	PdfDocumentP document = 1;
+}
+
+message PdfiumSetMetadataDictRequestP {
+	PdfDocumentP document = 1;
+	StringDictionaryP metadataDict = 2;
+}
+

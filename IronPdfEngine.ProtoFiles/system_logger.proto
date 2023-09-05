@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message SystemSetIsDebugRequestP {
+  bool is_debug = 1;
+}

@@ -32,7 +32,7 @@ public final class Render_Api {
      * @throws IOException the io exception
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath, null, null,null);
+        return renderHtmlFileAsPdf(htmlFilePath, null, null);
     }
 
     /**
@@ -44,7 +44,7 @@ public final class Render_Api {
      * @return A {@link InternalPdfDocument}
      * @throws IOException the io exception
      */
-    public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath, String baseUrl,
+    public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromePdfRenderOptions renderOptions,
                                                           ChromeHttpLoginCredentials loginCredentials) throws IOException {
         if (Utils_StringHelper.isNullOrWhiteSpace(htmlFilePath)) {
@@ -66,7 +66,7 @@ public final class Render_Api {
                     htmlFilePath));
         }
 
-        return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials, baseUrl);
+        return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials);
     }
 
     /**
@@ -75,55 +75,45 @@ public final class Render_Api {
      * @param html             The Html to be rendered as a PDF.
      * @param renderOptions    Rendering options
      * @param loginCredentials Http login credentials
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
                                                       ChromePdfRenderOptions renderOptions,
-                                                      ChromeHttpLoginCredentials loginCredentials,
-                                                      String baseUrl) {
+                                                      ChromeHttpLoginCredentials loginCredentials) {
         RpcClient client = Access.ensureConnection();
 
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<RenderPdfDocumentFromStringSnippetRequestStream> requestStream =
-                client.stub.renderFromStringSnippet(
+        io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromHtmlRequestStreamP> requestStream =
+                client.stub.chromeRenderFromHtml(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
-        RenderPdfDocumentFromStringSnippetRequestStream.Info.Builder info =
-                RenderPdfDocumentFromStringSnippetRequestStream.Info.newBuilder();
+        ChromeRenderPdfDocumentFromHtmlRequestStreamP.InfoP.Builder info =
+                ChromeRenderPdfDocumentFromHtmlRequestStreamP.InfoP.newBuilder();
 
-        com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptions renderOp = Render_Converter.toProto(
+        com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptionsP renderOp = Render_Converter.toProto(
                 renderOptions);
         if (renderOp != null) {
             info.setRenderOptions(renderOp);
         }
 
-        com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentials login = Render_Converter.toProto(
+        com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentialsP login = Render_Converter.toProto(
                 loginCredentials);
         if (login != null) {
             info.setHttpOptions(login);
         }
-        if(baseUrl!=null){
-            if(Setting_Api.isIronPdfEngineDocker){
-                logger.warn("baseUrl does not support when using IronPdfEngine in Docker, For alternative please use PdfDocument.renderZipAsPdf()");
-            }else {
-                info.setBaseUrl(baseUrl);
-            }
 
-        }
-
-        RenderPdfDocumentFromStringSnippetRequestStream.Builder infoMsg =
-                RenderPdfDocumentFromStringSnippetRequestStream.newBuilder();
+        ChromeRenderPdfDocumentFromHtmlRequestStreamP.Builder infoMsg =
+                ChromeRenderPdfDocumentFromHtmlRequestStreamP.newBuilder();
         infoMsg.setInfo(info);
         requestStream.onNext(infoMsg.build());
 
         for (Iterator<char[]> it = Utils_Util.chunk(html.toCharArray()); it.hasNext(); ) {
             char[] htmlChunk = it.next();
-            RenderPdfDocumentFromStringSnippetRequestStream.Builder dataMsg = RenderPdfDocumentFromStringSnippetRequestStream.newBuilder();
+            ChromeRenderPdfDocumentFromHtmlRequestStreamP.Builder dataMsg = ChromeRenderPdfDocumentFromHtmlRequestStreamP.newBuilder();
             dataMsg.setHtmlChunk(String.valueOf(htmlChunk));
             requestStream.onNext(dataMsg.build());
         }
@@ -145,7 +135,7 @@ public final class Render_Api {
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromeHttpLoginCredentials loginCredentials
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath,null, null, loginCredentials);
+        return renderHtmlFileAsPdf(htmlFilePath, null, loginCredentials);
     }
 
     /**
@@ -159,7 +149,7 @@ public final class Render_Api {
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                           ChromePdfRenderOptions renderOptions
     ) throws IOException {
-        return renderHtmlFileAsPdf(htmlFilePath,null, renderOptions, null);
+        return renderHtmlFileAsPdf(htmlFilePath, renderOptions, null);
     }
 
     /**
@@ -186,20 +176,20 @@ public final class Render_Api {
                                                      ChromePdfRenderOptions renderOptions,
                                                      ChromeHttpLoginCredentials loginCredentials) {
         RpcClient client = Access.ensureConnection();
-        RenderPdfDocumentFromUriRequest.Builder request = RenderPdfDocumentFromUriRequest.newBuilder();
+        ChromeRenderPdfDocumentFromUriRequestP.Builder request = ChromeRenderPdfDocumentFromUriRequestP.newBuilder();
         request.setUri(url);
 
-        //optional;
-        if (renderOptions != null) {
-            request.setRenderOptions(Render_Converter.toProto(renderOptions));
+        if (renderOptions == null) {
+            renderOptions = new ChromePdfRenderOptions();
         }
+        request.setRenderOptions(Render_Converter.toProto(renderOptions));
 
-        //optional;
-        if (loginCredentials != null) {
-            request.setHttpOptions(Render_Converter.toProto(loginCredentials));
+        if (loginCredentials == null) {
+            loginCredentials = new ChromeHttpLoginCredentials();
         }
+        request.setHttpOptions(Render_Converter.toProto(loginCredentials));
 
-        PdfDocumentResult res = client.blockingStub.renderFromUri(request.build());
+        PdfDocumentResultP res = client.blockingStub.chromeRenderFromUri(request.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -237,61 +227,7 @@ public final class Render_Api {
      * @return A {@link InternalPdfDocument}
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html) {
-        return renderHtmlAsPdf(html, null, null, null);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
-     *
-     * @param html             The Html to be rendered as a PDF.
-     * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or                         URL context for hyperlinks, images, CSS and JavaScript files.
-     * @param loginCredentials Http login credentials
-     * @return A {@link InternalPdfDocument}
-     */
-    public static InternalPdfDocument renderHtmlAsPdf(String html,
-                                                      String baseUrl,
-                                                      ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, null, loginCredentials, baseUrl);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
-     *
-     * @param html          The Html to be rendered as a PDF.
-     * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL                      context for hyperlinks, images, CSS and JavaScript files.
-     * @param renderOptions Rendering options
-     * @return A {@link InternalPdfDocument}
-     */
-    public static InternalPdfDocument renderHtmlAsPdf(String html,
-                                                      String baseUrl,
-                                                      ChromePdfRenderOptions renderOptions) {
-        return renderHtmlAsPdf(html, renderOptions, null, baseUrl);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
-     *
-     * @param html             The Html to be rendered as a PDF.
-     * @param renderOptions    Rendering options
-     * @param loginCredentials Http login credentials
-     * @return A {@link InternalPdfDocument}
-     */
-    public static InternalPdfDocument renderHtmlAsPdf(String html,
-                                                      ChromePdfRenderOptions renderOptions,
-                                                      ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, renderOptions, loginCredentials, null);
-    }
-
-    /**
-     * Creates a PDF file from a Html string, and returns it as a {@link InternalPdfDocument}.
-     *
-     * @param html    The Html to be rendered as a PDF.
-     * @param baseUrl Optional. Setting the BaseURL property gives the relative file path or URL                context for hyperlinks, images, CSS and JavaScript files.
-     * @return A {@link InternalPdfDocument}
-     */
-    public static InternalPdfDocument renderHtmlAsPdf(String html,
-                                                      String baseUrl) {
-        return renderHtmlAsPdf(html, null, null, baseUrl);
+        return renderHtmlAsPdf(html, null, null);
     }
 
     /**
@@ -303,7 +239,7 @@ public final class Render_Api {
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
                                                       ChromeHttpLoginCredentials loginCredentials) {
-        return renderHtmlAsPdf(html, null, loginCredentials, null);
+        return renderHtmlAsPdf(html, null, loginCredentials);
     }
 
     /**
@@ -315,7 +251,7 @@ public final class Render_Api {
      */
     public static InternalPdfDocument renderHtmlAsPdf(String html,
                                                       ChromePdfRenderOptions renderOptions) {
-        return renderHtmlAsPdf(html, renderOptions, null, null);
+        return renderHtmlAsPdf(html, renderOptions, null);
     }
 
     /**
@@ -329,15 +265,20 @@ public final class Render_Api {
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<RenderPdfDocumentFromRtfStringRequestStream> requestStream =
-                client.stub.renderFromRtfString(
+        io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromRtfStringRequestStreamP> requestStream =
+                client.stub.chromeRenderRtfToPdf(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
+        ChromeRenderPdfDocumentFromRtfStringRequestStreamP.InfoP.Builder info = ChromeRenderPdfDocumentFromRtfStringRequestStreamP.InfoP.newBuilder();
+        info.setRenderOptions(Render_Converter.toProto(new ChromePdfRenderOptions()));
+        info.setHttpOptions(Render_Converter.toProto(new ChromeHttpLoginCredentials()));
+
+        requestStream.onNext(ChromeRenderPdfDocumentFromRtfStringRequestStreamP.newBuilder().setInfo(info.build()).build());
         for (Iterator<char[]> it = Utils_Util.chunk(rtfString.toCharArray()); it.hasNext(); ) {
             char[] htmlChunk = it.next();
-            RenderPdfDocumentFromRtfStringRequestStream.Builder dataMsg = RenderPdfDocumentFromRtfStringRequestStream.newBuilder();
+            ChromeRenderPdfDocumentFromRtfStringRequestStreamP.Builder dataMsg = ChromeRenderPdfDocumentFromRtfStringRequestStreamP.newBuilder();
             dataMsg.setRtfStringChunk(String.valueOf(htmlChunk));
             requestStream.onNext(dataMsg.build());
         }
@@ -354,36 +295,35 @@ public final class Render_Api {
         RpcClient client = Access.ensureConnection();
 
 
+        ChromeRenderPdfDocumentFromZipFileRequestStreamP.InfoP.Builder info =
+                ChromeRenderPdfDocumentFromZipFileRequestStreamP.InfoP.newBuilder();
 
-        RenderPdfDocumentFromZipRequestStream.Info.Builder info =
-                RenderPdfDocumentFromZipRequestStream.Info.newBuilder();
-
-        com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptions renderOp = Render_Converter.toProto(
+        com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptionsP renderOp = Render_Converter.toProto(
                 renderOptions);
         if (renderOp != null) {
             info.setRenderOptions(renderOp);
         }
 
-        com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentials login = Render_Converter.toProto(
+        com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentialsP login = Render_Converter.toProto(
                 loginCredentials);
         if (login != null) {
             info.setHttpOptions(login);
         }
-        if(mainFile!=null){
+        if (mainFile != null) {
             info.setMainFile(mainFile);
         }
 
-        RenderPdfDocumentFromZipRequestStream.Builder infoMsg =
-                RenderPdfDocumentFromZipRequestStream.newBuilder();
+        ChromeRenderPdfDocumentFromZipFileRequestStreamP.Builder infoMsg =
+                ChromeRenderPdfDocumentFromZipFileRequestStreamP.newBuilder();
         infoMsg.setInfo(info);
 
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<RenderPdfDocumentFromZipRequestStream> requestStream =
-                client.stub.renderFromZip(
+        io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromZipFileRequestStreamP> requestStream =
+                client.stub.chromeRenderFromZipFile(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         requestStream.onNext(infoMsg.build());
@@ -391,8 +331,8 @@ public final class Render_Api {
         byte[] zipByte = Files.readAllBytes(zipFilePath);
         for (Iterator<byte[]> it = Utils_Util.chunk(zipByte); it.hasNext(); ) {
             byte[] zipChunk = it.next();
-            RenderPdfDocumentFromZipRequestStream.Builder dataMsg = RenderPdfDocumentFromZipRequestStream.newBuilder();
-            dataMsg.setRawZipChunk(ByteString.copyFrom(zipChunk));
+            ChromeRenderPdfDocumentFromZipFileRequestStreamP.Builder dataMsg = ChromeRenderPdfDocumentFromZipFileRequestStreamP.newBuilder();
+            dataMsg.setZipChunk(ByteString.copyFrom(zipChunk));
             requestStream.onNext(dataMsg.build());
         }
 

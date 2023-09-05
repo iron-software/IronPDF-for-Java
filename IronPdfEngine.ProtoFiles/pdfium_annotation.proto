@@ -1,0 +1,61 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+
+message PdfiumGetAnnotationCountRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
+message PdfiumAnnotationIconP {
+  int32 enum_value = 1;
+}
+
+message PdfiumTextAnnotationP {
+  optional int32 page_index = 2;
+  optional int32 annot_index = 3;
+  optional string color_code = 4;
+  optional string contents = 5;
+  optional bool hidden = 6;
+  optional double opacity = 7;
+  optional bool open_by_default = 8;
+  optional bool printable = 9;
+  optional bool read_only = 10;
+  optional bool rotatable = 11;
+  optional string subject = 12;
+  optional string title = 13;
+  optional PdfiumAnnotationIconP icon = 14;
+  optional int32 x = 15;
+  optional int32 y = 16;
+  optional int32 width = 17;
+  optional int32 height = 18;
+}
+
+message PdfiumAddTextAnnotationRequestP {
+  PdfDocumentP document = 1;
+  PdfiumTextAnnotationP annotation = 2;
+}
+message PdfiumEditTextAnnotationRequestP {
+  PdfDocumentP document = 1;
+  PdfiumTextAnnotationP annotation = 2;
+}
+message PdfiumRemoveAnnotationRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  int32 annot_index = 3;
+}
+message PdfiumGetTextAnnotationResultP {
+  oneof result_or_exception {
+    PdfiumTextAnnotationP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+message PdfiumGetAnnotationRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  int32 annot_index = 3;
+}

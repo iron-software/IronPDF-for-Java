@@ -25,7 +25,7 @@ public class AnnotationApiTests extends TestBase {
         textAnnotation1.setOpenByDefault(false);
         textAnnotation1.setPrintable(false);
         textAnnotation1.setReadOnly(false);
-        textAnnotation1.setRotateable(false);
+        textAnnotation1.setRotatable(false);
         textAnnotation1.setSubject("subject");
         textAnnotation1.setTitle("title");
         textAnnotation1.setIcon(AnnotationIcon.NO_ICON);

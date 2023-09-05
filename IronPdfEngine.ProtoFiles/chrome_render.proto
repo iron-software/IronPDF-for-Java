@@ -1,0 +1,183 @@
+﻿syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message ChromeRenderPdfDocumentFromHtmlRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    string html_chunk = 2;
+  }
+  message InfoP {
+    optional ChromePdfRenderOptionsP render_options = 1;
+    optional ChromeHttpLoginCredentialsP http_options = 2;
+  }
+}
+message ChromeRenderPdfDocumentFromZipFileRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes zip_chunk = 2;
+  }
+  message InfoP {
+    string main_file = 1;
+    optional ChromePdfRenderOptionsP render_options = 2;
+    optional ChromeHttpLoginCredentialsP http_options = 3;
+  }
+}
+message ChromePdfCssMediaTypeP {
+  int32 enum_value = 1;
+}
+message ChromeHtmlHeaderFooterP {
+  optional string base_url = 1;
+  optional int32  max_height = 2;
+  optional bool draw_divider_line = 3;
+  optional string divider_line_color = 4;
+  optional string html_fragment = 5;
+  optional bool loadStylesAndCSSFromMainHtmlDocument = 6;
+}
+
+message ChromeTextHeaderFooterP {
+  optional string left_text = 1;
+  optional string center_text = 2;
+  optional string right_text = 3;
+  optional bool draw_divider_line = 4;
+  optional FontTypeP font = 5;
+  optional double font_size = 6;
+  optional string divider_line_color = 7;
+}
+
+message ChromeRenderPdfDocumentFromUriRequestP {
+  string uri = 1;
+  optional ChromePdfRenderOptionsP render_options = 2;
+  optional ChromeHttpLoginCredentialsP http_options = 3;
+}
+
+message ChromeHttpLoginCredentialsP {
+  optional StringDictionaryP custom_cookies = 1;
+  optional bool enable_cookies = 2;
+  optional string  network_password = 3;
+  optional string  network_username = 4;
+}
+
+message RenderOptionWaitForP {
+  int32 Type = 1;
+  int32 Timeout = 2;
+  int32 NetworkIdleDuration = 3;
+  int32 NumAllowedInFlight = 4;
+  int32 RenderDelayDuration = 5;
+  optional string HtmlElementQueryStr = 6;
+}
+
+//we not allow to add HeaderFooter because html and string could be too long to handle that we need to use stream which will makes things complicated.
+message ChromePdfRenderOptionsP {
+  // optional bool apply_margin_to_header_and_footer = 1;
+  optional bool create_pdf_forms_from_html = 1;
+  optional string custom_css_url = 2;
+  optional bool enable_java_script = 3;
+  optional ChromeFitToPaperModesP fit_to_paper_mode = 5;
+  // optional bool generate_unique_document_identifiers = 6;
+  optional bool gray_scale = 7;
+  optional double margin_bottom = 8;
+  optional double margin_left = 9;
+  optional double margin_right = 10;
+  optional double margin_top = 11;
+  optional ChromePdfPaperOrientationP paper_orientation = 12;
+  optional ChromePdfPaperSizeP paper_size = 13;
+  optional bool print_html_backgrounds = 14;
+  optional int32 render_delay = 15;
+  optional int32 timeout = 16;
+  optional string title = 17;
+  optional int32 view_port_height = 18;
+  optional int32 view_port_width = 19;
+  optional int32 zoom = 20;
+  optional string  input_encoding = 21;
+  optional ChromePdfCssMediaTypeP css_media_type = 22;
+  optional double custom_paper_width = 23;
+  optional double custom_paper_height = 24;
+  optional string javascript = 25;
+  optional ChromeHtmlHeaderFooterP html_header = 26;
+  optional ChromeHtmlHeaderFooterP html_footer = 27;
+  optional ChromeTextHeaderFooterP text_header = 28;
+  optional ChromeTextHeaderFooterP text_footer = 29;
+  optional int32 first_page_number = 30;
+  optional ChromeUseMarginsP use_margins_on_header_footer = 31;
+  optional bool enable_grayscale = 32;
+  optional bool force_paper_size = 33;
+  optional RenderOptionWaitForP waitFor = 34;
+}
+
+message ChromeCefRenderSettingsP {
+  optional int32 AutoSizeBehavior = 1;
+  optional int32 AutoSizeScreenToPaperPPI = 2;
+  optional bool EnableBackgrounds = 3;
+  optional bool EnableEmulateScreenMediaType = 4;
+  optional bool EnableFormGeneration = 5;
+  optional bool EnableLandscapeOrientation = 6;
+  optional int32 FirstPageNumber = 7;
+  optional int32 MaxHeaderHeight = 8;
+  optional int32 MaxFooterHeight = 9;
+  optional string SavePath = 10;
+  optional double Scale = 11;
+  optional string PageSizeType = 12;
+  optional double PageWidth = 13;
+  optional double PageHeight = 14;
+  optional int32 PageMarginType = 15;
+  optional double PageMarginTop = 16;
+  optional double PageMarginRight = 17;
+  optional double PageMarginBottom = 18;
+  optional double PageMarginLeft = 19;
+  optional string HeaderHtml = 20;
+  optional string HeaderDividerLineColor = 21;
+  optional string FooterHtml = 22;
+  optional string FooterDividerLineColor = 23;
+  optional string PostProcessingJavascript = 24;
+  optional int32 RenderDelay = 25;
+  optional int32 Timeout = 26;
+  optional string Title = 27;
+  optional bool EnableGrayScale = 28;
+  optional RenderOptionWaitForP WaitFor = 29;
+}
+// NOTE 3/9/23: implement javascript callback for gRPC
+message ChromeCefBrowserSettingsP {
+  optional bool enable_javascript = 1;
+  optional string password = 2;
+  optional string username = 3;
+  optional int32 view_height = 4;
+  optional int32 view_width = 5;
+}
+
+message ChromePdfPaperOrientationP {
+  int32 enum_value = 1;
+}
+
+message ChromePdfPaperSizeP {
+  int32 enum_value = 1;
+}
+
+message ChromeUseMarginsP {
+  int32 enum_value = 1;
+}
+
+message ChromeFitToPaperModesP {
+  int32 enum_value = 1;
+}
+        
+message ChromeRenderPdfDocumentFromRtfStringRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    string rtf_string_chunk = 2;
+  }
+  message InfoP {
+    optional ChromePdfRenderOptionsP render_options = 1;
+    optional ChromeHttpLoginCredentialsP http_options = 2;
+  }
+}
+
+message ChromeApplyCookiesRequestP {
+  string url = 1;
+  StringDictionaryP cookies = 2;
+}
+
+message ChromeClearCookiesRequestP {}

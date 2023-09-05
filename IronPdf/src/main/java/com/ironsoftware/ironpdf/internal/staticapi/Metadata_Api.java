@@ -29,13 +29,13 @@ public final class Metadata_Api {
     public static String getMetadata(InternalPdfDocument internalPdfDocument, String key) {
         RpcClient client = Access.ensureConnection();
 
-        GetMetadataRequest.Builder req = GetMetadataRequest.newBuilder();
+        PdfiumGetMetadataRequestP.Builder req = PdfiumGetMetadataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
-        MetadataFieldResult res = client.blockingStub.pdfDocumentMetadataGetMetadata(
+        PdfiumMetadataFieldResultP res = client.blockingStub.pdfiumMetadataGetMetadata(
                 req.build());
 
-        if (res.getResultOrExceptionCase() == MetadataFieldResult.ResultOrExceptionCase.EXCEPTION) {
+        if (res.getResultOrExceptionCase() == PdfiumMetadataFieldResultP.ResultOrExceptionCase.EXCEPTION) {
             throw fromProto(res.getException());
         }
 
@@ -62,11 +62,11 @@ public final class Metadata_Api {
     public static void setMetadata(InternalPdfDocument internalPdfDocument, String key, String value) {
         RpcClient client = Access.ensureConnection();
 
-        SetMetadataRequest.Builder req = SetMetadataRequest.newBuilder();
+        PdfiumSetMetadataRequestP.Builder req = PdfiumSetMetadataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
         req.setValue(value);
-        EmptyResult res = client.blockingStub.pdfDocumentMetadataSetMetadata(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumMetadataSetMetadata(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -225,10 +225,10 @@ public final class Metadata_Api {
     public static void removeMetadata(InternalPdfDocument internalPdfDocument, String key) {
         RpcClient client = Access.ensureConnection();
 
-        RemoveMetadataRequest.Builder req = RemoveMetadataRequest.newBuilder();
+        PdfiumRemoveMetadataRequestP.Builder req = PdfiumRemoveMetadataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
-        EmptyResult res = client.blockingStub.pdfDocumentMetadataRemoveMetadata(req.build());
+        EmptyResultP res = client.blockingStub.pdfiumMetadataRemoveMetadata(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

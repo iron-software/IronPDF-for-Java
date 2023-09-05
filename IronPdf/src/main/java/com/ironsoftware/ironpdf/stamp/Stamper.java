@@ -2,11 +2,17 @@ package com.ironsoftware.ironpdf.stamp;
 
 import com.ironsoftware.ironpdf.edit.Length;
 import com.ironsoftware.ironpdf.edit.MeasurementUnit;
+import com.ironsoftware.ironpdf.render.WaitFor;
 
 /**
  * Defines a PDF Stamper. {@link com.ironsoftware.ironpdf.PdfDocument#applyStamp(Stamper)}
  */
 public abstract class Stamper {
+
+    /**
+     * A convenient wrapper to wait for various events, or just wait for amount of time.
+     */
+    private WaitFor waitFor = new WaitFor();
 
     private String html = "";
     /**
@@ -378,4 +384,17 @@ public abstract class Stamper {
         isStampBehindContent = value;
     }
 
+    /**
+     * Get A convenient wrapper to wait for various events, or just wait for amount of time.
+     */
+    public WaitFor getWaitFor() {
+        return waitFor;
+    }
+
+    /**
+     * Set A convenient wrapper to wait for various events, or just wait for amount of time.
+     */
+    public void setWaitFor(WaitFor waitFor) {
+        this.waitFor = waitFor;
+    }
 }

@@ -1,10 +1,10 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.bookmark.Bookmark;
-import com.ironsoftware.ironpdf.internal.proto.EmptyResult;
-import com.ironsoftware.ironpdf.internal.proto.GetBookmarksRequest;
-import com.ironsoftware.ironpdf.internal.proto.GetBookmarksResult;
-import com.ironsoftware.ironpdf.internal.proto.InsertBookmarkRequest;
+import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumGetBookmarksDescriptorRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumGetBookmarksDescriptorResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumInsertBookmarkRequestP;
 
 import java.util.List;
 
@@ -26,12 +26,12 @@ public final class Bookmark_Api {
 
         RpcClient client = Access.ensureConnection();
 
-        GetBookmarksRequest.Builder request = GetBookmarksRequest.newBuilder();
+        PdfiumGetBookmarksDescriptorRequestP.Builder request = PdfiumGetBookmarksDescriptorRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
-        GetBookmarksResult result = client.blockingStub.pdfDocumentBookmarkGetBookmarks(
+        PdfiumGetBookmarksDescriptorResultP result = client.blockingStub.pdfiumBookmarkGetBookmarksDescriptor(
                 request.build());
 
-        if (result.getResultOrExceptionCase() == GetBookmarksResult.ResultOrExceptionCase.EXCEPTION) {
+        if (result.getResultOrExceptionCase() == PdfiumGetBookmarksDescriptorResultP.ResultOrExceptionCase.EXCEPTION) {
             throw fromProto(result.getException());
         }
 
@@ -64,7 +64,7 @@ public final class Bookmark_Api {
                                       String parentText, String previousText) {
         RpcClient client = Access.ensureConnection();
 
-        InsertBookmarkRequest.Builder request = InsertBookmarkRequest.newBuilder();
+        PdfiumInsertBookmarkRequestP.Builder request = PdfiumInsertBookmarkRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setPageIndex(pageIndex);
         request.setText(text);
@@ -76,7 +76,7 @@ public final class Bookmark_Api {
             request.setPreviousText(previousText);
         }
 
-        EmptyResult res = client.blockingStub.pdfDocumentBookmarkInsertBookmark(
+        EmptyResultP res = client.blockingStub.pdfiumBookmarkInsertBookmark(
                 request.build());
         Utils_Util.handleEmptyResult(res);
     }

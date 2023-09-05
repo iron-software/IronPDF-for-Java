@@ -29,8 +29,7 @@ public class RenderingTests extends TestBase {
         ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
         tempVar.setPaperSize(PaperSize.A2);
 
-        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", "",
-                tempVar);
+        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", tempVar);
         List<PageInfo> info = doc.getPagesInfo();
         Assertions.assertEquals(1, info.size());
         Assertions.assertEquals(420, info.get(0).getWidth(), 1);
@@ -40,13 +39,13 @@ public class RenderingTests extends TestBase {
     final void RenderRtfAsPdfTest() throws IOException {
         PdfDocument doc = PdfDocument.renderRtfFileAsPdf(getTestPath("Data/Sample_RTF.rtf"));
         List<PageInfo> info = doc.getPagesInfo();
-        Assertions.assertTrue(info.size()>1);
+        Assertions.assertTrue(info.size() > 1);
         Assertions.assertTrue(doc.extractTextFromPage(PageSelection.firstPage()).contains("Lorem"));
     }
 
     @Test
     final void RenderZipAsPdfTest() throws IOException {
-        PdfDocument doc = PdfDocument.renderZipAsPdf(getTestPath("Data/ZipTest.zip"),"Basic.html");
+        PdfDocument doc = PdfDocument.renderZipAsPdf(getTestPath("Data/ZipTest.zip"), "Basic.html");
         List<PageInfo> info = doc.getPagesInfo();
         Assertions.assertEquals(4, info.size());
         Assertions.assertFalse(doc.extractAllImages().isEmpty());
@@ -57,8 +56,7 @@ public class RenderingTests extends TestBase {
         ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
         tempVar.setPaperSize(PaperSize.A2);
         tempVar.setJavascript("console.log('ExecutePostProcessingJavascript test'); document.querySelectorAll('h1').forEach(function(el){el.style.color='red';})");
-        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", "",
-                tempVar);
+        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", tempVar);
         List<PageInfo> info = doc.getPagesInfo();
         Assertions.assertEquals(1, info.size());
         Assertions.assertEquals(420, info.get(0).getWidth(), 1);

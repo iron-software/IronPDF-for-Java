@@ -5,14 +5,18 @@ import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 
 /**
  * Defines a Sticky-Note style PDF annotation.
- * {@link Annotation_Api#addTextAnnotation(InternalPdfDocument, TextAnnotation, int, int, int)}
+ * {@link Annotation_Api#addTextAnnotation(InternalPdfDocument, TextAnnotation)}
  */
 public final class TextAnnotation {
 
     /**
+     * Index of the annotation on a page. The first page has a annotation_index of 0
+     */
+    private int annotationIndex = -1;
+    /**
      * The color of the annotation's 'Sticky Note'.  Uses CSS '#ff66BB' hex color style.
      */
-    private String colorCode = null;
+    private String colorCode = "#FFFF33";
     /**
      * The contents of the 'sticky note' annotation
      */
@@ -41,7 +45,7 @@ public final class TextAnnotation {
     /**
      * Allows the annotation to be rotated.  E.g. when the containing page os rotated
      */
-    private boolean rotateable = false;
+    private boolean rotatable = false;
     /**
      * The subject of the annotation as displayed in the header of the 'sticky note'
      */
@@ -57,9 +61,31 @@ public final class TextAnnotation {
 
 
     /**
+     * Index of the page to add the annotation. The first page has a PageIndex of 0
+     */
+    private int pageIndex = 0;
+    /**
+     * The horizontal X position of the annotation on your page in pixels
+     */
+    private int x = 0;
+    /**
+     * The vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
+     */
+    private int y = 0;
+    /**
+     * The width of your annotation's icon and interactive area in pixels. Default 30
+     */
+    private int width = 30;
+
+    /**
+     * The height of your annotation's icon and interactive area in pixels. Default 30
+     */
+    private int height = 30;
+
+    /**
      * Instantiates a new text annotation.
      */
-    public TextAnnotation(){
+    public TextAnnotation() {
     }
 
     /**
@@ -67,7 +93,7 @@ public final class TextAnnotation {
      *
      * @param contents the contents of the 'sticky note' annotation
      */
-    public TextAnnotation(String contents){
+    public TextAnnotation(String contents) {
         this.contents = contents;
     }
 
@@ -200,19 +226,19 @@ public final class TextAnnotation {
     /**
      * Is rotateable boolean. Allows the annotation to be rotated.  E.g. when the containing page os rotated.
      *
-     * @return the rotateable boolean.
+     * @return the rotatable boolean.
      */
-    public boolean isRotateable() {
-        return rotateable;
+    public boolean isRotatable() {
+        return rotatable;
     }
 
     /**
-     * Sets rotateable. Allows the annotation to be rotated.  E.g. when the containing page os rotated.
+     * Sets rotatable. Allows the annotation to be rotated.  E.g. when the containing page os rotated.
      *
      * @param value the rotateable value.
      */
-    public void setRotateable(boolean value) {
-        rotateable = value;
+    public void setRotatable(boolean value) {
+        rotatable = value;
     }
 
     /**
@@ -277,5 +303,89 @@ public final class TextAnnotation {
      */
     public void setIcon(AnnotationIcon value) {
         icon = value;
+    }
+
+    /**
+     * Gets the height of your annotation's icon and interactive area in pixels
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Sets the height of your annotation's icon and interactive area in pixels
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * Gets the width of your annotation's icon and interactive area in pixels
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Sets the width of your annotation's icon and interactive area in pixels
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    /**
+     * Gets the vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * Sets the vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
+     */
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    /**
+     * Gets the horizontal X position of the annotation on your page in pixels
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Sets the horizontal X position of the annotation on your page in pixels
+     */
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    /**
+     * Gets index of the page to add the annotation. The first page has a PageIndex of 0
+     */
+    public int getPageIndex() {
+        return pageIndex;
+    }
+
+    /**
+     * Sets index of the page to add the annotation. The first page has a PageIndex of 0
+     */
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    /**
+     * Gets index of the annotation on a page. The first page has a annotation_index of 0
+     */
+    public int getAnnotationIndex() {
+        return annotationIndex;
+    }
+
+    /**
+     * Sets index of the annotation on a page. The first page has a annotation_index of 0
+     */
+    public void setAnnotationIndex(int annotationIndex) {
+        this.annotationIndex = annotationIndex;
     }
 }

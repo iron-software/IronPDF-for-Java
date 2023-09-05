@@ -14,7 +14,7 @@ public class HtmlHeaderFooter implements Cloneable {
     private String dividerLineColorCode = "#b1b1b1";
     private boolean drawDividerLine = false;
     private String baseUrl = null;
-    private Integer maxHeight = null;
+    private Integer maxHeight = 300;
     private String htmlFragment = "";
     private boolean loadStylesAndCSSFromMainHtmlDocument = false;
 

@@ -16,7 +16,7 @@ public class HeaderFooterApiTests extends TestBase {
 
     @Test
     public final void AddTextHeaderTest() throws IOException {
-        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = Image_Api.pdfToImage(doc, Collections.singletonList(0)).get(0);
 
@@ -44,7 +44,7 @@ public class HeaderFooterApiTests extends TestBase {
 
     @Test
     public final void AddTextFooterTest() throws IOException {
-        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = Image_Api.pdfToImage(doc, Collections.singletonList(0)).get(0);
 
@@ -72,7 +72,7 @@ public class HeaderFooterApiTests extends TestBase {
 
     @Test
     public final void AddHtmlHeaderTest() throws IOException {
-        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/emptyA4.pdf"));
 
         byte[] imageBytesBefore = Image_Api.pdfToImage(doc, Collections.singletonList(0)).get(0);
 

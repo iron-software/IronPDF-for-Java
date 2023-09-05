@@ -4,6 +4,8 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.internal.proto.*;
+import com.ironsoftware.ironpdf.signature.Signature;
+import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The type Pdf document api.
@@ -99,30 +102,30 @@ public final class PdfDocument_Api {
         //for checking that the response stream is finished
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<PdfDocumentConstructorStream> requestStream =
-                client.stub.pdfDocumentFromBytes(
+        io.grpc.stub.StreamObserver<PdfiumPdfDocumentConstructorStreamP> requestStream =
+                client.stub.pdfiumFromBytes(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         // sending request
-        PdfDocumentConstructorStream.Builder pdfDocumentConstructor_info = PdfDocumentConstructorStream.newBuilder();
+        PdfiumPdfDocumentConstructorStreamP.Builder pdfDocumentConstructor_info = PdfiumPdfDocumentConstructorStreamP.newBuilder();
 
-        PdfDocumentConstructorStream.Info.Builder info = PdfDocumentConstructorStream.Info.newBuilder();
+        PdfiumPdfDocumentConstructorStreamP.InfoP.Builder info = PdfiumPdfDocumentConstructorStreamP.InfoP.newBuilder();
 
         if (!Utils_StringHelper.isNullOrWhiteSpace(userPassword) || !Utils_StringHelper.isNullOrWhiteSpace(ownerPassword)) {
 
             info.setUserPassword(!Utils_StringHelper.isNullOrWhiteSpace(userPassword) ? userPassword : "");
 
             info.setOwnerPassword(!Utils_StringHelper.isNullOrWhiteSpace(ownerPassword) ? ownerPassword : "");
-
-            pdfDocumentConstructor_info.setInfo(info);
-            requestStream.onNext(pdfDocumentConstructor_info.build());
         }
+        info.setTrackChanges(true);
+        pdfDocumentConstructor_info.setInfo(info);
+        requestStream.onNext(pdfDocumentConstructor_info.build());
 
         for (Iterator<byte[]> it = Utils_Util.chunk(pdfFileBytes); it.hasNext(); ) {
             byte[] bytes = it.next();
-            PdfDocumentConstructorStream.Builder pdfDocumentConstructor_data = PdfDocumentConstructorStream.newBuilder();
+            PdfiumPdfDocumentConstructorStreamP.Builder pdfDocumentConstructor_data = PdfiumPdfDocumentConstructorStreamP.newBuilder();
 
             pdfDocumentConstructor_data.setPdfBytesChunk(ByteString.copyFrom(bytes));
             requestStream.onNext(pdfDocumentConstructor_data.build());
@@ -133,7 +136,10 @@ public final class PdfDocument_Api {
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
-        return Utils_Util.handlePdfDocumentChunks(resultChunks);
+        InternalPdfDocument doc = Utils_Util.handlePdfDocumentChunks(resultChunks);
+        doc.userPassword = userPassword;
+        doc.ownerPassword = ownerPassword;
+        return doc;
     }
 
     /**
@@ -165,7 +171,7 @@ public final class PdfDocument_Api {
      * Gets the binary data for the full PDF file as a byte array.
      *
      * @param internalPdfDocument the internal pdf document
-     * @param isIncremental isIncremental
+     * @param isIncremental       isIncremental
      * @return the pdf byte array
      */
     public static byte[] getBytes(InternalPdfDocument internalPdfDocument, boolean isIncremental) {
@@ -174,58 +180,72 @@ public final class PdfDocument_Api {
         //for checking that the response stream is finished
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-//        ArrayList<byte[]> chunks = new ArrayList<byte[]>();
-        List<BytesResultStream> resultChunks = new ArrayList<>();
+        List<BytesResultStreamP> resultChunks = new ArrayList<>();
 
-        GetBinaryDataRequest.Builder req = GetBinaryDataRequest.newBuilder();
-        req.setIsIncremental(isIncremental);
-        req.setDocument(internalPdfDocument.remoteDocument);
+        PdfiumGetBinaryDataRequestStreamP.InfoP.Builder infoP = PdfiumGetBinaryDataRequestStreamP.InfoP.newBuilder();
+        infoP.setDocument(internalPdfDocument.remoteDocument);
+        infoP.setIsIncremental(isIncremental);
 
-        client.stub.pdfDocumentGetBinaryData(req.build(),
-                //response handler
+        StreamObserver<PdfiumGetBinaryDataRequestStreamP> requestStream = client.stub.pdfiumGetBinaryData(
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
 
+        requestStream.onNext(PdfiumGetBinaryDataRequestStreamP.newBuilder().setInfo(infoP).build());
+        PdfiumPdfSignatureCollectionP.Builder collectionP = PdfiumPdfSignatureCollectionP.newBuilder();
+
+        // sigObjIndex != Signature.InternalIndex
+        for (int sigObjIndex : IntStream.range(0, internalPdfDocument.signatures.size()).toArray()) {
+            Signature sigObj = internalPdfDocument.signatures.get(sigObjIndex);
+
+            for (Iterator<byte[]> it = Utils_Util.chunk(sigObj.getCertificateRawData()); it.hasNext(); ) {
+                byte[] chunk = it.next();
+                PdfiumGetBinaryDataRequestStreamP.Builder msg = PdfiumGetBinaryDataRequestStreamP.newBuilder();
+                msg.setRawSignaturesChunk(PdfiumRawSignatureChunkWithIndexP.newBuilder()
+                        .setRawSignatureChunk(ByteString.copyFrom(chunk))
+                        .setSignatureIndex(sigObjIndex).build());
+                requestStream.onNext(msg.build());
+            }
+
+            PdfiumPdfSignatureP signatureP = Signature_Converter.toProto(sigObj);
+            collectionP.addSignature(signatureP);
+        }
+
+        requestStream.onNext(PdfiumGetBinaryDataRequestStreamP.newBuilder().setSignatures(collectionP).build());
+
+        requestStream.onCompleted();
+
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
-        List<byte[]> bytesChunks = resultChunks.stream().map(res -> {
-                    if (res.getResultOrExceptionCase() == BytesResultStream.ResultOrExceptionCase.EXCEPTION) {
-                        throw Exception_Converter.fromProto(res.getException());
-                    }
-                    return res.getResultChunk().toByteArray();
-                }
-        ).collect(Collectors.toList());
-
-        return Utils_Util.combineChunk(bytesChunks);
+        return Utils_Util.handleByteChunks(resultChunks);
     }
 
     /**
      * Gets the binary data for the full PDF file as a byte array.
      *
      * @param internalPdfDocument the internal pdf document
-     * @param index revision index
+     * @param index               revision index
      * @return the internal pdf document
      */
-    public static InternalPdfDocument getRevision(InternalPdfDocument internalPdfDocument, int index) {
+    public static byte[] getRevision(InternalPdfDocument internalPdfDocument, int index) {
         RpcClient client = Access.ensureConnection();
 
         //for checking that the response stream is finished
         final CountDownLatch finishLatch = new CountDownLatch(1);
 
-        ArrayList<PdfDocumentResult> resultChunks = new ArrayList<>();
+        ArrayList<BytesResultStreamP> resultChunks = new ArrayList<>();
 
-        GetRevisionRequest.Builder req = GetRevisionRequest.newBuilder();
+        PdfiumGetRevisionRequestP.Builder req = PdfiumGetRevisionRequestP.newBuilder();
         req.setIndex(index);
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        client.stub.pdfDocumentGetRevision(req.build(),
+        client.stub.pdfiumGetRevision(req.build(),
                 //response handler
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
-        return Utils_Util.handlePdfDocumentChunks(resultChunks);
+        return Utils_Util.handleByteChunks(resultChunks);
     }
 
     /**

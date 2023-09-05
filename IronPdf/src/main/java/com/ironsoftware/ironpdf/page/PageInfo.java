@@ -6,25 +6,29 @@ package com.ironsoftware.ironpdf.page;
 public class PageInfo {
 
     /**
-     * Gets the width of the pdf page in mm.
+     * The width of the pdf page in mm.
      */
     private final double width;
     /**
-     * Gets the height of the pdf page in mm.
+     * The height of the pdf page in mm.
      */
     private final double height;
     /**
-     * Gets the width of the pdf page in printer points.
+     * The width of the pdf page in printer points.
      */
     private final double printWidth;
     /**
-     * Gets the height of the pdf page  in printer points.
+     * The height of the pdf page  in printer points.
      */
     private final double printHeight;
     /**
-     * Gets the page rotation.
+     * Page index
      */
-    private final com.ironsoftware.ironpdf.page.PageRotation PageRotation;
+    private final int pageIndex;
+    /**
+     * Page rotation.
+     */
+    private final com.ironsoftware.ironpdf.page.PageRotation pageRotation;
 
     /**
      * Instantiates a new Page info.
@@ -35,13 +39,14 @@ public class PageInfo {
      * @param printHeight  the print height
      * @param pageRotation the page rotation
      */
-    public PageInfo(double width, double height, double printWidth, double printHeight,
+    public PageInfo(int pageIndex, double width, double height, double printWidth, double printHeight,
                     com.ironsoftware.ironpdf.page.PageRotation pageRotation) {
+        this.pageIndex = pageIndex;
         this.width = width;
         this.height = height;
         this.printWidth = printWidth;
         this.printHeight = printHeight;
-        PageRotation = pageRotation;
+        this.pageRotation = pageRotation;
     }
 
     /**
@@ -81,11 +86,20 @@ public class PageInfo {
     }
 
     /**
+     * Gets page index
+     *
+     * @return the page index
+     */
+    public final int getPageIndex() {
+        return pageIndex;
+    }
+
+    /**
      * Gets page rotation.
      *
      * @return the page rotation
      */
     public final com.ironsoftware.ironpdf.page.PageRotation getPageRotation() {
-        return PageRotation;
+        return pageRotation;
     }
 }

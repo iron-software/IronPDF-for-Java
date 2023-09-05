@@ -29,7 +29,7 @@ public class SecurityManager {
      * @return owner password
      */
     public final String getOwnerPassword() {
-        return Security_Api.getPdfSecurityOptions(internalPdfDocument).getOwnerPassword();
+        return internalPdfDocument.ownerPassword;
     }
 
     /**
@@ -40,7 +40,7 @@ public class SecurityManager {
      * @param ownerPassword
      */
     public final void setOwnerPassword(String ownerPassword) {
-        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(ownerPassword);
+        internalPdfDocument.ownerPassword = ownerPassword;
     }
 
     /**
@@ -49,7 +49,7 @@ public class SecurityManager {
      * @return password
      */
     public final String getPassword() {
-        return Security_Api.getPdfSecurityOptions(internalPdfDocument).getOwnerPassword();
+        return internalPdfDocument.userPassword;
     }
 
     /**
@@ -59,7 +59,7 @@ public class SecurityManager {
      * @param password
      */
     public final void setPassword(String password) {
-        Security_Api.getPdfSecurityOptions(internalPdfDocument).setOwnerPassword(password);
+        internalPdfDocument.userPassword = password;
     }
 
     /**

@@ -52,6 +52,15 @@ public class AttachmentManager {
     }
 
     /**
+     * Remove an attachment by attachment index
+     *
+     * @param index attachment index
+     */
+    public final void removeAttachment(int index) {
+        Attachment_Api.removePdfAttachment(this.internalPdfDocument, index);
+    }
+
+    /**
      * Gets attachment data from attachment name
      *
      * @param name Attachment name
@@ -59,6 +68,16 @@ public class AttachmentManager {
      */
     public final byte[] getAttachmentData(String name) {
         return Attachment_Api.getPdfAttachmentData(this.internalPdfDocument, name);
+    }
+
+    /**
+     * Gets attachment data from attachment index
+     *
+     * @param index Attachment index
+     * @return a attachment data
+     */
+    public final byte[] getAttachmentData(int index) {
+        return Attachment_Api.getPdfAttachmentData(this.internalPdfDocument, index);
     }
 
 }

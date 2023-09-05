@@ -1,0 +1,96 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumPageP {
+  double width = 1;
+  double height = 2;
+  double print_width = 3;
+  double print_height = 4;
+  PdfiumPageRotationP page_rotation = 5;
+  int32 page_index = 6;
+}
+
+message PdfiumPageCollectionP {
+  repeated PdfiumPageP pages = 1;
+}
+
+
+message PdfiumGetPagesRequestP {
+  PdfDocumentP document = 1;
+}
+message PdfiumGetPageRequestP {
+  PdfDocumentP document = 1;
+  int32 index = 2;
+}
+
+message PdfiumGetPageCountRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetPageCountResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetPageResultP {
+  oneof result_or_exception {
+    PdfiumPageP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+message PdfiumGetPagesResultP {
+  oneof result_or_exception {
+    PdfiumPageCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumCopyPagesRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2;
+}
+
+message PdfiumPdfDocumentInsertRequestP {
+  PdfDocumentP main_document = 1;
+  int32  insertion_index = 2;
+  PdfDocumentP inserted_document = 3;
+}
+
+message PdfiumPdfDocumentMergeRequestP {
+  repeated PdfDocumentP documents = 1;
+}
+
+message PdfiumRemovePagesRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2;
+}
+
+message PdfiumRemovePagesResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumSetPagesRotationRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2;
+  PdfiumPageRotationP page_rotation = 3;
+}
+
+message PdfiumPageRotationP {
+  int32 enum_value = 1;
+}
+
+message PdfiumResizePageRequestP {
+  PdfDocumentP document = 1;
+  int32 PageIndex = 2;
+  double PageWidth = 3;
+  double PageHeight = 4;
+}

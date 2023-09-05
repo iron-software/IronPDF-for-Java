@@ -8,6 +8,10 @@ public final class IronPdfInputException extends Exception_RemoteException {
         super(message, stackTrace, exceptionType);
     }
 
+    public IronPdfInputException(String message) {
+        super(message, "IronPdfInputException");
+    }
+
     public IronPdfInputException(Exception_RemoteException ex) {
         super(ex.getMessage(), ex.stackTraceString, ex.getExceptionType());
     }

@@ -32,7 +32,7 @@ public class SecurityTests extends TestBase {
 
         SecurityOptions secInfoAfter = securityManager.getCurrentSecurityOptions();
         AssertNullOrEmpty(secInfoAfter.getOwnerPassword());
-        Assertions.assertEquals("123123", secInfoAfter.getUserPassword());
+        Assertions.assertEquals("", secInfoAfter.getUserPassword());
         Assertions.assertTrue(secInfoAfter.isAllowUserAnnotations());
         Assertions.assertTrue(secInfoAfter.isAllowUserCopyPasteContent());
         Assertions.assertTrue(secInfoAfter.isAllowUserCopyPasteContentForAccessibility());

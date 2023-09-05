@@ -1,0 +1,36 @@
+﻿syntax = "proto3";
+import "chrome_render.proto";
+import "basic.proto";
+
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message ChromeImageBehaviorP {
+  int32 enum_value = 1;
+}
+
+message ChromeImageToPdfRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    RawImageChunkWithIndexP raw_images_chunk = 2;
+  }
+  message InfoP {
+    ChromeImageBehaviorP image_behavior = 1;
+    optional ChromePdfRenderOptionsP render_options = 2;
+//    optional ChromePdfPaperSizeP paper_size = 3; //duplicated with render_options
+  }
+}
+
+message ChromeImageFilesToPdfRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    RawImageChunkWithIndexAndFileTypeP raw_images_file_chunk = 2;
+  }
+  message InfoP {
+    ChromeImageBehaviorP image_behavior = 1;
+    optional ChromePdfRenderOptionsP render_options = 2;
+//    optional ChromePdfPaperSizeP paper_size = 3; //duplicated with render_options
+  }
+}

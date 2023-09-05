@@ -8,6 +8,7 @@ import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class used to read and write data to AcroForms in a {@link com.ironsoftware.ironpdf.PdfDocument}.
@@ -73,9 +74,10 @@ public class FormManager {
      * @param currentFieldName Current fully qualified field name
      * @param newFieldName     New partial field name Please use a fully qualified field name for
      *                         CurrentFieldName, and a partial field name for NewFieldName
+     * @return New fully-qualified field name
      */
-    public void renameField(String currentFieldName, String newFieldName) {
-        Form_Api.renameField(internalPdfDocument, currentFieldName,
+    public String renameField(String currentFieldName, String newFieldName) {
+        return Form_Api.renameField(internalPdfDocument, currentFieldName,
                 newFieldName);
     }
 
@@ -86,8 +88,12 @@ public class FormManager {
      * @param value     New value
      */
     public void setFieldValue(String fieldName, String value) {
-        Form_Api.setFieldValue(internalPdfDocument, fieldName,
+        Optional<FormField> optionalFormField = this.getFields().getAllFields().stream().filter(f->f.getName().equalsIgnoreCase(fieldName)).findFirst();
+        if(optionalFormField.isPresent())
+            Form_Api.setFieldValue(internalPdfDocument, optionalFormField.get().getAnnotationIndex(),
                 value);
+        else
+            throw new RuntimeException(String.format("setFieldValue, not found field name: %s", fieldName));
     }
 
     /**
@@ -97,8 +103,12 @@ public class FormManager {
      * @param value     is read only
      */
     public void setFieldReadOnly(String fieldName, boolean value) {
-        Form_Api.setFormFieldIsReadOnly(internalPdfDocument, fieldName,
-                value);
+        Optional<FormField> optionalFormField = this.getFields().getAllFields().stream().filter(f->f.getName().equalsIgnoreCase(fieldName)).findFirst();
+        if(optionalFormField.isPresent())
+            Form_Api.setFormFieldIsReadOnly(internalPdfDocument, optionalFormField.get().getAnnotationIndex(),
+                    value);
+        else
+            throw new RuntimeException(String.format("setFieldReadOnly, not found field name: %s", fieldName));
     }
 
     /**

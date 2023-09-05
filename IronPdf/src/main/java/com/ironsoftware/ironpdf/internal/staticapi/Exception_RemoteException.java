@@ -11,6 +11,12 @@ public class Exception_RemoteException extends RuntimeException {
         throw new UnsupportedOperationException("RemoteException should not be manually initialized.");
     }
 
+    public Exception_RemoteException(String message, String exceptionType) {
+        super(message);
+        this.stackTraceString = "";
+        this.exceptionType = exceptionType;
+    }
+
     public Exception_RemoteException(String message, String stackTrace, String exceptionType) {
         super(message);
         this.stackTraceString = stackTrace;
