@@ -289,4 +289,56 @@ public final class PdfDocument_Api {
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes) {
         return fromBytes(pdfFileBytes, null, null);
     }
+
+    public static InternalPdfDocument toPdfA(InternalPdfDocument internalPdfDocument, byte[] customICCFileBytes) {
+        RpcClient client = Access.ensureConnection();
+
+        //for checking that the response stream is finished
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+
+        ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
+
+        PdfiumConvertToPdfARequestStreamP.InfoP.Builder infoP = PdfiumConvertToPdfARequestStreamP.InfoP.newBuilder();
+        infoP.setDocument(internalPdfDocument.remoteDocument);
+        PdfiumConvertToPdfARequestStreamP.Builder req = PdfiumConvertToPdfARequestStreamP.newBuilder();
+        req.setInfo(infoP);
+
+
+        StreamObserver<PdfiumConvertToPdfARequestStreamP> requestStream = client.stub.pdfiumConvertToPdfA(
+                //response handler
+                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
+        );
+
+        requestStream.onNext(req.build());
+
+        for (Iterator<byte[]> it = Utils_Util.chunk(customICCFileBytes); it.hasNext(); ) {
+            byte[] bytes = it.next();
+            PdfiumConvertToPdfARequestStreamP.Builder pdfDocumentConstructor_data = PdfiumConvertToPdfARequestStreamP.newBuilder();
+
+            pdfDocumentConstructor_data.setIccBytesChunk(ByteString.copyFrom(bytes));
+            requestStream.onNext(pdfDocumentConstructor_data.build());
+        }
+
+        requestStream.onCompleted();
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        InternalPdfDocument doc = Utils_Util.handlePdfDocumentChunks(resultChunks);
+        doc.userPassword = internalPdfDocument.userPassword;
+        doc.ownerPassword = internalPdfDocument.ownerPassword;
+        return doc;
+    }
+
+    public static InternalPdfDocument toPdfUA(InternalPdfDocument internalPdfDocument) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumConvertToPdfUARequestP.Builder req = PdfiumConvertToPdfUARequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        EmptyResultP res = client.blockingStub.pdfiumConvertToPdfUA(req.build());
+
+        Utils_Util.handleEmptyResult(res);
+
+        return internalPdfDocument;
+    }
 }
