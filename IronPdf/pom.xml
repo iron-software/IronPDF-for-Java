@@ -257,19 +257,16 @@
             <artifactId>grpc-netty-shaded</artifactId>
             <groupId>io.grpc</groupId>
             <version>1.57.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>grpc-protobuf</artifactId>
             <groupId>io.grpc</groupId>
             <version>1.57.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>grpc-stub</artifactId>
             <groupId>io.grpc</groupId>
             <version>1.57.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>javax.annotation-api</artifactId>
