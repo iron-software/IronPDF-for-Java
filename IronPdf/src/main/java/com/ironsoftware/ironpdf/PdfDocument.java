@@ -53,7 +53,7 @@ public class PdfDocument implements Printable {
      * The Logger.
      */
     static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
-    private final InternalPdfDocument internalPdfDocument;
+    private InternalPdfDocument internalPdfDocument;
 
     //region Constructor
     private final BookmarkManager bookmarkManager;
@@ -254,12 +254,13 @@ public class PdfDocument implements Printable {
     public static PdfDocument fromImage(List<Path> imagesPath, ImageBehavior imageBehavior,
                                         ChromePdfRenderOptions renderOptions) {
 
-       List<Image_Api.ImageData> imageDataList =  imagesPath.stream().map(x -> {
-                    try {
-                        return new Image_Api.ImageData(Files.readAllBytes(x),FilenameUtils.getExtension(x.toAbsolutePath().toString()) );
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }}).collect(Collectors.toList());
+        List<Image_Api.ImageData> imageDataList = imagesPath.stream().map(x -> {
+            try {
+                return new Image_Api.ImageData(Files.readAllBytes(x), FilenameUtils.getExtension(x.toAbsolutePath().toString()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
 
         return new PdfDocument(Image_Api.imageToPdf(imageDataList, imageBehavior, renderOptions));
     }
@@ -499,14 +500,14 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     Resize a page to the specified dimensions (in millimeters)
-
-     @param pageWidth Desired page width, in millimeters
-     @param pageHeight Desired page height, in millimeters
-     @param pageSelection Selected page indexes.
+     * Resize a page to the specified dimensions (in millimeters)
+     *
+     * @param pageWidth     Desired page width, in millimeters
+     * @param pageHeight    Desired page height, in millimeters
+     * @param pageSelection Selected page indexes.
      */
-    public final void resizePage(double pageWidth, double pageHeight, PageSelection pageSelection){
-        internalPdfDocument.getPageList(pageSelection).forEach(x->{
+    public final void resizePage(double pageWidth, double pageHeight, PageSelection pageSelection) {
+        internalPdfDocument.getPageList(pageSelection).forEach(x -> {
             Page_Api.resizePage(internalPdfDocument, pageWidth, pageHeight, x);
         });
     }
@@ -1481,21 +1482,20 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     Saves the PDF as byte array with changes appended to the end of the file.
-
-     @return The PDF file as a byte array.
+     * Saves the PDF as byte array with changes appended to the end of the file.
+     *
+     * @return The PDF file as a byte array.
      */
     public final byte[] getBinaryDataIncremental() {
         return PdfDocument_Api.getBytes(internalPdfDocument, true);
     }
 
 
-
     /**
-     Saves the PDF as byte array at the specified revision number. {@link PdfDocument#saveAsRevision}
-
-     @return a {@link PdfDocument} document
-     @param index revision index
+     * Saves the PDF as byte array at the specified revision number. {@link PdfDocument#saveAsRevision}
+     *
+     * @param index revision index
+     * @return a {@link PdfDocument} document
      */
     public final byte[] getRevision(int index) {
         return PdfDocument_Api.getRevision(internalPdfDocument, index);
@@ -1908,16 +1908,16 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     *Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
-     *<p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
-     *<p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
-     *<p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
-     *<p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
-     *@param zipFilePath Path to a Zip to be rendered as a PDF.
-     *@param mainFile Name of the primary HTML file.
-     *@param renderOptions Rendering options
-     *@return
-     *A {@link PdfDocument}
+     * Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
+     * <p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
+     * <p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
+     * <p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
+     * <p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
+     *
+     * @param zipFilePath   Path to a Zip to be rendered as a PDF.
+     * @param mainFile      Name of the primary HTML file.
+     * @param renderOptions Rendering options
+     * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
     public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile, ChromePdfRenderOptions renderOptions) throws IOException {
@@ -1925,20 +1925,88 @@ public class PdfDocument implements Printable {
     }
 
     /**
-     *Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
-     *<p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
-     *<p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
-     *<p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
-     *<p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
-     *@param zipFilePath Path to a Zip to be rendered as a PDF.
-     *@param mainFile Name of the primary HTML file.
-     *@return
-     *A {@link PdfDocument}
+     * Creates a PDF file from a local Zip file, and returns it as a {@link PdfDocument}.
+     * <p>IronPDF is a W3C standards compliant HTML rendering based on Google's Chromium browser.  If your output PDF does not look as expected:
+     * <p> - Validate your HTML file using  https://validator.w3.org/ &amp; CSS https://jigsaw.w3.org/css-validator/
+     * <p> - To debug HTML, view the file in Chrome web browser's print preview which will work almost exactly as IronPDF.
+     * <p> - Read our detailed documentation on pixel perfect HTML to PDF: https://ironpdf.com/tutorials/pixel-perfect-html-to-pdf/
+     *
+     * @param zipFilePath Path to a Zip to be rendered as a PDF.
+     * @param mainFile    Name of the primary HTML file.
+     * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
     public static PdfDocument renderZipAsPdf(Path zipFilePath, String mainFile) throws IOException {
         return new PdfDocument(Render_Api.renderZipAsPdf(zipFilePath, mainFile, new ChromePdfRenderOptions(), new ChromeHttpLoginCredentials()));
     }
 
+    //endregion
+
+    //region pdfA
+
+    /**
+     * Save the current document into the specified PDF-A standard format
+     *
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument saveAsPdfA(String filePath) throws IOException {
+        return convertToPdfA().saveAs(filePath);
+    }
+
+    /**
+     * Save the current document into the specified PDF-A standard format
+     *
+     * @param customICCFilePath (Optional) Custom color profile file path
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument saveAsPdfA(String filePath, String customICCFilePath) throws IOException {
+        return convertToPdfA(customICCFilePath).saveAs(filePath);
+    }
+
+    /**
+     * Convert the current document into the specified PDF-A standard format
+     *
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfA() throws IOException {
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, new byte[0]);
+        return this;
+    }
+
+    /**
+     * Convert the current document into the specified PDF-A standard format
+     *
+     * @param customICCFilePath (Optional) Custom color profile file path
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfA(String customICCFilePath) throws IOException {
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, Files.readAllBytes(Paths.get(customICCFilePath)));
+        return this;
+    }
+
+    /**
+     * Save the current document into the specified PDF/UA standard format
+     *
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument saveAsPdfUA(String filePath) throws IOException {
+        return convertToPdfUA().saveAs(filePath);
+    }
+
+    /**
+     * Convert the current document into the specified PDF/UA standard format
+     *
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfUA() throws IOException {
+        PdfDocument_Api.toPdfUA(internalPdfDocument);
+        return this;
+    }
     //endregion
 }
