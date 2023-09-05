@@ -87,3 +87,31 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+  publish-javadoc-from-java11:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Replace version with release tag
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' IronPdf/pom.xml
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Build Java doc .jar
+        run: mvn javadoc:jar -Pjavadoc-java11
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Upload JARs to GitHub Release
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'IronPdf/target/*.jar'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
