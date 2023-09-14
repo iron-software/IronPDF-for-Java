@@ -59,6 +59,12 @@ jobs:
       - name: Replace windows-x86 version with release tag
         run: |
           sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-windows-x86/pom.xml
+      - name: Replace macos-arm64 version with release tag
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-macos-arm64/pom.xml
+      - name: Replace macos-x64 version with release tag
+        run: |
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-engine-pack/ironpdf-engine-macos-x64/pom.xml
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
@@ -83,6 +89,18 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}  
       - name: Publish windows-x86 to Maven Central Repository   
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-windows-x86/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Publish macos-arm64 to Maven Central Repository   
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-macos-arm64/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Publish macos-x64 to Maven Central Repository   
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-macos-x64/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
