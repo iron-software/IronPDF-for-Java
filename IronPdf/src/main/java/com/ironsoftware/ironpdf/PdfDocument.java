@@ -894,7 +894,7 @@ public class PdfDocument implements Printable {
      * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions) {
-        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
+        HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
                 internalPdfDocument.getPageList(PageSelection.allPages()),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
@@ -913,7 +913,7 @@ public class PdfDocument implements Printable {
      * @return the pdf document
      */
     public PdfDocument addHtmlFooter(HtmlHeaderFooter footer, HeaderFooterOptions headerFooterOptions, PageSelection pageSelection) {
-        HeaderFooter_Api.addHtmlHeader(internalPdfDocument, footer,
+        HeaderFooter_Api.addHtmlFooter(internalPdfDocument, footer,
                 headerFooterOptions.getFirstPageNumber(),
                 internalPdfDocument.getPageList(pageSelection),
                 headerFooterOptions.getMarginLeftMm(), headerFooterOptions.getMarginRightMm(),
