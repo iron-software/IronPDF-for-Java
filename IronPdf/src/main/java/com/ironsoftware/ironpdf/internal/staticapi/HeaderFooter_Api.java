@@ -781,7 +781,6 @@ public final class HeaderFooter_Api {
         if (isHeader) {
             optionBuilder.setHtmlHeader(chromeHtmlHeaderFooterPBuilder);
         } else {
-            optionBuilder.setHtmlHeader(chromeHtmlHeaderFooterPBuilder);
             optionBuilder.setHtmlFooter(chromeHtmlHeaderFooterPBuilder);
         }
 
