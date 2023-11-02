@@ -5,19 +5,29 @@ import "basic.proto";
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
 
-message PdfiumFontNamesP
+message PdfiumFontInfoP
 {
-  repeated string value = 1;
+  int32 id = 1;
+  uint32 obj_num = 2;
+  int32 name_length = 3;
+  bool is_embedded = 4;
+  string name = 5;
+  int32 type = 6;
 }
 
-message PdfiumGetFontNamesResultP {
+message PdfiumFontInfoCollectionP
+{
+  repeated PdfiumFontInfoP value = 1;
+}
+
+message PdfiumGetFontInfoCollectionResultP {
   oneof result_or_exception {
-    PdfiumFontNamesP result = 1;
+    PdfiumFontInfoCollectionP result = 1;
     RemoteExceptionP exception = 2;
   }
 }
 
-message PdfiumGetFontNamesRequestP {
+message PdfiumGetFontInfoCollectionRequestP {
   PdfDocumentP document = 1;
 }
 

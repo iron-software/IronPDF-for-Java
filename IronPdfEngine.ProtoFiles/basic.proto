@@ -82,6 +82,10 @@ message ListStringP {
   repeated string items = 1;
 }
 
+message ListIntP {
+  repeated int32 items = 1;
+}
+
 message ListStringResultP {
   oneof result_or_exception {
     ListStringP result = 1;
@@ -148,4 +152,16 @@ message ImagesResultStreamP {
 message RawImageChunkWithIndexP {
   int32 image_index = 1;
   bytes raw_image_chunk = 2;
+}
+
+message PdfiumIDocumentObjectP {
+    PdfDocumentP document = 1;
+    uint32 obj_num = 2;
+}
+
+message IntListResultP {
+  oneof result_or_exception {
+    ListIntP result = 1;
+    RemoteExceptionP exception = 2;
+  }
 }

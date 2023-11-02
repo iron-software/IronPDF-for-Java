@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * The type Internal pdf document. For users, please use {@link com.ironsoftware.ironpdf.PdfDocument} instead.
  */
-public final class InternalPdfDocument implements AutoCloseable, Printable {
+public final class InternalPdfDocument implements AutoCloseable , Printable {
 
     /**
      * The Remote document.
@@ -49,7 +49,12 @@ public final class InternalPdfDocument implements AutoCloseable, Printable {
     }
 
     @Override
-    public void close() {
+    protected void finalize() {
+        this.close();
+    }
+
+    @Override
+    public synchronized void close() {
         try {
             if (this.disposed) {
                 return;

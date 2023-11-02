@@ -90,7 +90,34 @@ message PdfiumPageRotationP {
 
 message PdfiumResizePageRequestP {
   PdfDocumentP document = 1;
+  int32 page_index = 2;
+  double page_width = 3;
+  double page_height = 4;
+}
+
+message PdfiumGetPageBoundsRequestP {
+  PdfDocumentP document = 1;
   int32 PageIndex = 2;
-  double PageWidth = 3;
-  double PageHeight = 4;
+}
+
+message PdfiumPageBoundsP {
+  double left = 1;
+  double right = 2;
+  double top = 3;
+  double bottom = 4;
+}
+
+message PdfiumMergePageObjectsAppendRequestP {
+  PdfDocumentP src_document = 1;
+  int32 src_page_index = 2;
+  PdfDocumentP dest_document = 3;
+  int32 dest_page_index = 4;
+  bool copy_annotations = 5;
+}
+
+message PdfiumPageBoundsPResultP {
+  oneof result_or_exception {
+    PdfiumPageBoundsP result = 1;
+    RemoteExceptionP exception = 2;
+  }
 }
