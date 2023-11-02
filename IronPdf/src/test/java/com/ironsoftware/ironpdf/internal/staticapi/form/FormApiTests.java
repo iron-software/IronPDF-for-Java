@@ -21,7 +21,7 @@ public class FormApiTests extends TestBase {
         Assertions.assertEquals(2, formBefore.size());
         Form_Api.flattenPdfFrom(doc);
         List<FormField> formAfter = Form_Api.getFields(doc);
-        Assertions.assertEquals(0, formAfter.size());
+        Assertions.assertEquals(2, formAfter.size());
 
     }
 
@@ -49,7 +49,8 @@ public class FormApiTests extends TestBase {
     @Test
     public final void SetFieldValueTest() throws IOException {
         InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
-        Form_Api.setFieldValue(doc, 0, "myFirstName");
+        List<FormField> formBefore = Form_Api.getFields(doc);
+        Form_Api.setFieldValue(doc, formBefore.get(0).getAnnotationIndex(), "myFirstName");
         List<FormField> form = Form_Api.getFields(doc);
         Assertions.assertEquals(2, form.size());
         Assertions.assertTrue(

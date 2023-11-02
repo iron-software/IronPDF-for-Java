@@ -83,3 +83,24 @@ message PdfiumVerifiedSignatureP {
   bool is_valid = 6;
   string filter = 7;
 }
+
+message PdfiumAddSignatureImageRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes data_chunk = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+    int32 page_index = 2;
+    int32 signature_index = 3;
+    double x = 4;
+    double y = 5;
+    double desired_width = 6;
+    double desired_height = 7;
+  }
+}
+
+message PdfiumGetSignatureByteRangeRequestP {
+    PdfDocumentP document = 1;
+    int32 index =2;
+}

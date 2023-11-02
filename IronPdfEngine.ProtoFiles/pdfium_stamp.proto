@@ -1,0 +1,26 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message PdfiumStampBackgroundWatermarkRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes image_bytes = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+  }
+}
+
+message PdfiumStampFooterWatermarkRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes image_bytes = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+  }
+}

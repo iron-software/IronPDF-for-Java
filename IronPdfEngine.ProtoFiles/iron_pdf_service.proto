@@ -22,6 +22,7 @@ import "chrome_render.proto";
 import "pdfium_security.proto";
 import "pdfium_text.proto";
 import "pdfium_image.proto";
+import "pdfium_stamp.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -38,6 +39,7 @@ service IronPdfService {
   rpc Chrome_Image_ImageFilesToPdf(stream ChromeImageFilesToPdfRequestStreamP) returns (PdfDocumentResultP){}
 
   //CHROME_Renderer
+  rpc Chrome_Render_MeasureHtml(stream ChromeRenderMeasureHtmlRequestStreamP) returns (SizeResultP){}
   rpc Chrome_Render_FromHtml(stream ChromeRenderPdfDocumentFromHtmlRequestStreamP) returns (PdfDocumentResultP){}
   rpc Chrome_Render_FromZipFile(stream ChromeRenderPdfDocumentFromZipFileRequestStreamP) returns (PdfDocumentResultP){}
   rpc Chrome_Render_FromUri(ChromeRenderPdfDocumentFromUriRequestP) returns (PdfDocumentResultP){}
@@ -56,6 +58,7 @@ service IronPdfService {
   rpc Pdfium_Annotation_GetAnnotationCountRequestP(PdfiumGetAnnotationCountRequestP) returns (IntResultP){}
   rpc Pdfium_Annotation_GetTextAnnotationRequestP(PdfiumGetAnnotationRequestP) returns (PdfiumGetTextAnnotationResultP){}
   rpc Pdfium_Annotation_RemoveAnnotation(PdfiumRemoveAnnotationRequestP) returns (IntResultP){}
+  rpc Pdfium_Annotation_AddLinkAnnotation(PdfiumAddLinkAnnotationRequestP)  returns (EmptyResultP){}
 
   //PDFIUM_Attachment
   rpc Pdfium_Attachment_GetPdfAttachmentCount(PdfiumGetPdfAttachmentCountRequestP) returns(PdfiumGetPdfAttachmentCountResultP){}
@@ -75,6 +78,7 @@ service IronPdfService {
 
   //PDFIUM_Compress
   rpc Pdfium_Compress_CompressImages(PdfiumCompressImagesRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Compress_RemoveStructTree(PdfiumRemoveStructTreeRequestP) returns (EmptyResultP){}
 
   //PDFIUM_Form
   rpc Pdfium_Form_GetForm(PdfiumGetFormRequestP) returns(PdfiumGetFormResultP){}
@@ -85,8 +89,17 @@ service IronPdfService {
   rpc Pdfium_Form_RenameField(PdfiumRenameFieldRequestP) returns(PdfiumRenameFormFieldResultP){}
   rpc Pdfium_Form_SetFieldValue(PdfiumSetFormFieldValueRequestP) returns(EmptyResultP){}
   rpc Pdfium_Form_SetFieldFont(PdfiumSetFormFieldFontRequestP) returns(EmptyResultP){}
-  rpc Pdfium_Form_FlattenForm(PdfiumFlattenFormRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_FlattenForm(PdfiumFlattenFormRequestP) returns (EmptyResultP){} 
+  //new form api
   rpc Pdfium_Form_SetFormFieldIsReadOnly(PdfiumSetFormFieldIsReadOnlyRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_AddFormField(PdfiumAddFormFieldRequestP) returns (IntResultP){}
+  rpc Pdfium_Form_AddFormFieldAnnotation(PdfiumAddFormFieldAnnotationRequestP) returns (IntResultP){}
+  rpc Pdfium_Form_RemoveFormField(PdfiumRemoveFormFieldRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_RemoveFormFieldAnnotation(PdfiumRemoveFormFieldAnnotationRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_SetFormFieldValue(PdfiumSetFormFieldValue2RequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_UpdateFormField(PdfiumUpdateFormFieldRequestP) returns (EmptyResultP){} 
+  rpc Pdfium_Form_UpdateFormFieldAnnotation(PdfiumUpdateFormFieldAnnotationRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Form_GetFormFields(PdfiumGetFormFieldsRequestP) returns (PdfiumGetFormFieldsResultP){}
 
   //PDFIUM_HeaderFooter
   rpc Pdfium_HeaderFooter_AddTextHeaderFooter(PdfiumAddTextHeaderFooterRequestP) returns (EmptyResultP){}
@@ -106,7 +119,6 @@ service IronPdfService {
   rpc Pdfium_Metadata_GetMetadataDict(PdfiumGetMetadataDictRequestP) returns (StringDictionaryResultP){}
   rpc Pdfium_Metadata_SetMetadataDict(PdfiumSetMetadataDictRequestP) returns (EmptyResultP){}
   
-
   //PDFIUM_Page
   rpc Pdfium_Page_RemovePages(PdfiumRemovePagesRequestP) returns (PdfiumRemovePagesResultP){}
   rpc Pdfium_Page_Merge(PdfiumPdfDocumentMergeRequestP) returns (PdfDocumentResultP){}
@@ -117,6 +129,8 @@ service IronPdfService {
   rpc Pdfium_Page_CopyPages(PdfiumCopyPagesRequestP) returns(PdfDocumentResultP){}
   rpc Pdfium_Page_SetPagesRotation(PdfiumSetPagesRotationRequestP) returns(EmptyResultP){}
   rpc Pdfium_Page_ResizePage(PdfiumResizePageRequestP) returns(EmptyResultP){}
+  rpc Pdfium_Page_GetPageBounds(PdfiumGetPageBoundsRequestP) returns (PdfiumPageBoundsPResultP){}
+  rpc Pdfium_Page_MergePageObjectsAppend(PdfiumMergePageObjectsAppendRequestP) returns (EmptyResultP){}
 
   //PDFIUM_PdfDocument
   rpc Pdfium_Dispose(PdfDocumentP) returns (EmptyResultP){}
@@ -129,7 +143,7 @@ service IronPdfService {
   rpc Pdfium_GetRevisionCount(PdfDocumentP)returns (IntResultP){}
   rpc Pdfium_GetRevision(PdfiumGetRevisionRequestP)  returns (stream BytesResultStreamP){}
   rpc Pdfium_GetPaperSizePreset(PdfiumGetPaperSizePresetRequestP) returns(PdfiumGetPaperSizePresetResultP){}
-  rpc Pdfium_Form_GetFontNames(PdfiumGetFontNamesRequestP) returns(PdfiumGetFontNamesResultP){}
+  rpc Pdfium_Form_GetFontInfoCollection(PdfiumGetFontInfoCollectionRequestP) returns(PdfiumGetFontInfoCollectionResultP){}
 
   //PDFIUM_Security
   rpc Pdfium_Security_RemovePasswordsAndEncryption(PdfiumRemovePasswordsAndEncryptionRequestP) returns (EmptyResultP){}
@@ -141,11 +155,17 @@ service IronPdfService {
   rpc Pdfium_Signature_GetVerifiedSignature(stream PdfiumGetVerifiedSignatureRequestStreamP) returns (PdfiumGetVerifySignatureResultP){}
   rpc Pdfium_Signature_RemoveSignatures(PdfiumRemoveSignaturesRequestP) returns (EmptyResultP);
   rpc Pdfium_Signature_GetSignatureCount(PdfiumGetSignatureCountRequestP) returns (PdfiumGetSignatureCountResultP);
+  rpc Pdfium_Signature_AddSignatureImage(stream PdfiumAddSignatureImageRequestStreamP) returns (EmptyResultP);
+  rpc Pdfium_Signature_GetSignatureByteRange(PdfiumGetSignatureByteRangeRequestP) returns (IntListResultP);
 
   //PDFIUM_Text
   rpc Pdfium_Text_ExtractAllText(PdfiumExtractAllTextRequestP)returns(StringResultP){}
   rpc Pdfium_Text_ReplaceText(PdfiumReplaceTextRequestP)returns(EmptyResultP){}
   rpc Pdfium_Text_DrawText(PdfiumDrawTextRequestP)returns(EmptyResultP){}
+
+  //PDFIUM_Stamp
+  rpc Pdfium_Stamp_StampBackgroundWatermark(stream PdfiumStampBackgroundWatermarkRequestStreamP)returns(EmptyResultP){}
+  rpc Pdfium_Stamp_StampStampFooterWatermark(stream PdfiumStampFooterWatermarkRequestStreamP)returns(EmptyResultP){}
 
   ///////////////////SYSTEM///////////////////
   //SYSTEM_License

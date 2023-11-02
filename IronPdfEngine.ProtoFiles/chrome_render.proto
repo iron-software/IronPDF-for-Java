@@ -5,6 +5,29 @@ import "basic.proto";
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
 
+message SizeP{
+  int32 width = 1;
+  int32 height = 2;
+}
+
+message SizeResultP {
+  oneof result_or_exception {
+    SizeP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message ChromeRenderMeasureHtmlRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    string html_chunk = 2;
+  }
+  message InfoP {
+    optional ChromePdfRenderOptionsP render_options = 1;
+    optional ChromeHttpLoginCredentialsP http_options = 2;
+  }
+}
+
 message ChromeRenderPdfDocumentFromHtmlRequestStreamP {
   oneof request {
     InfoP info = 1;
@@ -106,6 +129,9 @@ message ChromePdfRenderOptionsP {
   optional bool enable_grayscale = 32;
   optional bool force_paper_size = 33;
   optional RenderOptionWaitForP waitFor = 34;
+  optional StringDictionaryP custom_cookies = 35;
+  optional ChromeTableOfContentsTypesP table_of_contents = 36;
+  optional bool enable_mathematical_latex = 37;
 }
 
 message ChromeCefRenderSettingsP {
@@ -181,3 +207,7 @@ message ChromeApplyCookiesRequestP {
 }
 
 message ChromeClearCookiesRequestP {}
+
+message ChromeTableOfContentsTypesP {
+  int32 enum_value = 1;
+}

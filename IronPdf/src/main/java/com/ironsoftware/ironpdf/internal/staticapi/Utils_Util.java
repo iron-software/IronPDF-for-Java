@@ -287,7 +287,7 @@ final class Utils_Util {
      */
     static <T> void waitAndCheck(CountDownLatch finishLatch, List<T> resultChunks) {
         try {
-            finishLatch.await(1, TimeUnit.MINUTES);
+            finishLatch.await(Setting_Api.ironPdfEngineTimeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

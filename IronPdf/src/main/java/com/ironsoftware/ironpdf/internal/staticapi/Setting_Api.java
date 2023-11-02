@@ -144,6 +144,17 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2023.10.3";
+    public static final String IRON_PDF_ENGINE_VERSION = "2023.11.7";
 
+    public static boolean singleProcess = false;
+
+    public static int chromeBrowserLimit = 30;
+
+    public static Path chromeBrowserCachePath = null;
+
+    public static int chromeGpuMode = 0;
+
+    public static boolean linuxAndDockerAutoConfig = true;
+
+    public static int ironPdfEngineTimeout = 120;
 }

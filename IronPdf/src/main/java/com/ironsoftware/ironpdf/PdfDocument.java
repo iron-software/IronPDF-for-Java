@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a PDF document. Allows: loading, editing, manipulating, merging, signing printing and saving PDFs.
  */
-public class PdfDocument implements Printable {
+public class PdfDocument implements Printable,AutoCloseable  {
     /**
      * The Logger.
      */
@@ -2007,6 +2007,12 @@ public class PdfDocument implements Printable {
     public PdfDocument convertToPdfUA() throws IOException {
         PdfDocument_Api.toPdfUA(internalPdfDocument);
         return this;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(internalPdfDocument != null)
+            internalPdfDocument.close();
     }
     //endregion
 }

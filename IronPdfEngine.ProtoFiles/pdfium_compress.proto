@@ -10,3 +10,8 @@ message PdfiumCompressImagesRequestP {
   int32 quality = 2;
   bool  scale_to_visible_size = 3;
 }
+
+
+message PdfiumRemoveStructTreeRequestP {
+  PdfDocumentP document = 1;
+}

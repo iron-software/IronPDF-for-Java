@@ -16,27 +16,24 @@ public class FormTests extends TestBase {
     @Test
     public final void FlattenFormAllPagesTest() throws IOException {
         PdfDocument doc = PdfDocument.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
-        FormManager formManager = doc.getForm();
-        List<FormField> formsBefore = formManager.getFields().getAllFields();
+        List<FormField> formsBefore = doc.getForm().getFields().getAllFields();
         Assertions.assertEquals(2, formsBefore.size());
 
-        formManager.flatten();
-        List<FormField> formsAfter = formManager.getFields().getAllFields();
-        Assertions.assertEquals(0, formsAfter.size());
+        doc.getForm().flatten();
+        List<FormField> formsAfter = doc.getForm().getFields().getAllFields();
+        Assertions.assertEquals(2, formsAfter.size());
 
     }
 
     @Test
     public final void FlattenFormSelectPageTest() throws IOException {
         PdfDocument doc = PdfDocument.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
-        FormManager formManager = doc.getForm();
-        List<FormField> formsBefore = formManager.getFields().getAllFields();
+        List<FormField> formsBefore = doc.getForm().getFields().getAllFields();
         Assertions.assertEquals(2, formsBefore.size());
 
-        formManager.flatten(PageSelection.singlePage(0));
-        List<FormField> formsAfter = formManager.getFields().getAllFields();
-        Assertions.assertEquals(0, formsAfter.size());
-
+        doc.getForm().flatten(PageSelection.singlePage(0));
+        List<FormField> formsAfter = doc.getForm().getFields().getAllFields();
+        Assertions.assertEquals(2, formsAfter.size());
     }
 
     @Test

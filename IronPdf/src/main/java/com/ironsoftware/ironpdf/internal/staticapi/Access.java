@@ -93,11 +93,11 @@ final class Access {
         }
     }
 
-    static void setLicenseKey(){
+    static void setLicenseKey() {
         //Set License
         String lk = Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey) ?
                 new ConfigLoader().getProperty("IRONPDF_LICENSE_KEY") : Setting_Api.licenseKey;
-        if(!Utils_StringHelper.isNullOrWhiteSpace(lk))
+        if (!Utils_StringHelper.isNullOrWhiteSpace(lk))
             License_Api.SetLicensed(lk);
     }
 
@@ -191,31 +191,34 @@ final class Access {
                 List<String> cmdList = new ArrayList<>();
 
                 cmdList.add(selectedFile.get().toPath().toAbsolutePath().toString());
-                cmdList.add(String.format("host=%1$s", Setting_Api.subProcessHost));
-                cmdList.add(String.format("port=%1$s", Setting_Api.subProcessPort));
-                cmdList.add(String.format("enable_debug=%1$s", Setting_Api.enableDebug));
-                cmdList.add(String.format("log_path=%1$s", Setting_Api.logPath));
-                cmdList.add(String.format("programming_language=%1$s", "java"));
-                cmdList.add(String.format("single_process=%1$s", currentOsFullName().equalsIgnoreCase("MacOS")));
+                cmdList.add("host=" + Setting_Api.subProcessHost);
+                cmdList.add("port=" + Setting_Api.subProcessPort);
+                cmdList.add("enable_debug=" + Setting_Api.enableDebug);
+                cmdList.add("log_path=" + Setting_Api.logPath);
+                cmdList.add("programming_language=" + "java");
+                cmdList.add("single_process=" + (Setting_Api.singleProcess || currentOsFullName().equalsIgnoreCase("MacOS")));
                 cmdList.add("docker_build=false");
-                cmdList.add("linux_and_docker_auto_config=false");
+                cmdList.add("linux_and_docker_auto_config=" + Setting_Api.linuxAndDockerAutoConfig);
                 cmdList.add("skip_initialization=false");
+                cmdList.add("chrome_browser_limit=" + Setting_Api.chromeBrowserLimit);
+                if (chromeBrowserCachePath != null)
+                    cmdList.add("chrome_cache_path=" + Setting_Api.chromeBrowserCachePath.toAbsolutePath());
+                cmdList.add("chrome_gpu_mode=" + Setting_Api.chromeGpuMode);
 
                 if (Setting_Api.tempFolderPath != null)
-                    cmdList.add(String.format("temp_folder_path=%1$s", Setting_Api.tempFolderPath.toAbsolutePath()));
+                    cmdList.add("temp_folder_path=" + Setting_Api.tempFolderPath.toAbsolutePath());
 
                 if (!Utils_StringHelper.isNullOrWhiteSpace(Setting_Api.licenseKey)) {
-                    cmdList.add(String.format("license_key=%1$s", Setting_Api.licenseKey));
+                    cmdList.add("license_key=" + Setting_Api.licenseKey);
                 } else {
-                    cmdList.add(String.format("license_key=%1$s",
-                            new ConfigLoader().getProperty("IRONPDF_LICENSE_KEY")));
+                    cmdList.add("license_key=" + new ConfigLoader().getProperty("IRONPDF_LICENSE_KEY"));
                 }
                 serverReady = new CountDownLatch(1);
                 ProcessBuilder pb = new ProcessBuilder(cmdList);
 
                 logger.info("Start IronPdfEngine");
-                if(enableDebug){
-                    logger.debug("options: "+ cmdList);
+                if (enableDebug) {
+                    logger.debug("options: " + cmdList);
                 }
 
                 Process proc = pb.start();
