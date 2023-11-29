@@ -11,6 +11,59 @@ message PdfiumGetAnnotationCountRequestP {
   int32 page_index = 2;
 }
 
+message PdfiumAnnotationSubTypesP {
+  int32 enum_value = 1;
+}
+
+message PdfiumPdfAnnotationP {
+  PdfiumAnnotationSubTypesP subtype = 2;
+  double x = 3;
+  double y = 4;
+  double width = 5;
+  double height = 6;
+  optional string contents = 7;
+  optional string name = 8;  
+}
+
+message PdfiumPdfTextAnnotationP {
+  PdfiumPdfAnnotationP annotation = 1;
+  optional string state = 2;
+}
+
+message PdfiumPdfFreeTextAnnotationP {
+  PdfiumPdfAnnotationP annotation = 1;
+  optional string appearance = 2;  
+}
+
+message PdfiumPdfLinkAnnotationP {
+  PdfiumPdfAnnotationP annotation = 1;
+  optional string dest = 2;    
+}
+
+message PdfiumWrappedPdfAnnotationP {
+  oneof annotations {
+    PdfiumPdfTextAnnotationP text = 2;
+    PdfiumPdfFreeTextAnnotationP freetext = 3;
+    PdfiumPdfLinkAnnotationP link = 4;  
+  }  
+}
+
+message PdfiumPdfAnnotationCollectionP {
+  repeated PdfiumWrappedPdfAnnotationP annotations = 1;
+}
+
+message PdfiumGetAnnotationsResultP {
+  oneof result_or_exception {
+    PdfiumPdfAnnotationCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetAnnotationsRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
 message PdfiumAnnotationIconP {
   int32 enum_value = 1;
 }

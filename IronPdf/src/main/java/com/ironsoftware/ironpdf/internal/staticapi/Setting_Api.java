@@ -144,7 +144,7 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2023.11.7";
+    public static final String IRON_PDF_ENGINE_VERSION = "2023.12.6";
 
     public static boolean singleProcess = false;
 

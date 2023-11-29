@@ -40,6 +40,14 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+    <properties>
+        <grpc.version>1.59.0</grpc.version>
+        <protobuf.version>3.25.0</protobuf.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <profiles>
         <profile>
             <id>release</id>
@@ -128,13 +136,13 @@
             <plugin>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <configuration>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.57.2:exe:${os.detected.classifier}
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
                     </pluginArtifact>
                     <pluginId>grpc-java</pluginId>
                     <protoSourceRoot>
                         ${project.basedir}/../IronPdfEngine.ProtoFiles
                     </protoSourceRoot>
-                    <protocArtifact>com.google.protobuf:protoc:3.22.3:exe:${os.detected.classifier}
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
                     </protocArtifact>
                 </configuration>
                 <executions>
@@ -256,17 +264,22 @@
         <dependency>
             <artifactId>grpc-netty-shaded</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.57.2</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <artifactId>grpc-protobuf</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.57.2</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <artifactId>grpc-stub</artifactId>
             <groupId>io.grpc</groupId>
-            <version>1.57.2</version>
+            <version>${grpc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <artifactId>javax.annotation-api</artifactId>
@@ -285,11 +298,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <modelVersion>4.0.0</modelVersion>
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

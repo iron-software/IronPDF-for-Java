@@ -7,12 +7,11 @@ option java_multiple_files = true;
 
 message PdfiumFontInfoP
 {
-  int32 id = 1;
-  uint32 obj_num = 2;
-  int32 name_length = 3;
-  bool is_embedded = 4;
-  string name = 5;
-  int32 type = 6;
+  uint32 obj_num = 1;
+  bool is_embedded = 2;
+  string name = 3;
+  int32 type = 4;
+  uint32 descendant_font_obj_num = 5;
 }
 
 message PdfiumFontInfoCollectionP
@@ -39,7 +38,7 @@ message PdfiumPdfDocumentConstructorStreamP {
   message InfoP {
     optional string user_password = 1;
     optional string owner_password = 2;
-    optional bool track_changes = 3;
+    optional int32 track_changes = 3;
   }
 }
 message PdfiumConvertToPdfARequestStreamP {

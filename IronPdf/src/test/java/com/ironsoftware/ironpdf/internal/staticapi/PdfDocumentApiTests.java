@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.TestBase;
+import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class PdfDocumentApiTests extends TestBase {
 
     @Test
     public final void GetBytesIncrementalTest() throws IOException {
-        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
+        InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"),"","", ChangeTrackingModes.ENABLE_CHANGE_TRACKING);
         AssertNotNullOrEmpty(PdfDocument_Api.getBytes(doc,true));
     }
 

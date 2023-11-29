@@ -296,7 +296,7 @@ final class Access {
             // Read the error from the command
             stdError.lines().forEach(line -> {
                 if (Setting_Api.enableDebug) {
-                    engineLogger.error("[IronPdfEngine][Error]" + line);
+                    engineLogger.info("[IronPdfEngine]" + line);
                 } else {
                     com.ironsoftware.ironpdf.Settings.setDebug(true);
                     logger.warn("IronPdfEngine Error! For more information, Please enable Debug mode by adding this line before calling any IronPDF methods `com.ironsoftware.ironpdf.Settings.setDebug(true);`");
