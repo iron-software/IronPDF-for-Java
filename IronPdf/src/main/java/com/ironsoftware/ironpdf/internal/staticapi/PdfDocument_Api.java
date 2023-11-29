@@ -3,6 +3,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.PdfDocument;
+import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.signature.Signature;
 import io.grpc.stub.StreamObserver;
@@ -38,7 +39,7 @@ public final class PdfDocument_Api {
      * @throws IOException Exception thrown if it can not be opened.
      */
     public static InternalPdfDocument fromFile(String pdfFilePath) throws IOException {
-        return fromFile(pdfFilePath, null, null);
+        return fromFile(pdfFilePath, null, null, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
 
@@ -52,7 +53,7 @@ public final class PdfDocument_Api {
      */
     public static InternalPdfDocument fromFile(String pdfFilePath, String password)
             throws IOException {
-        return fromFile(pdfFilePath, password, null);
+        return fromFile(pdfFilePath, password, null, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
     /**
@@ -65,7 +66,7 @@ public final class PdfDocument_Api {
      * @throws IOException Exception thrown if it can not be opened.
      */
     public static InternalPdfDocument fromFile(String pdfFilePath, String password,
-                                               String ownerPassword) throws IOException {
+                                               String ownerPassword, ChangeTrackingModes trackChanges) throws IOException {
         if (Utils_StringHelper.isNullOrWhiteSpace(pdfFilePath)) {
             throw new IllegalArgumentException("Value 'pdfFilePath' cannot be null or empty.");
         }
@@ -84,7 +85,7 @@ public final class PdfDocument_Api {
                     pdfFilePath));
         }
 
-        return fromBytes(pdfData, password, ownerPassword);
+        return fromBytes(pdfData, password, ownerPassword, trackChanges);
     }
 
     /**
@@ -96,7 +97,7 @@ public final class PdfDocument_Api {
      * @return the internal pdf document
      */
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes, String userPassword,
-                                                String ownerPassword) {
+                                                String ownerPassword, ChangeTrackingModes trackChanges) {
         RpcClient client = Access.ensureConnection();
         logger.info("open PDF");
         //for checking that the response stream is finished
@@ -119,7 +120,7 @@ public final class PdfDocument_Api {
 
             info.setOwnerPassword(!Utils_StringHelper.isNullOrWhiteSpace(ownerPassword) ? ownerPassword : "");
         }
-        info.setTrackChanges(true);
+        info.setTrackChanges(trackChanges.ordinal());
         pdfDocumentConstructor_info.setInfo(info);
         requestStream.onNext(pdfDocumentConstructor_info.build());
 
@@ -277,7 +278,7 @@ public final class PdfDocument_Api {
      * @return the internal pdf document
      */
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes, String userPassword) {
-        return fromBytes(pdfFileBytes, userPassword, null);
+        return fromBytes(pdfFileBytes, userPassword, null, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
     /**
@@ -287,7 +288,7 @@ public final class PdfDocument_Api {
      * @return the internal pdf document
      */
     public static InternalPdfDocument fromBytes(byte[] pdfFileBytes) {
-        return fromBytes(pdfFileBytes, null, null);
+        return fromBytes(pdfFileBytes, null, null, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
     public static InternalPdfDocument toPdfA(InternalPdfDocument internalPdfDocument, byte[] customICCFileBytes) {

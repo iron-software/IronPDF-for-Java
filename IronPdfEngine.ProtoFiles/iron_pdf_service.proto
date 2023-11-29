@@ -23,6 +23,7 @@ import "pdfium_security.proto";
 import "pdfium_text.proto";
 import "pdfium_image.proto";
 import "pdfium_stamp.proto";
+import "pdfium_font.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -56,6 +57,7 @@ service IronPdfService {
   rpc Pdfium_Annotation_AddTextAnnotation(PdfiumAddTextAnnotationRequestP) returns (IntResultP){}
   rpc Pdfium_Annotation_EditTextAnnotation(PdfiumEditTextAnnotationRequestP) returns (EmptyResultP){}
   rpc Pdfium_Annotation_GetAnnotationCountRequestP(PdfiumGetAnnotationCountRequestP) returns (IntResultP){}
+  rpc Pdfium_Annotation_GetAnnotationsRequestP(PdfiumGetAnnotationsRequestP) returns (PdfiumGetAnnotationsResultP){}
   rpc Pdfium_Annotation_GetTextAnnotationRequestP(PdfiumGetAnnotationRequestP) returns (PdfiumGetTextAnnotationResultP){}
   rpc Pdfium_Annotation_RemoveAnnotation(PdfiumRemoveAnnotationRequestP) returns (IntResultP){}
   rpc Pdfium_Annotation_AddLinkAnnotation(PdfiumAddLinkAnnotationRequestP)  returns (EmptyResultP){}
@@ -100,6 +102,21 @@ service IronPdfService {
   rpc Pdfium_Form_UpdateFormField(PdfiumUpdateFormFieldRequestP) returns (EmptyResultP){} 
   rpc Pdfium_Form_UpdateFormFieldAnnotation(PdfiumUpdateFormFieldAnnotationRequestP) returns (EmptyResultP){}
   rpc Pdfium_Form_GetFormFields(PdfiumGetFormFieldsRequestP) returns (PdfiumGetFormFieldsResultP){}
+
+  //PDFIUM_Font
+  rpc Pdfium_Font_ResolveStandardFontName(PdfiumResolveStandardFontNameRequestP) returns(PdfiumResolveStandardFontNameResultP){}
+  rpc Pdfium_Font_GetStandardFontName(PdfiumGetStandardFontNameRequestP) returns(PdfiumGetStandardFontNameResultP){}
+  rpc Pdfium_Font_EmbedViaByteArray(stream PdfiumEmbedFontViaByteArrayRequestStreamP) returns(PdfiumEmbedFontViaByteArrayResultP){}
+  rpc Pdfium_Font_GetFontInfoAt(PdfiumGetFontInfoAtRequestP) returns(PdfiumGetFontInfoAtResultP){}
+  rpc Pdfium_Font_AddViaStandardFontName(PdfiumAddFontViaStandardFontNameRequestP) returns(PdfiumAddFontViaStandardFontNameResultP){}
+  rpc Pdfium_Font_AddViaStandardFontEnumVal(PdfiumAddFontViaStandardFontEnumValRequestP) returns(PdfiumAddFontViaStandardFontEnumValResultP){}
+  rpc Pdfium_Font_AddViaByteArray(stream PdfiumAddFontViaByteArrayRequestStreamP) returns(PdfiumAddFontViaByteArrayResultP){}
+  rpc Pdfium_Font_FindFonts(PdfiumFindFontsRequestP) returns(PdfiumFindFontsResultP){}
+  rpc Pdfium_Font_UnEmbedFontViaRegexFontName(PdfiumUnEmbedFontViaRegexFontNameRequestP) returns(PdfiumUnEmbedFontViaRegexFontNameResultP){}
+  rpc Pdfium_Font_UnEmbedFontViaObjNum(PdfiumUnEmbedFontViaObjNumRequestP) returns(PdfiumUnEmbedFontViaObjNumResultP){}
+  rpc Pdfium_Font_ReplaceViaStandardFontName(PdfiumReplaceFontViaStandardFontNameRequestP) returns(PdfiumReplaceFontViaStandardFontNameResultP){}
+  rpc Pdfium_Font_ReplaceViaStandardFontEnumVal(PdfiumReplaceFontViaStandardFontEnumValRequestP) returns(PdfiumReplaceFontViaStandardFontEnumValResultP){}
+  rpc Pdfium_Font_ReplaceViaByteArray(stream PdfiumReplaceFontViaByteArrayRequestStreamP) returns(PdfiumReplaceFontViaByteArrayResultP){}
 
   //PDFIUM_HeaderFooter
   rpc Pdfium_HeaderFooter_AddTextHeaderFooter(PdfiumAddTextHeaderFooterRequestP) returns (EmptyResultP){}

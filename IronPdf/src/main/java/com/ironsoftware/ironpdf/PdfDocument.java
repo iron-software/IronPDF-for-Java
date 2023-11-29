@@ -3,6 +3,7 @@ package com.ironsoftware.ironpdf;
 import com.ironsoftware.ironpdf.annotation.AnnotationManager;
 import com.ironsoftware.ironpdf.attachment.AttachmentManager;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;
+import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.form.FormManager;
 import com.ironsoftware.ironpdf.headerfooter.HeaderFooterOptions;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a PDF document. Allows: loading, editing, manipulating, merging, signing printing and saving PDFs.
  */
-public class PdfDocument implements Printable,AutoCloseable  {
+public class PdfDocument implements Printable, AutoCloseable {
     /**
      * The Logger.
      */
@@ -83,7 +84,19 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @throws IOException if an I/O error occurs reading from the stream
      */
     public PdfDocument(Path pdfFilePath, String password) throws IOException {
-        this(pdfFilePath, password, "");
+        this(pdfFilePath, password, "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath  The PDF file path.
+     * @param password     Optional user password if the PDF document is encrypted.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @throws IOException if an I/O error occurs reading from the stream
+     */
+    public PdfDocument(Path pdfFilePath, String password, ChangeTrackingModes trackChanges) throws IOException {
+        this(pdfFilePath, password, "", trackChanges);
     }
 
     /**
@@ -95,7 +108,20 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @throws IOException if an I/O error occurs reading from the stream
      */
     public PdfDocument(Path pdfFilePath, String password, String ownerPassword) throws IOException {
-        this(Files.readAllBytes(pdfFilePath), password, ownerPassword);
+        this(Files.readAllBytes(pdfFilePath), password, ownerPassword, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath   The PDF file path.
+     * @param password      Optional user password if the PDF document is encrypted.
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing, modifying restrictions etc..)
+     * @param trackChanges  Optionally track changes to the document (for use with incremental saves)
+     * @throws IOException if an I/O error occurs reading from the stream
+     */
+    public PdfDocument(Path pdfFilePath, String password, String ownerPassword, ChangeTrackingModes trackChanges) throws IOException {
+        this(Files.readAllBytes(pdfFilePath), password, ownerPassword, trackChanges);
     }
 
 
@@ -108,9 +134,21 @@ public class PdfDocument implements Printable,AutoCloseable  {
      */
     public PdfDocument(byte[] pdfData, String password, String ownerPassword) {
         this(PdfDocument_Api.fromBytes(pdfData,
-                password, ownerPassword));
+                password, ownerPassword, ChangeTrackingModes.AUTO_CHANGE_TRACKING));
     }
 
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfData       The PDF file data as byte array.
+     * @param password      Optional user password if the PDF document is encrypted.
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing, modifying restrictions etc..)
+     * @param trackChanges  Optionally track changes to the document (for use with incremental saves)
+     */
+    public PdfDocument(byte[] pdfData, String password, String ownerPassword, ChangeTrackingModes trackChanges) {
+        this(PdfDocument_Api.fromBytes(pdfData,
+                password, ownerPassword, trackChanges));
+    }
 
     /**
      * Opens an existing PDF document for editing.
@@ -119,7 +157,18 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @throws IOException the io exception
      */
     public PdfDocument(Path pdfFilePath) throws IOException {
-        this(pdfFilePath, "", "");
+        this(pdfFilePath, "", "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath  The PDF file path.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @throws IOException the io exception
+     */
+    public PdfDocument(Path pdfFilePath, ChangeTrackingModes trackChanges) throws IOException {
+        this(pdfFilePath, "", "", trackChanges);
     }
 
     /**
@@ -129,7 +178,18 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @param password Optional user password if the PDF document is encrypted.
      */
     public PdfDocument(byte[] pdfData, String password) {
-        this(pdfData, password, "");
+        this(pdfData, password, "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfData      The PDF file data as byte array.
+     * @param password     Optional user password if the PDF document is encrypted.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     */
+    public PdfDocument(byte[] pdfData, String password, ChangeTrackingModes trackChanges) {
+        this(pdfData, password, "", trackChanges);
     }
 
     /**
@@ -138,7 +198,17 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @param pdfData The PDF file data as byte array.
      */
     public PdfDocument(byte[] pdfData) {
-        this(pdfData, "", "");
+        this(pdfData, "", "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfData      The PDF file data as byte array.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     */
+    public PdfDocument(byte[] pdfData, ChangeTrackingModes trackChanges) {
+        this(pdfData, "", "", trackChanges);
     }
 
 
@@ -155,9 +225,21 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @throws IOException if an I/O error occurs reading from the stream
      */
     public static PdfDocument fromFile(Path pdfFilePath, String password) throws IOException {
-        return fromFile(pdfFilePath, password, "");
+        return fromFile(pdfFilePath, password, "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath The PDF file path.
+     * @param password    Optional user password if the PDF document is encrypted.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
+     */
+    public static PdfDocument fromFile(Path pdfFilePath, String password, ChangeTrackingModes trackChanges) throws IOException {
+        return fromFile(pdfFilePath, password, "", trackChanges);
+    }
 
     /**
      * Opens an existing PDF document for editing.
@@ -170,7 +252,22 @@ public class PdfDocument implements Printable,AutoCloseable  {
      */
     public static PdfDocument fromFile(Path pdfFilePath, String password, String ownerPassword)
             throws IOException {
-        return new PdfDocument(pdfFilePath, password, ownerPassword);
+        return new PdfDocument(pdfFilePath, password, ownerPassword, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath   The PDF file path.
+     * @param password      Optional user password if the PDF document is encrypted.
+     * @param ownerPassword Optional password if the PDF document is protected by owner (printing, modifying restrictions etc..)
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
+     */
+    public static PdfDocument fromFile(Path pdfFilePath, String password, String ownerPassword, ChangeTrackingModes trackChanges)
+            throws IOException {
+        return new PdfDocument(pdfFilePath, password, ownerPassword, trackChanges);
     }
 
     /**
@@ -181,7 +278,19 @@ public class PdfDocument implements Printable,AutoCloseable  {
      * @throws IOException if an I/O error occurs reading from the stream
      */
     public static PdfDocument fromFile(Path pdfFilePath) throws IOException {
-        return fromFile(pdfFilePath, "", "");
+        return fromFile(pdfFilePath, "", "", ChangeTrackingModes.AUTO_CHANGE_TRACKING);
+    }
+
+    /**
+     * Opens an existing PDF document for editing.
+     *
+     * @param pdfFilePath The PDF file path.
+     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @return An IronPdf.PdfDocument object as loaded from the file path.
+     * @throws IOException if an I/O error occurs reading from the stream
+     */
+    public static PdfDocument fromFile(Path pdfFilePath, ChangeTrackingModes trackChanges) throws IOException {
+        return fromFile(pdfFilePath, "", "", trackChanges);
     }
 
 
@@ -1344,6 +1453,15 @@ public class PdfDocument implements Printable,AutoCloseable  {
     }
 
     /**
+     * Remove document struct tree information which describes the logical layout of the document.
+     * Removing the "structure tree" can significantly reduce the disk space used by the document.
+     * Removing the "structure tree" of a complicated document can negatively impact text selection.
+     */
+    public final void compressStructTree(int quality, boolean scaleToVisibleSize) {
+        Compress_Api.compressStructTree(internalPdfDocument);
+    }
+
+    /**
      * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
      * @return The extracted images as {@link BufferedImage} objects.
@@ -2011,7 +2129,7 @@ public class PdfDocument implements Printable,AutoCloseable  {
 
     @Override
     public void close() throws Exception {
-        if(internalPdfDocument != null)
+        if (internalPdfDocument != null)
             internalPdfDocument.close();
     }
     //endregion

@@ -1,0 +1,209 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+import "pdfium_pdf_document.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+// ResolveStandardFontName
+message PdfiumResolveStandardFontNameRequestP {
+  string font_name = 1;
+}
+
+message PdfiumResolveStandardFontNameResultP {
+  oneof result_or_exception {
+    string result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// GetStandardFontName
+message PdfiumGetStandardFontNameRequestP {
+  uint32 font_val = 1;
+}
+
+message PdfiumGetStandardFontNameResultP {
+  oneof result_or_exception {
+    string result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// GetFontInfoAt()
+message PdfiumGetFontInfoAtRequestP {
+  PdfDocumentP document = 1;
+  uint32 font_obj_num = 2;
+}
+
+message PdfiumGetFontInfoAtResultP {
+  oneof result_or_exception {
+    PdfiumFontInfoP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// Add - standard font name
+message PdfiumAddFontViaStandardFontNameRequestP {
+  PdfDocumentP document = 1;
+  string standard_font_name = 2;
+}
+
+message PdfiumAddFontViaStandardFontNameResultP {
+  oneof result_or_exception {
+    PdfiumFontInfoP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// Add - standard font enum
+message PdfiumAddFontViaStandardFontEnumValRequestP {
+  PdfDocumentP document = 1;
+  uint32 standard_font_enum_val = 2;
+}
+
+message PdfiumAddFontViaStandardFontEnumValResultP {
+  oneof result_or_exception {
+    PdfiumFontInfoP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// Add - byte array
+// This takes care of overload sets that accepts
+// - byte[]
+// - Stream
+// - File path (resolved as byte[] before grpc request)
+message PdfiumAddFontViaByteArrayRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes font_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    PdfDocumentP document = 1;
+    uint32 font_bytes_size = 2;
+  }
+}
+
+message PdfiumAddFontViaByteArrayResultP {
+  oneof result_or_exception {
+    PdfiumFontInfoP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// Embed - byte array
+// This takes care of overload sets that accepts
+// - byte[]
+// - Stream
+// - File path (resolved as byte[] before grpc request)
+message PdfiumEmbedFontViaByteArrayRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes font_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    PdfDocumentP document = 1;
+    uint32 font_obj_num = 2;
+    int32 embed_as_type = 3;
+    uint32 font_bytes_size = 4;
+  }
+}
+
+message PdfiumEmbedFontViaByteArrayResultP {
+  oneof result_or_exception {
+    bool success = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// UnEmbedFont - regex font name
+message PdfiumUnEmbedFontViaRegexFontNameRequestP {
+  PdfDocumentP document = 1;
+  string regex_font_name = 2;
+}
+
+message PdfiumUnEmbedFontViaRegexFontNameResultP {
+  oneof result_or_exception {
+    uint32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// UnEmbedFont - objnum
+message PdfiumUnEmbedFontViaObjNumRequestP {
+  PdfDocumentP document = 1;
+  uint32 obj_num = 2;
+}
+
+message PdfiumUnEmbedFontViaObjNumResultP {
+  oneof result_or_exception {
+    uint32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// FindFonts
+message PdfiumFindFontsRequestP {
+  PdfDocumentP document = 1;
+  string regex = 2;
+}
+
+message PdfiumFindFontsResultP {
+  oneof result_or_exception {
+    PdfiumFontInfoCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// ReplaceFonts - byte array
+message PdfiumReplaceFontViaByteArrayRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes font_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    PdfDocumentP document = 1;
+    uint32 font_obj_num = 2;
+    uint32 font_bytes_size = 4;
+    int32 replace_as_type = 3;
+  }
+}
+
+message PdfiumReplaceFontViaByteArrayResultP {
+  oneof result_or_exception {
+    uint32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// ReplaceFont - standard font name (string)
+message PdfiumReplaceFontViaStandardFontNameRequestP {
+  PdfDocumentP document = 1;
+  uint32 font_obj_num = 2;
+  string standard_font_name = 3;
+}
+
+message PdfiumReplaceFontViaStandardFontNameResultP {
+  oneof result_or_exception {
+    uint32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+// ReplaceFont - standard font enum value
+message PdfiumReplaceFontViaStandardFontEnumValRequestP {
+  PdfDocumentP document = 1;
+  uint32 font_obj_num = 2;
+  uint32 standard_font_enum_val = 3;
+}
+
+message PdfiumReplaceFontViaStandardFontEnumValResultP {
+  oneof result_or_exception {
+    uint32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}

@@ -2,6 +2,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.internal.proto.PdfiumCompressImagesRequestP;
 import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumRemoveStructTreeRequestP;
 
 /**
  * The type Compress api.
@@ -28,4 +29,17 @@ public final class Compress_Api {
 
         Utils_Util.handleEmptyResult(res);
     }
+
+    public static void compressStructTree(InternalPdfDocument internalPdfDocument) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumRemoveStructTreeRequestP.Builder req = PdfiumRemoveStructTreeRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        EmptyResultP res = client.blockingStub.pdfiumCompressRemoveStructTree(req.build());
+
+        Utils_Util.handleEmptyResult(res);
+    }
+
+
 }

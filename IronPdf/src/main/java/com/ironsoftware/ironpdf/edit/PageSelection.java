@@ -71,7 +71,7 @@ public class PageSelection extends InternalPageSelection {
      */
     public static PageSelection pageRange(int startIndex, int endIndex) {
         PageSelection ps = new PageSelection();
-        ps.setPageList(IntStream.range(startIndex, endIndex).boxed().collect(Collectors.toList()));
+        ps.setPageList(IntStream.range(startIndex, endIndex + 1).boxed().collect(Collectors.toList()));
         return ps;
     }
 
