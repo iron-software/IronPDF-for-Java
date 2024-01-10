@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import com.ironsoftware.ironpdf.exception.IronPdfDeploymentException;
 import com.ironsoftware.ironpdf.internal.proto.HandshakeRequestP;
 import com.ironsoftware.ironpdf.internal.proto.HandshakeResponseP;
 import com.ironsoftware.ironpdf.internal.proto.IronPdfServiceGrpc;
@@ -35,6 +36,52 @@ final class Access {
     private static BufferedReader stdInput;
     private static BufferedReader stdError;
     private static CountDownLatch serverReady;
+    private static final int MAX_RETRY_ATTEMPTS = 20;
+
+    private static ManagedChannel createChannel(){
+        int attempts = 0;
+        Exception lastException = new Exception("unknown reason");
+        while (attempts < MAX_RETRY_ATTEMPTS) {
+            try {
+                return ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
+                        Setting_Api.subProcessPort).usePlaintext().build();
+            } catch (Exception e) {
+                lastException = e;
+                attempts++;
+                logger.info("Connect to IronPdfEngine failed. (Retry "+attempts+"/"+MAX_RETRY_ATTEMPTS+")");
+                try {
+                    TimeUnit.SECONDS.sleep(2); // Wait for 2 seconds before retrying
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+        throw new RuntimeException(String.format("Cannot connected to IronPdfEngine: %s:%d", subProcessHost, subProcessPort), lastException);
+    }
+
+    private static HandshakeResponseP handshakeWithRetry(RpcClient newClient){
+        HandshakeRequestP.Builder handshakeRequest = HandshakeRequestP.newBuilder();
+        handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
+        handshakeRequest.setProgLang("java");
+
+        HandshakeResponseP handshakeResult = null;
+        int attempts = 0;
+        Exception lastException = new Exception("unknown reason");
+        while (attempts < MAX_RETRY_ATTEMPTS) {
+            try{
+                return newClient.blockingStub.handshake(
+                        handshakeRequest.build());
+            }catch (Exception exception){
+                lastException=exception;
+                attempts++;
+                logger.info("Waiting for IronPdfEngine is ready. (Retry "+attempts+"/"+MAX_RETRY_ATTEMPTS+")");
+                try {
+                    TimeUnit.SECONDS.sleep(4); // Wait for 4 seconds before retrying
+                } catch (InterruptedException ignored1) {
+                }
+            }
+        }
+        throw new RuntimeException(String.format("Cannot handshake with IronPdfEngine: %s:%d due to:", subProcessHost, subProcessPort), lastException);
+    }
 
     static synchronized RpcClient ensureConnection() {
         if (client != null) {
@@ -46,8 +93,7 @@ final class Access {
         }
 
         if (channel == null) {
-            channel = ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
-                    Setting_Api.subProcessPort).usePlaintext().build();
+            channel = createChannel();
         }
 
         RpcClient newClient = new RpcClient(
@@ -57,23 +103,17 @@ final class Access {
 
         logger.debug("Handshaking, Expected IronPdfEngine Version : " + Setting_Api.IRON_PDF_ENGINE_VERSION);
 
-        HandshakeRequestP.Builder handshakeRequest = HandshakeRequestP.newBuilder();
-        handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
-        handshakeRequest.setProgLang("java");
+        HandshakeResponseP handshakeResult = handshakeWithRetry(newClient);
 
-        HandshakeResponseP res_firstTry = newClient.blockingStub.handshake(
-                handshakeRequest.build());
+        logger.debug("Handshake result:" + handshakeResult);
 
-        logger.debug("Handshake result:" + res_firstTry);
-
-        switch (res_firstTry.getResultOrExceptionCase()) {
+        switch (handshakeResult.getResultOrExceptionCase()) {
             case SUCCESS:
                 client = newClient;
                 setLicenseKey();
                 return client;
             case REQUIREDVERSION:
-                logger.error("Mismatch IronPdfEngine version expected: "
-                        + Setting_Api.IRON_PDF_ENGINE_VERSION + " but found:" + res_firstTry);
+                logger.error(String.format("Mismatch IronPdfEngine version expected: %s but found: %s", Setting_Api.IRON_PDF_ENGINE_VERSION, handshakeResult.getRequiredVersion()));
 //                //todo download new Binary
                 if (!isIronPdfEngineDocker && tryAgain) {
                     tryAgain = false;
@@ -87,7 +127,7 @@ final class Access {
                 return client;
 
             case EXCEPTION:
-                throw Exception_Converter.fromProto(res_firstTry.getException());
+                throw Exception_Converter.fromProto(handshakeResult.getException());
             default:
                 throw new RuntimeException("Unexpected result from handshake");
         }
