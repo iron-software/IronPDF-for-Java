@@ -45,7 +45,7 @@ public class FormField {
     /**
      * Form field types
      */
-    private final FormFieldTypes type;
+    private final String type;
 
     /**
      * (INTERNAL) Please Get ComboBoxField from {@link FormFieldsSet#getUnknownFields()} from {@link FormManager#getFields()}
@@ -61,7 +61,7 @@ public class FormField {
      * @param value           the value
      * @param readOnly        the read only
      */
-    public FormField(int annotationIndex, String name, int pageIndex, FormFieldTypes type, double x,
+    public FormField(int annotationIndex, String name, int pageIndex, String type, double x,
                      double y, double width, double height, String value, boolean readOnly) {
         this.annotationIndex = annotationIndex;
         this.name = name;
@@ -117,7 +117,7 @@ public class FormField {
      * @return the type
      */
     public final FormFieldTypes getType() {
-        return type;
+        return FormFieldTypes.fromFormType(type);
     }
 
     /**

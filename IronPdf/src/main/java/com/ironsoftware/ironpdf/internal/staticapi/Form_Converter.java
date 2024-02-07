@@ -52,11 +52,11 @@ final class Form_Converter {
 
     static FormField fromProtoToFormField(com.ironsoftware.ironpdf.internal.proto.PdfiumFormFieldP proto) {
         return new FormField(proto.getAnnotationIndex(), proto.getName(), proto.getPageIndex(),
-                fromProto(proto.getType()), proto.getX(), proto.getY(), proto.getWidth(), proto.getHeight(),
+                proto.getType(), proto.getX(), proto.getY(), proto.getWidth(), proto.getHeight(),
                 proto.getValue(), proto.getReadOnly());
     }
 
-    static FormFieldTypes fromProto(com.ironsoftware.ironpdf.internal.proto.PdfiumFormFieldTypesP input) {
+    static FormFieldTypes fromProto(com.ironsoftware.ironpdf.internal.proto.PdfiumPdfFormFieldTypeP input) {
         return FormFieldTypes.values()[input.getEnumValue()];
     }
 }

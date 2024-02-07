@@ -5,6 +5,64 @@ import "basic.proto";
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
 
+message PdfiumCharObjectP
+{
+  double left = 1;
+  double right = 2;
+  double top = 3;
+  double bottom = 4;
+  double looseleft = 5;
+  double looseright = 6;
+  double loosetop = 7;
+  double loosebottom = 8;
+  string contents = 9;
+  double angle = 10;
+}
+
+message PdfiumCharObjectCollectionP
+{
+  repeated PdfiumCharObjectP value = 1;
+}
+
+message PdfiumGetCharObjectCollectionResultP {
+  oneof result_or_exception {
+    PdfiumCharObjectCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetCharObjectCollectionRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
+message PdfiumTextObjectP
+{
+  double left = 1;
+  double right = 2;
+  double top = 3;
+  double bottom = 4;
+  string contents = 5;
+  string color = 6;
+}
+
+message PdfiumTextObjectCollectionP
+{
+  repeated PdfiumTextObjectP value = 1;
+}
+
+message PdfiumGetTextObjectCollectionResultP {
+  oneof result_or_exception {
+    PdfiumTextObjectCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetTextObjectCollectionRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
 message PdfiumFontInfoP
 {
   uint32 obj_num = 1;

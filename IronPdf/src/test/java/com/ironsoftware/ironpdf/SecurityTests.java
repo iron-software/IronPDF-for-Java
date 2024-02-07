@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class SecurityTests extends TestBase {
 
@@ -104,6 +105,26 @@ public class SecurityTests extends TestBase {
         Assertions.assertEquals(PdfEditSecurity.NO_EDIT, secInfoAfter.getAllowUserEdits());
         Assertions.assertFalse(secInfoAfter.isAllowUserFormData());
         Assertions.assertEquals(PdfPrintSecurity.FULL_PRINT_RIGHTS, secInfoAfter.getAllowUserPrinting());
+    }
+
+
+
+    @Test
+    public final void SetIncompleteSecurityOptions() throws IOException {
+        PdfDocument pdf = PdfDocument.fromFile(getTestPath("/Data/empty.pdf"));
+        SecurityOptions securityOptions = new SecurityOptions();
+        securityOptions.setAllowUserCopyPasteContent(false);
+        securityOptions.setAllowUserAnnotations(false);
+        securityOptions.setAllowUserPrinting(PdfPrintSecurity.FULL_PRINT_RIGHTS);
+        securityOptions.setAllowUserFormData(false);
+        securityOptions.setOwnerPassword("top-secret");
+        securityOptions.setUserPassword("sharable");
+
+        com.ironsoftware.ironpdf.security.SecurityManager securityManager = pdf.getSecurity();
+        securityManager.removePasswordsAndEncryption();
+        securityManager.makePdfDocumentReadOnly("secret-key");
+
+        securityManager.setSecurityOptions(securityOptions); // should not throw error
     }
 
 }

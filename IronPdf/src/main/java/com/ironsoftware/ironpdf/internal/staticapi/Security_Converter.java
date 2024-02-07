@@ -36,58 +36,70 @@ final class Security_Converter {
     public static int convertPermissionsInterfaceToEnum(SecurityOptions securityOptions) {
         int enumObject = PdfDocumentPermissionsEnum.AllowAll.getValue();
 
-        if (securityOptions.isAllowUserCopyPasteContent()) {
-            enumObject |= PdfDocumentPermissionsEnum.AllowExtractContent.getValue();
-        } else {
-            enumObject &= ~PdfDocumentPermissionsEnum.AllowExtractContent.getValue();
+        if(securityOptions.isAllowUserCopyPasteContent() != null) {
+            if (securityOptions.isAllowUserCopyPasteContent()) {
+                enumObject |= PdfDocumentPermissionsEnum.AllowExtractContent.getValue();
+            } else {
+                enumObject &= ~PdfDocumentPermissionsEnum.AllowExtractContent.getValue();
+            }
         }
 
-        if (securityOptions.isAllowUserCopyPasteContentForAccessibility()) {
-            enumObject |= PdfDocumentPermissionsEnum.AllowAccessibilityExtractContent.getValue();
-        } else {
-            enumObject &= ~PdfDocumentPermissionsEnum.AllowAccessibilityExtractContent.getValue();
+        if(securityOptions.isAllowUserCopyPasteContentForAccessibility() != null) {
+            if (securityOptions.isAllowUserCopyPasteContentForAccessibility()) {
+                enumObject |= PdfDocumentPermissionsEnum.AllowAccessibilityExtractContent.getValue();
+            } else {
+                enumObject &= ~PdfDocumentPermissionsEnum.AllowAccessibilityExtractContent.getValue();
+            }
         }
 
-        if (securityOptions.isAllowUserAnnotations()) {
-            enumObject |= PdfDocumentPermissionsEnum.AllowAnnotations.getValue();
-        } else {
-            enumObject &= ~PdfDocumentPermissionsEnum.AllowAnnotations.getValue();
+        if(securityOptions.isAllowUserAnnotations() != null) {
+            if (securityOptions.isAllowUserAnnotations()) {
+                enumObject |= PdfDocumentPermissionsEnum.AllowAnnotations.getValue();
+            } else {
+                enumObject &= ~PdfDocumentPermissionsEnum.AllowAnnotations.getValue();
+            }
         }
 
-        if (securityOptions.isAllowUserFormData()) {
-            enumObject |= PdfDocumentPermissionsEnum.AllowFillForms.getValue();
-        } else {
-            enumObject &= ~PdfDocumentPermissionsEnum.AllowFillForms.getValue();
+        if(securityOptions.isAllowUserFormData() != null) {
+            if (securityOptions.isAllowUserFormData()) {
+                enumObject |= PdfDocumentPermissionsEnum.AllowFillForms.getValue();
+            } else {
+                enumObject &= ~PdfDocumentPermissionsEnum.AllowFillForms.getValue();
+            }
         }
 
-        switch (securityOptions.getAllowUserEdits()) {
-            case NO_EDIT:
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowModify.getValue();
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
-                break;
-            case EDIT_PAGES:
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowModify.getValue();
-                enumObject |= PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
-                break;
-            case EDIT_ALL:
-                enumObject |= PdfDocumentPermissionsEnum.AllowModify.getValue();
-                enumObject |= PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
-                break;
+        if(securityOptions.getAllowUserEdits() != null) {
+            switch (securityOptions.getAllowUserEdits()) {
+                case NO_EDIT:
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowModify.getValue();
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
+                    break;
+                case EDIT_PAGES:
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowModify.getValue();
+                    enumObject |= PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
+                    break;
+                case EDIT_ALL:
+                    enumObject |= PdfDocumentPermissionsEnum.AllowModify.getValue();
+                    enumObject |= PdfDocumentPermissionsEnum.AllowAssembleDocument.getValue();
+                    break;
+            }
         }
 
-        switch (securityOptions.getAllowUserPrinting()) {
-            case NO_PRINT:
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowPrint.getValue();
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
-                break;
-            case PRINT_LOW_QUALITY:
-                enumObject |= PdfDocumentPermissionsEnum.AllowPrint.getValue();
-                enumObject &= ~PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
-                break;
-            case FULL_PRINT_RIGHTS:
-                enumObject |= PdfDocumentPermissionsEnum.AllowPrint.getValue();
-                enumObject |= PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
-                break;
+        if(securityOptions.getAllowUserPrinting() != null) {
+            switch (securityOptions.getAllowUserPrinting()) {
+                case NO_PRINT:
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowPrint.getValue();
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
+                    break;
+                case PRINT_LOW_QUALITY:
+                    enumObject |= PdfDocumentPermissionsEnum.AllowPrint.getValue();
+                    enumObject &= ~PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
+                    break;
+                case FULL_PRINT_RIGHTS:
+                    enumObject |= PdfDocumentPermissionsEnum.AllowPrint.getValue();
+                    enumObject |= PdfDocumentPermissionsEnum.AllowPrintFullQuality.getValue();
+                    break;
+            }
         }
 
         return enumObject;

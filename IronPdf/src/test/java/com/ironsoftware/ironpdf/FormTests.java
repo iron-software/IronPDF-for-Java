@@ -4,6 +4,7 @@ import com.ironsoftware.ironpdf.edit.PageSelection;
 import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.form.FormField;
 import com.ironsoftware.ironpdf.form.FormManager;
+import com.ironsoftware.ironpdf.form.ComboBoxField;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -82,6 +83,39 @@ public class FormTests extends TestBase {
         FormField form = expected.get();
         // TODO Maybe add Assertions for Font
         Assertions.assertNotNull(form);
+    }
+
+    @Test
+    public final void GetFormTypeTest() throws IOException {
+        PdfDocument doc = PdfDocument.renderHtmlFileAsPdf(getTestFile("/Data/advance.html"));
+        FormManager formManager = doc.getForm();
+
+        List<FormField> forms = formManager.getFields().getAllFields();
+        Assertions.assertEquals(3, forms.size());
+
+        // Assert for TextField
+        Assertions.assertTrue(forms.stream().map(FormField::getName).anyMatch(x -> x.equals("fname")));
+        Assertions.assertTrue(forms.stream().map(FormField::getName).anyMatch(x -> x.equals("lname")));
+
+        // // Assert for CheckBoxField
+        // Assertions.assertTrue(forms.stream().anyMatch(CheckBoxField.class::isInstance));
+        // CheckBoxField checkBoxField = (CheckBoxField) forms.stream()
+        //         .filter(CheckBoxField.class::isInstance)
+        //         .findFirst()
+        //         .orElse(null);
+        // Assertions.assertNotNull(checkBoxField);
+        // Assertions.assertEquals("subscribe", checkBoxField.getName());
+        // Assertions.assertEquals("yes", checkBoxField.getValue());
+
+        // Assert ComboBoxFields
+        Assertions.assertTrue(forms.stream().anyMatch(ComboBoxField.class::isInstance));
+        ComboBoxField comboBoxField = (ComboBoxField) forms.stream()
+                .filter(ComboBoxField.class::isInstance)
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(comboBoxField);
+        Assertions.assertEquals("country", comboBoxField.getName());
+        //Assertions.assertEquals("uk", comboBoxField.getValue());
     }
 
 }
