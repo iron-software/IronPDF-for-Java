@@ -161,6 +161,8 @@ service IronPdfService {
   rpc Pdfium_GetRevision(PdfiumGetRevisionRequestP)  returns (stream BytesResultStreamP){}
   rpc Pdfium_GetPaperSizePreset(PdfiumGetPaperSizePresetRequestP) returns(PdfiumGetPaperSizePresetResultP){}
   rpc Pdfium_Form_GetFontInfoCollection(PdfiumGetFontInfoCollectionRequestP) returns(PdfiumGetFontInfoCollectionResultP){}
+  rpc Pdfium_Form_GetTextObjectCollection(PdfiumGetTextObjectCollectionRequestP) returns(PdfiumGetTextObjectCollectionResultP){}
+  rpc Pdfium_Form_GetCharObjectCollection(PdfiumGetCharObjectCollectionRequestP) returns(PdfiumGetCharObjectCollectionResultP){}
 
   //PDFIUM_Security
   rpc Pdfium_Security_RemovePasswordsAndEncryption(PdfiumRemovePasswordsAndEncryptionRequestP) returns (EmptyResultP){}

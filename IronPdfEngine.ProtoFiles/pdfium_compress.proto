@@ -9,6 +9,7 @@ message PdfiumCompressImagesRequestP {
   PdfDocumentP document = 1;
   int32 quality = 2;
   bool  scale_to_visible_size = 3;
+  bool  use_hq_sampling = 4;
 }
 
 

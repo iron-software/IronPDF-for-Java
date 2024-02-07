@@ -28,7 +28,7 @@ public class ComboBoxField extends FormField {
     public ComboBoxField(int annotationIndex, String name, int pageIndex,
                          double x, double y, double width, double height, String value, List<String> options,
                          int selectedIndex, boolean readOnly) {
-        super(annotationIndex, name, pageIndex, FormFieldTypes.COMBO_BOX, x, y, width, height, value, readOnly);
+        super(annotationIndex, name, pageIndex, FormFieldTypes.COMBO_BOX.getFormType(), x, y, width, height, value, readOnly);
         this.options = options;
         this.selectedIndex = selectedIndex;
     }

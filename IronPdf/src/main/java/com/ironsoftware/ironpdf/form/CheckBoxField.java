@@ -23,7 +23,7 @@ public class CheckBoxField extends FormField {
      */
     public CheckBoxField(int annotationIndex, String name, int pageIndex,
                          double x, double y, double width, double height, String value, boolean booleanValue, boolean readOnly) {
-        super(annotationIndex, name, pageIndex, FormFieldTypes.CHECK_BOX, x, y, width, height, value, readOnly);
+        super(annotationIndex, name, pageIndex, FormFieldTypes.CHECK_BOX.getFormType(), x, y, width, height, value, readOnly);
         this.booleanValue = booleanValue;
     }
 

@@ -7,6 +7,6 @@ public class TextField extends FormField {
      */
     public TextField(int annotationIndex, String name, int pageIndex, double x,
                      double y, double width, double height, String value, boolean readOnly) {
-        super(annotationIndex, name, pageIndex, FormFieldTypes.TEXT_FIELD, x, y, width, height, value, readOnly);
+        super(annotationIndex, name, pageIndex, FormFieldTypes.TEXT_FIELD.getFormType(), x, y, width, height, value, readOnly);
     }
 }
