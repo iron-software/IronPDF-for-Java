@@ -1,17 +1,17 @@
 #
-# Base Linux image - currently using Debian 11.5 (bullseye)
+# Base Linux image - currently using amazoncorretto 17
 #
-FROM openjdk:18-slim-bullseye
+FROM amazoncorretto:17
 
 #
 # Option 1 : Build the Jar inside docker
 # Build stage - you can skip this by manually copy the precompiled Jar instead.
 #
-RUN apt update -y
-RUN apt install -y openjdk-11-jdk maven
+RUN yum update -y
+RUN yum install -y openjdk-11-jdk maven
 COPY src /home/app/src
 COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean package
+RUN mvn -X -f /home/app/pom.xml clean package
 
 #
 # Option 2 : Build the Jar outside and copy to docker
@@ -21,16 +21,11 @@ RUN mvn -f /home/app/pom.xml clean package
 #
 # Install required packages
 # Which packages to install depends on which Linux distro is used
-# For this example, we are using Debian 11.5 (bullseye) so these packages are specific to this distro.
+# For this example, we are using amazoncorretto:17 so these packages are specific to this distro.
 # For information other distro's required packages please visit https://ironpdf.com/docs/questions/linux/
 #
 #RUN apt-get update -y
-RUN apt-get install -y libc6-dev libgtk2.0-0 libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcb-dri3-0 libdrm-common libgbm1 libasound2 libxkbcommon-x11-0 libxrender1 libfontconfig1 libxshmfence1
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-RUN apt-get install -y gcc-9 g++-9
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
-RUN apt-get install -y xvfb libva-dev libgdiplus
+RUN yum install -y pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc glibc-devel.x86_64 at-spi2-atk.x86_64 mesa-libgbm.x86_64 libxkbcommon amazon-linux-extras libgdiplus
 
 #
 # Start the app
