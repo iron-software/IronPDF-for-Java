@@ -33,6 +33,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
     }
 
     /**
+     * @deprecated This method is deprecated and is no longer supported.
      * Create custom font types.
      *
      * @param Name         the name
@@ -53,7 +54,8 @@ public final class FontTypes extends Utils_CustomEnumeration {
     }
 
     /**
-     * Gets FontTypes from font name or font file path.
+     * @deprecated This method is deprecated and is no longer supported.
+     * Gets FontTypes from font file path.
      *
      * @param FontNameOrFilePath the font name or file path
      * @return the font types
@@ -85,7 +87,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the arial
      */
     public static FontTypes getArial() {
-        return new FontTypes(1, "Arial");
+        return new FontTypes(0, "Arial");
     }
 
     /**
@@ -94,7 +96,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the arial bold
      */
     public static FontTypes getArialBold() {
-        return new FontTypes(2, "Arial-Bold");
+        return new FontTypes(0, "Arial-Bold");
     }
 
     /**
@@ -103,7 +105,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the arial bold italic
      */
     public static FontTypes getArialBoldItalic() {
-        return new FontTypes(3, "Arial-BoldItalic");
+        return new FontTypes(0, "Arial-BoldItalic");
     }
 
     /**
@@ -112,7 +114,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the arial italic
      */
     public static FontTypes getArialItalic() {
-        return new FontTypes(4, "Arial-Italic");
+        return new FontTypes(0, "Arial-Italic");
     }
 
     /**
@@ -121,7 +123,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier
      */
     public static FontTypes getCourier() {
-        return new FontTypes(5, "Courier");
+        return new FontTypes(0, "Courier");
     }
 
     /**
@@ -130,7 +132,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier bold oblique
      */
     public static FontTypes getCourierBoldOblique() {
-        return new FontTypes(6, "Courier-BoldOblique");
+        return new FontTypes(0, "Courier-BoldOblique");
     }
 
     /**
@@ -139,7 +141,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier oblique
      */
     public static FontTypes getCourierOblique() {
-        return new FontTypes(7, "Courier-Oblique");
+        return new FontTypes(0, "Courier-Oblique");
     }
 
     /**
@@ -148,7 +150,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier bold
      */
     public static FontTypes getCourierBold() {
-        return new FontTypes(8, "Courier-Bold");
+        return new FontTypes(0, "Courier-Bold");
     }
 
     /**
@@ -157,7 +159,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier new
      */
     public static FontTypes getCourierNew() {
-        return new FontTypes(9, "CourierNew");
+        return new FontTypes(0, "CourierNew");
     }
 
     /**
@@ -166,7 +168,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier new bold
      */
     public static FontTypes getCourierNewBold() {
-        return new FontTypes(10, "CourierNew-Bold");
+        return new FontTypes(0, "CourierNew-Bold");
     }
 
     /**
@@ -175,7 +177,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier new bold italic
      */
     public static FontTypes getCourierNewBoldItalic() {
-        return new FontTypes(11, "CourierNew-BoldItalic");
+        return new FontTypes(0, "CourierNew-BoldItalic");
     }
 
     /**
@@ -184,7 +186,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the courier new italic
      */
     public static FontTypes getCourierNewItalic() {
-        return new FontTypes(12, "CourierNew-Italic");
+        return new FontTypes(0, "CourierNew-Italic");
     }
 
     /**
@@ -193,7 +195,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the helvetica
      */
     public static FontTypes getHelvetica() {
-        return new FontTypes(13, "Helvetica");
+        return new FontTypes(0, "Helvetica");
     }
 
     /**
@@ -202,7 +204,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the helvetica bold
      */
     public static FontTypes getHelveticaBold() {
-        return new FontTypes(14, "Helvetica-Bold");
+        return new FontTypes(0, "Helvetica-Bold");
     }
 
     /**
@@ -211,7 +213,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the helvetica bold oblique
      */
     public static FontTypes getHelveticaBoldOblique() {
-        return new FontTypes(15, "Helvetica-BoldOblique");
+        return new FontTypes(0, "Helvetica-BoldOblique");
     }
 
     /**
@@ -220,7 +222,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the helvetica oblique
      */
     public static FontTypes getHelveticaOblique() {
-        return new FontTypes(16, "Helvetica-Oblique");
+        return new FontTypes(0, "Helvetica-Oblique");
     }
 
     /**
@@ -229,7 +231,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the symbol
      */
     public static FontTypes getSymbol() {
-        return new FontTypes(17, "Symbol");
+        return new FontTypes(0, "Symbol");
     }
 
     /**
@@ -238,7 +240,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the times new roman
      */
     public static FontTypes getTimesNewRoman() {
-        return new FontTypes(18, "TimesNewRoman");
+        return new FontTypes(0, "TimesNewRoman");
     }
 
     /**
@@ -247,7 +249,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the times new roman bold
      */
     public static FontTypes getTimesNewRomanBold() {
-        return new FontTypes(19, "TimesNewRoman-Bold");
+        return new FontTypes(0, "TimesNewRoman-Bold");
     }
 
     /**
@@ -256,7 +258,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the times new roman bold italic
      */
     public static FontTypes getTimesNewRomanBoldItalic() {
-        return new FontTypes(20, "TimesNewRoman-BoldItalic");
+        return new FontTypes(0, "TimesNewRoman-BoldItalic");
     }
 
     /**
@@ -265,7 +267,7 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the times new roman italic
      */
     public static FontTypes getTimesNewRomanItalic() {
-        return new FontTypes(21, "TimesNewRoman-Italic");
+        return new FontTypes(0, "TimesNewRoman-Italic");
     }
 
     /**
@@ -274,15 +276,6 @@ public final class FontTypes extends Utils_CustomEnumeration {
      * @return the zapf dingbats
      */
     public static FontTypes getZapfDingbats() {
-        return new FontTypes(22, "ZapfDingbats");
-    }
-
-    /**
-     * Gets custom font file path. Only available when FontTypes object was created by {@link #createCustomFont(String, String)}
-     *
-     * @return the custom font file path
-     */
-    public String getCustomFontFilePath() {
-        return customFontFilePath;
+        return new FontTypes(0, "ZapfDingbats");
     }
 }

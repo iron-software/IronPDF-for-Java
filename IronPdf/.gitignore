@@ -163,5 +163,5 @@ buildNumber.properties
 /ironpdf/TestOutput
 /*/src/main/resources/
 
-# Ignore Download directory
-IronPdfEngine.*
+/IronPdfEngine.*
+/src/test/resources/config.properties

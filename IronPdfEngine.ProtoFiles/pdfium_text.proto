@@ -30,3 +30,10 @@ message PdfiumDrawTextRequestP {
   double rotation = 9;
   string color = 10;
 }
+
+message PdfiumRedactTextRequestP {
+	PdfDocumentP document = 1;
+	int32 page_index = 2;
+	string replace_text = 3;
+	bool is_draw_boxes = 4;
+}

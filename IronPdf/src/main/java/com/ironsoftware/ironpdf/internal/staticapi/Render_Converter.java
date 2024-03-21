@@ -39,17 +39,16 @@ final class Render_Converter {
         proto.setZoom(Options.getZoom());
         proto.setCssMediaType(Render_Converter.toProto(Options.getCssMediaType()));
         proto.setJavascript(Utils_Util.nullGuard(Options.getJavascript()));
-        if (Options.getPaperSize() != PaperSize.Custom) {
-            return proto.build();
+        if (Options.getPaperSize() == PaperSize.Custom) {
+            proto.setCustomPaperHeight(Options.getCustomPaperHeight());
+            proto.setCustomPaperWidth(Options.getCustomPaperWidth());
         }
 
-        proto.setCustomPaperHeight(Options.getCustomPaperHeight());
-        proto.setCustomPaperWidth(Options.getCustomPaperWidth());
         proto.setWaitFor(toProto(Options.getWaitFor()));
 
-        proto.setHtmlHeader(ChromeHtmlHeaderFooterP.newBuilder().build());
-        proto.setHtmlFooter(ChromeHtmlHeaderFooterP.newBuilder().build());
+        //let H/F be default, since in Java API we separate H/F from rendering
 
+        proto.setTableOfContents(Render_Converter.toProto(Options.getTableOfContents()));
         return proto.build();
     }
 
@@ -115,5 +114,11 @@ final class Render_Converter {
             proto.addItems(tempVar);
         }
         return proto.build();
+    }
+
+    static ChromeTableOfContentsTypesP toProto(TableOfContentsTypes Input) {
+        ChromeTableOfContentsTypesP.Builder tempVar = ChromeTableOfContentsTypesP.newBuilder();
+        tempVar.setEnumValue(Input.ordinal());
+        return tempVar.build();
     }
 }

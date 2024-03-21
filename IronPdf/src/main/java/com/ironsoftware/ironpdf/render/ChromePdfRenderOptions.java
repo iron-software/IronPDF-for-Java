@@ -46,7 +46,7 @@ public class ChromePdfRenderOptions implements Cloneable {
     /**
      * The input character encoding as a string;
      */
-    private String inputEncoding = "utf-8"; //Now  Disable this function for JAVA
+    private String inputEncoding = "utf-8";
     /**
      * Bottom Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
      * applications.
@@ -93,6 +93,11 @@ public class ChromePdfRenderOptions implements Cloneable {
      * By default, it will wait for nothing.
      */
     private WaitFor waitFor = new WaitFor();
+
+    /**
+     * Generate a table of contents at the location in the HTML document where an element is found with id "ironpdf-toc".
+     */
+    private TableOfContentsTypes tableOfContents = TableOfContentsTypes.None;
 
     /**
      * Is create pdf forms from html. Turns all Html forms elements into editable PDF forms.
@@ -252,14 +257,19 @@ public class ChromePdfRenderOptions implements Cloneable {
 
     /**
      * Gets input character encoding as a string;
-     *
+     * e.g. "utf-8" "utf-16" "ASCII"
      * @return the input encoding
      */
     public String getInputEncoding() {
         return inputEncoding;
     }
 
-    //Disable setInputEncoding in JAVA
+    /**
+     * Sets input character encoding as a string;
+     * e.g. "utf-8" "utf-16" "ASCII"
+     * @param value e.g. "utf-8", "utf-16", "ASCII" or else
+     */
+    public void setInputEncoding(String value) { inputEncoding = value; }
 
     /**
      * Gets margin bottom. Bottom Pdf "paper" margin in millimeters.  Set to zero for border-less and commercial printing
@@ -650,5 +660,23 @@ public class ChromePdfRenderOptions implements Cloneable {
         marginBottom = 0;
         marginLeft = margin;
         marginRight = margin;
+    }
+
+
+    /**
+     * Gets TableOfContents. Generate a table of contents at the location in the HTML document where an element is found with id "ironpdf-toc".
+     * @return the title
+     */
+    public TableOfContentsTypes getTableOfContents() {
+        return tableOfContents;
+    }
+
+    /**
+     * Sets TableOfContents. Generate a table of contents at the location in the HTML document where an element is found with id "ironpdf-toc".
+     *
+     * @param value the value
+     */
+    public void setTableOfContents(TableOfContentsTypes value) {
+        tableOfContents = value;
     }
 }

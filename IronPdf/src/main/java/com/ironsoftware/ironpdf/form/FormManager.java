@@ -112,6 +112,7 @@ public class FormManager {
     }
 
     /**
+     * @deprecated This method is deprecated and no longer has any effect.
      * Set the font of a {@link TextField}
      *
      * @param textFieldName Fully qualified field name

@@ -1,6 +1,7 @@
 ﻿syntax = "proto3";
 package ironpdfengineproto;
 import "basic.proto";
+import "pdfium_pdf_document.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -66,7 +67,7 @@ message ChromeTextHeaderFooterP {
   optional string center_text = 2;
   optional string right_text = 3;
   optional bool draw_divider_line = 4;
-  optional FontTypeP font = 5;
+  optional PdfiumFontInfoP font = 5;
   optional double font_size = 6;
   optional string divider_line_color = 7;
 }

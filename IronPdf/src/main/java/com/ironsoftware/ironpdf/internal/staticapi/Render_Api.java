@@ -66,7 +66,7 @@ public final class Render_Api {
                     htmlFilePath));
         }
 
-        return renderHtmlAsPdf(String.join("", htmlList), renderOptions, loginCredentials);
+        return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
     }
 
     /**
