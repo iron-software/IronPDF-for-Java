@@ -36,6 +36,16 @@ public class RenderingTests extends TestBase {
     }
 
     @Test
+    public final void InputEncodingTest() {
+        ChromePdfRenderOptions tempVar = new ChromePdfRenderOptions();
+        tempVar.setInputEncoding("utf-16");
+
+        PdfDocument doc = PdfDocument.renderHtmlAsPdf("<body><h1>Hello World !</h1></body>", tempVar);
+        List<PageInfo> info = doc.getPagesInfo();
+        Assertions.assertEquals(1, doc.getPagesInfo().size());
+    }
+
+    @Test
     final void RenderRtfAsPdfTest() throws IOException {
         PdfDocument doc = PdfDocument.renderRtfFileAsPdf(getTestPath("Data/Sample_RTF.rtf"));
         List<PageInfo> info = doc.getPagesInfo();

@@ -231,8 +231,8 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Opens an existing PDF document for editing.
      *
-     * @param pdfFilePath The PDF file path.
-     * @param password    Optional user password if the PDF document is encrypted.
+     * @param pdfFilePath  The PDF file path.
+     * @param password     Optional user password if the PDF document is encrypted.
      * @param trackChanges Optionally track changes to the document (for use with incremental saves)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
      * @throws IOException if an I/O error occurs reading from the stream
@@ -261,7 +261,7 @@ public class PdfDocument implements Printable, AutoCloseable {
      * @param pdfFilePath   The PDF file path.
      * @param password      Optional user password if the PDF document is encrypted.
      * @param ownerPassword Optional password if the PDF document is protected by owner (printing, modifying restrictions etc..)
-     * @param trackChanges Optionally track changes to the document (for use with incremental saves)
+     * @param trackChanges  Optionally track changes to the document (for use with incremental saves)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
      * @throws IOException if an I/O error occurs reading from the stream
      */
@@ -284,7 +284,7 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Opens an existing PDF document for editing.
      *
-     * @param pdfFilePath The PDF file path.
+     * @param pdfFilePath  The PDF file path.
      * @param trackChanges Optionally track changes to the document (for use with incremental saves)
      * @return An IronPdf.PdfDocument object as loaded from the file path.
      * @throws IOException if an I/O error occurs reading from the stream
@@ -2022,7 +2022,7 @@ public class PdfDocument implements Printable, AutoCloseable {
      * @throws IOException the io exception
      */
     public static PdfDocument renderRtfFileAsPdf(Path rtfFilePath) throws IOException {
-        return new PdfDocument(Render_Api.renderRtfAsPdf(String.join("", Files.readAllLines(rtfFilePath))));
+        return new PdfDocument(Render_Api.renderRtfAsPdf(String.join(System.lineSeparator(), Files.readAllLines(rtfFilePath))));
     }
 
     /**
@@ -2128,9 +2128,14 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        if (internalPdfDocument != null)
-            internalPdfDocument.close();
+    public void close() {
+        try {
+            if (internalPdfDocument != null) {
+                internalPdfDocument.close();
+            }
+        } catch (Exception ignored) {
+            
+        }
     }
     //endregion
 }

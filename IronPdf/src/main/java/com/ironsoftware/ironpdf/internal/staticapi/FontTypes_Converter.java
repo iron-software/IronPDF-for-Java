@@ -1,18 +1,14 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.ironsoftware.ironpdf.font.FontTypes;
-import com.ironsoftware.ironpdf.internal.proto.FontTypeP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumFontInfoP;
 
 final class FontTypes_Converter {
 
-    static FontTypeP toProto(FontTypes Iron) {
-        FontTypeP.Builder proto = FontTypeP.newBuilder();
-        proto.setId(Iron.getId());
+    static PdfiumFontInfoP toProto(FontTypes Iron) {
+        PdfiumFontInfoP.Builder proto = PdfiumFontInfoP.newBuilder();
+        proto.setObjNum(Iron.getId());
         proto.setName(Utils_Util.nullGuard(Iron.getName()));
-
-        if (!Utils_StringHelper.isNullOrWhiteSpace(Iron.getCustomFontFilePath())) {
-            proto.setFontFilePath(Iron.getCustomFontFilePath());
-        }
 
         return proto.build();
     }

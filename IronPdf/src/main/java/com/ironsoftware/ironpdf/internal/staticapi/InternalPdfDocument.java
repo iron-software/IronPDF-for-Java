@@ -14,6 +14,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
     List<PageInfo> tempPagesInfo = Collections.emptyList();
     private boolean disposed = false;
 
-    public List<Signature> signatures = Collections.emptyList();
+    public List<Signature> signatures = new ArrayList<>();
 
     public String userPassword = "";
     public String ownerPassword = "";
@@ -55,18 +56,16 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
 
     @Override
     public synchronized void close() {
+        if (this.disposed) {
+            return;
+        }
+        disposed = true;
         try {
-            if (this.disposed) {
-                return;
-            }
-
             RpcClient client = Access.ensureConnection();
 
             EmptyResultP res = client.blockingStub.pdfiumDispose(remoteDocument);
 
             Utils_Util.handleEmptyResult(res);
-
-            disposed = true;
         } catch (Exception ignored) {
 
         }

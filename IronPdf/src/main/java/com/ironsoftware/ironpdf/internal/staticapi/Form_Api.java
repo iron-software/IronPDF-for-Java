@@ -80,6 +80,7 @@ public final class Form_Api {
 
 
     /**
+     * @deprecated This method is deprecated and no longer has any effect.
      * Sets text field font.
      *
      * @param internalPdfDocument the internal pdf document
@@ -89,16 +90,7 @@ public final class Form_Api {
      */
     public static void setTextFieldFont(InternalPdfDocument internalPdfDocument, String textFieldName,
                                         FontTypes font, int fontSize) {
-        RpcClient client = Access.ensureConnection();
 
-        PdfiumSetFormFieldFontRequestP.Builder request = PdfiumSetFormFieldFontRequestP.newBuilder();
-        request.setDocument(internalPdfDocument.remoteDocument);
-        request.setFieldName(textFieldName);
-        request.setFontType(FontTypes_Converter.toProto(font));
-        request.setFontSize(fontSize);
-        EmptyResultP response = client.blockingStub.pdfiumFormSetFieldFont(
-                request.build());
-        Utils_Util.handleEmptyResult(response);
     }
 
 

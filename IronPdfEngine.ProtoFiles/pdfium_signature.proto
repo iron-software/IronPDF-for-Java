@@ -27,6 +27,7 @@ message PdfiumSignRequestStreamP {
     optional int32 signature_image_y = 12;
     optional int32 signature_image_w = 13;
     optional int32 signature_image_h = 14;
+    optional string contact_information = 15;
   }
 }
 message PdfiumSignResultP {
