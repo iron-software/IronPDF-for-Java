@@ -28,8 +28,12 @@ final class Signature_Converter {
     static com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSignatureP toProto(Signature input) {
         PdfiumPdfSignatureP.Builder proto = PdfiumPdfSignatureP.newBuilder();
         proto.setIndex(input.getInternalIndex());
-        proto.setPassword(input.getPassword());
-        proto.setTimestampUrl(input.getTimeStampUrl());
+        if(input.getPassword() != null){
+            proto.setPassword(input.getPassword());
+        }
+        if(input.getTimeStampUrl() != null){
+            proto.setTimestampUrl(input.getTimeStampUrl());
+        }
         return proto.build();
     }
 }

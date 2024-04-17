@@ -100,6 +100,11 @@ public class ChromePdfRenderOptions implements Cloneable {
     private TableOfContentsTypes tableOfContents = TableOfContentsTypes.None;
 
     /**
+     * Render timeout in seconds. Default value is 60.
+     */
+    private int timeout = 60;
+
+    /**
      * Is create pdf forms from html. Turns all Html forms elements into editable PDF forms.
      *
      * @return the boolean
@@ -524,6 +529,20 @@ public class ChromePdfRenderOptions implements Cloneable {
      */
     public void setWaitFor(WaitFor waitFor) {
         this.waitFor = waitFor;
+    }
+
+    /**
+     * Gets render timeout in seconds. Default value is 60.
+     */
+    public int getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Sets render timeout in seconds. Default value is 60.
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     /**

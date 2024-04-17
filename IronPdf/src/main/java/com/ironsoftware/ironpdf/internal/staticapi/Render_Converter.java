@@ -39,6 +39,7 @@ final class Render_Converter {
         proto.setZoom(Options.getZoom());
         proto.setCssMediaType(Render_Converter.toProto(Options.getCssMediaType()));
         proto.setJavascript(Utils_Util.nullGuard(Options.getJavascript()));
+        proto.setTimeout(Options.getTimeout());
         if (Options.getPaperSize() == PaperSize.Custom) {
             proto.setCustomPaperHeight(Options.getCustomPaperHeight());
             proto.setCustomPaperWidth(Options.getCustomPaperWidth());
