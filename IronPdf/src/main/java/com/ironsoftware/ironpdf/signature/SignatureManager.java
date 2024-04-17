@@ -1,7 +1,6 @@
 package com.ironsoftware.ironpdf.signature;
 
 import com.ironsoftware.ironpdf.PdfDocument;
-import com.ironsoftware.ironpdf.bookmark.Bookmark;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Signature_Api;
 
@@ -11,17 +10,16 @@ import java.util.List;
 
 
 /**
- * Class used to add , edit and remove bookmarks from a {@link PdfDocument} outline.
- * <p>Bookmarks are arranged and navigated in a parent/child node hierarchy, similar to an HTML DOM.</p>
- * <p> See: {@link PdfDocument#getBookmark()} </p>
- * <p> See: {@link Bookmark} </p>
+ * Class used to sign , get and signature from a {@link PdfDocument}.
+ * <p> See: {@link PdfDocument#getSignature()} </p>
+ * <p> See: {@link Signature} </p>
  */
 public class SignatureManager {
 
     private final InternalPdfDocument internalPdfDocument;
 
     /**
-     * Please get BookmarkManager by {@link PdfDocument#getBookmark()} instead.
+     * Please get SignatureManager by {@link PdfDocument#getSignature()} instead.
      *
      * @param internalPdfDocument the internal pdf document
      */
@@ -72,7 +70,7 @@ public class SignatureManager {
     }
 
     /**
-     *
+     * Removes all signature from the PDF document.
      */
     public void RemoveSignature(){
         internalPdfDocument.signatures = new ArrayList<>();
