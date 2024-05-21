@@ -332,22 +332,22 @@ final class Access {
         stdError = new BufferedReader(new
                 InputStreamReader(proc.getErrorStream()));
 
-        Thread threadError = new Thread(() -> {
-            // Read the error from the command
-            stdError.lines().forEach(line -> {
-                if (Setting_Api.enableDebug) {
-                    engineLogger.info("[IronPdfEngine]" + line);
-                } else {
-                    com.ironsoftware.ironpdf.Settings.setDebug(true);
-                    logger.warn("IronPdfEngine Error! For more information, Please enable Debug mode by adding this line before calling any IronPDF methods `com.ironsoftware.ironpdf.Settings.setDebug(true);`");
-                    logger.info("Current log file path: " + Setting_Api.logPath.toAbsolutePath());
-                }
-            });
-        });
+//Disable stdError since Chrome throw a warning as an error
+//        Thread threadError = new Thread(() -> {
+//            // Read the error from the command
+//            stdError.lines().forEach(line -> {
+//                if (Setting_Api.enableDebug) {
+//                    engineLogger.info("[IronPdfEngine]" + line);
+//                } else {
+//                    logger.warn("IronPdfEngine Error! For more information, Please enable Debug mode by adding this line before calling any IronPDF methods `com.ironsoftware.ironpdf.Settings.setDebug(true);`");
+//                    logger.info("Current log file path: " + Setting_Api.logPath.toAbsolutePath());
+//                }
+//            });
+//        });
 
         //Note: Whenever the last non-daemon thread terminates, all the daemon threads will be terminated automatically.
-        threadError.setDaemon(true);
-        threadError.start();
+        //threadError.setDaemon(true);
+        //threadError.start();
     }
 
     private static void shutdownChanel() {
