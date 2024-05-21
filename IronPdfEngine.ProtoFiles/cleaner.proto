@@ -1,0 +1,37 @@
+syntax = "proto3";
+import "basic.proto";
+
+package ironpdfengineproto;
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message SanitizeWithSvgRequestP {
+  int32 enum_value = 1;
+}
+
+message ScanPdfRequestP {
+  PdfDocumentP document = 1;
+  repeated string yaraFiles = 2;
+}
+
+message ScanPdfRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    TextFileChunkWithIndexP raw_text_file_chunk = 2;
+  }
+  message InfoP {
+    PdfDocumentP document = 1;
+  }
+}
+
+message ScanResultP {
+  oneof result_or_exception {
+    RisksP risks = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message RisksP{
+  repeated string risks = 1;
+}

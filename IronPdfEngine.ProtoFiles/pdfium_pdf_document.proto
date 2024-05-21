@@ -110,6 +110,7 @@ message PdfiumConvertToPdfARequestStreamP {
 }
 message PdfiumConvertToPdfUARequestP {
   PdfDocumentP document = 1;
+  int32 natural_lang_index = 2;
 }
 
 message PdfiumGetPaperSizePresetRequestP {

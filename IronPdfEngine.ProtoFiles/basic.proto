@@ -165,3 +165,8 @@ message IntListResultP {
     RemoteExceptionP exception = 2;
   }
 }
+
+message TextFileChunkWithIndexP {
+  int32 file_index = 1;
+  string text_chunk = 2;
+}

@@ -24,6 +24,7 @@ import "pdfium_text.proto";
 import "pdfium_image.proto";
 import "pdfium_stamp.proto";
 import "pdfium_font.proto";
+import "cleaner.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -198,4 +199,12 @@ service IronPdfService {
 
   //Startup
   rpc Handshake(HandshakeRequestP) returns (HandshakeResponseP){}
+
+  //Clenaer
+  rpc Cleaner_SanitizeWithSvg(PdfDocumentP) returns (PdfDocumentResultP){}
+  rpc Cleaner_SanitizeWithBitmap(PdfDocumentP) returns (PdfDocumentResultP){}
+  rpc Cleaner_SanitizeByRemoveSomeElements(PdfDocumentP) returns (PdfDocumentResultP){}
+  rpc Cleaner_SanitizeByRecreatePdf(PdfDocumentP) returns (PdfDocumentResultP){}
+  rpc Cleaner_ScanPdf(stream ScanPdfRequestStreamP) returns (ScanResultP) {}
+  
 }
