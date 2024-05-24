@@ -8,17 +8,10 @@ import com.ironsoftware.ironpdf.stamp.VerticalAlignment;
 
 public final class Stamp_Converter {
 
-    public static com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP enumToProto(
-            BarcodeEncoding input) {
-        com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.newBuilder();
-        tempVar.setEnumValue(input.ordinal());
-        return tempVar.build();
-    }
-
     public static com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP toProto(
             BarcodeEncoding input) {
         com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.ChromeBarcodeEncodingP.newBuilder();
-        tempVar.setEnumValue(input.ordinal());
+        tempVar.setEnumValue(input.getValue());
         return tempVar.build();
     }
 

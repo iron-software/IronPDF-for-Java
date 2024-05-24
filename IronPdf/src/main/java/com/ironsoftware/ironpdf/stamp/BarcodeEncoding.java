@@ -12,14 +12,14 @@ public enum BarcodeEncoding {
      * ISO/IEC 15417:2007. Supported characters include: All alphabetic and numeric
      * characters.
      */
-    Code128,
+    Code128(32),
 
     /**
      * Code 39 (1D barcode format). Code 39 is a variable length, discrete barcode symbology. The Code
      * 39 specification defines 43 characters. Supported characters include: Digits from (0-9),
      * Uppercase (A through Z), and these symbols: (-.$/+% space)
      */
-    Code39,
+    Code39(8),
 
     /**
      * QR Code (2D barcode format).  QR code (abbreviated from Quick Response Code) is a
@@ -27,5 +27,14 @@ public enum BarcodeEncoding {
      * attached. A QR code uses four standardized encoding modes to efficiently store data.
      * Supported characters include: All numeric, alphanumeric, byte/binary, and Japanese kanji.
      */
-    QRCode
+    QRCode(524288);
+
+    private final int value;
+
+    private BarcodeEncoding(int value) {
+        this.value = value;
+    }
+    public int getValue() {
+        return value;
+    }
 }
