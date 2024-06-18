@@ -1,5 +1,7 @@
 package com.ironsoftware.ironpdf;
 
+import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
+import com.ironsoftware.ironpdf.render.TableOfContentsTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,7 @@ public class PdfATests extends TestBase {
 
         int originalBytesSize = doc.getBinaryData().length;
 
-        int pdfUAByteSize = doc.convertToPdfUA().getBinaryData().length;
+        int pdfUAByteSize = doc.convertToPdfUA(NaturalLanguages.English).getBinaryData().length;
 
         Assertions.assertTrue(originalBytesSize != pdfUAByteSize);
     }

@@ -330,11 +330,12 @@ public final class PdfDocument_Api {
         return doc;
     }
 
-    public static InternalPdfDocument toPdfUA(InternalPdfDocument internalPdfDocument) {
+    public static InternalPdfDocument toPdfUA(InternalPdfDocument internalPdfDocument, int naturalLanguages) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumConvertToPdfUARequestP.Builder req = PdfiumConvertToPdfUARequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
+        req.setLang(naturalLanguages);
 
         EmptyResultP res = client.blockingStub.pdfiumConvertToPdfUA(req.build());
 
