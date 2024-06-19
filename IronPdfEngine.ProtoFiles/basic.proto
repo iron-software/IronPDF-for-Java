@@ -82,6 +82,13 @@ message ListStringP {
   repeated string items = 1;
 }
 
+message Rectangle {
+    double x = 1;
+    double y = 2;
+    double width = 3;
+    double height = 4;
+}
+
 message ListIntP {
   repeated int32 items = 1;
 }

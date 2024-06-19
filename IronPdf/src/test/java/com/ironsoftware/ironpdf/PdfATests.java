@@ -24,7 +24,7 @@ public class PdfATests extends TestBase {
 
         int originalBytesSize = doc.getBinaryData().length;
 
-        int pdfUAByteSize = doc.convertToPdfUA().getBinaryData().length;
+        int pdfUAByteSize = doc.convertToPdfUA(NaturalLanguages.English).getBinaryData().length;
 
         Assertions.assertTrue(originalBytesSize != pdfUAByteSize);
     }

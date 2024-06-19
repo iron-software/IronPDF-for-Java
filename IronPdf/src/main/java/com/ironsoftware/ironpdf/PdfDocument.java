@@ -2108,22 +2108,22 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Save the current document into the specified PDF/UA standard format
-     *
+     * @param naturalLanguages Natural Languages Specification
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
-    public PdfDocument saveAsPdfUA(String filePath) throws IOException {
-        return convertToPdfUA().saveAs(filePath);
+    public PdfDocument saveAsPdfUA(String filePath, NaturalLanguages naturalLanguages) throws IOException {
+        return convertToPdfUA(naturalLanguages).saveAs(filePath);
     }
 
     /**
      * Convert the current document into the specified PDF/UA standard format
-     *
+     * @param naturalLanguages Natural Languages Specification
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
-    public PdfDocument convertToPdfUA() throws IOException {
-        PdfDocument_Api.toPdfUA(internalPdfDocument);
+    public PdfDocument convertToPdfUA(NaturalLanguages naturalLanguages) throws IOException {
+        PdfDocument_Api.toPdfUA(internalPdfDocument, naturalLanguages.getValue());
         return this;
     }
 

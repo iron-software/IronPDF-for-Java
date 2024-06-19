@@ -42,6 +42,7 @@ message PdfiumPdfToImagesRequestP {
   optional int32 dpi = 3;
   optional int32 max_width = 4;
   optional int32 max_height = 5;
+  optional bool flatten = 6;
 }
 
 message PdfiumPdfToMultiPageTiffImageRequestP {
@@ -50,5 +51,6 @@ message PdfiumPdfToMultiPageTiffImageRequestP {
   optional int32 dpi = 3;
   optional int32 max_width = 4;
   optional int32 max_height = 5;
+  optional bool flatten = 6;
 }
 

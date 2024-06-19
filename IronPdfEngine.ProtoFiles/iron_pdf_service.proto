@@ -183,6 +183,7 @@ service IronPdfService {
   rpc Pdfium_Text_ReplaceText(PdfiumReplaceTextRequestP)returns(EmptyResultP){}
   rpc Pdfium_Text_DrawText(PdfiumDrawTextRequestP)returns(EmptyResultP){}
   rpc Pdfium_Text_RedactText(PdfiumRedactTextRequestP)returns(EmptyResultP){}
+  rpc Pdfium_Text_RedactRegions(PdfiumRedactRegionsRequestP)returns(EmptyResultP){}
 
   //PDFIUM_Stamp
   rpc Pdfium_Stamp_StampBackgroundWatermark(stream PdfiumStampBackgroundWatermarkRequestStreamP)returns(EmptyResultP){}

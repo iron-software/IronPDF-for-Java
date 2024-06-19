@@ -172,6 +172,7 @@ message PdfiumIFormFieldAnnotationP {
     string appearance_state = 4;
     PdfiumPdfAnnotationFlagsP annotation_flags = 5;
     string on_appearance = 6;
+    string javascript = 7;
 }
 
 

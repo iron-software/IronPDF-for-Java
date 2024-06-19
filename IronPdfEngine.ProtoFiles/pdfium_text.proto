@@ -37,3 +37,10 @@ message PdfiumRedactTextRequestP {
 	string replace_text = 3;
 	bool is_draw_boxes = 4;
 }
+
+message PdfiumRedactRegionsRequestP {
+	PdfDocumentP document = 1;
+	int32 page_index = 2;
+	repeated Rectangle regions = 3;
+	bool is_draw_boxes = 4;
+}
