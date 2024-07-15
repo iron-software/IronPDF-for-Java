@@ -36,6 +36,9 @@ message PdfiumRedactTextRequestP {
 	int32 page_index = 2;
 	string replace_text = 3;
 	bool is_draw_boxes = 4;
+	bool match_whole_words = 5;
+	string replacement_text = 6;
+	bool case_sensitive = 7;
 }
 
 message PdfiumRedactRegionsRequestP {
