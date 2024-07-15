@@ -95,6 +95,15 @@ message PdfiumResizePageRequestP {
   double page_height = 4;
 }
 
+message PdfiumExtendPageRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  double ext_left = 3;
+  double ext_right = 4;
+  double ext_top = 5;
+  double ext_bot = 6;
+}
+
 message PdfiumGetPageBoundsRequestP {
   PdfDocumentP document = 1;
   int32 PageIndex = 2;

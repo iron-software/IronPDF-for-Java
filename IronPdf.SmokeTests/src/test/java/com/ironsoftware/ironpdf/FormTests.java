@@ -22,7 +22,8 @@ public class FormTests extends TestBase {
 
         doc.getForm().flatten();
         List<FormField> formsAfter = doc.getForm().getFields().getAllFields();
-        Assertions.assertEquals(2, formsAfter.size());
+        // Starting from IronPdfEngine v2024.7.8 Flatten will remove Form Field out completely
+        Assertions.assertEquals(0, formsAfter.size());
 
     }
 
@@ -34,7 +35,8 @@ public class FormTests extends TestBase {
 
         doc.getForm().flatten(PageSelection.singlePage(0));
         List<FormField> formsAfter = doc.getForm().getFields().getAllFields();
-        Assertions.assertEquals(2, formsAfter.size());
+        // Starting from IronPdfEngine v2024.7.8 Flatten will remove Form Field out completely
+        Assertions.assertEquals(0, formsAfter.size());
     }
 
     @Test

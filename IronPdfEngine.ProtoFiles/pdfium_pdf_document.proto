@@ -106,8 +106,11 @@ message PdfiumConvertToPdfARequestStreamP {
   }
   message InfoP {
     PdfDocumentP document = 1;
+    int32 convtVer = 2;
+    bool isAVariant = 3;
   }
 }
+
 message PdfiumConvertToPdfUARequestP {
   PdfDocumentP document = 1;
   int32 lang = 2;

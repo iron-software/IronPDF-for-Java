@@ -21,7 +21,8 @@ public class FormApiTests extends TestBase {
         Assertions.assertEquals(2, formBefore.size());
         Form_Api.flattenPdfFrom(doc);
         List<FormField> formAfter = Form_Api.getFields(doc);
-        Assertions.assertEquals(2, formAfter.size());
+        // Starting from IronPdfEngine v2024.7.8 Flatten will remove Form Field out completely
+        Assertions.assertEquals(0, formAfter.size());
 
     }
 

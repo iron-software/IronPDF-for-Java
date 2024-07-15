@@ -147,6 +147,7 @@ service IronPdfService {
   rpc Pdfium_Page_CopyPages(PdfiumCopyPagesRequestP) returns(PdfDocumentResultP){}
   rpc Pdfium_Page_SetPagesRotation(PdfiumSetPagesRotationRequestP) returns(EmptyResultP){}
   rpc Pdfium_Page_ResizePage(PdfiumResizePageRequestP) returns(EmptyResultP){}
+  rpc Pdfium_Page_ExtendPage(PdfiumExtendPageRequestP) returns(EmptyResultP){}
   rpc Pdfium_Page_GetPageBounds(PdfiumGetPageBoundsRequestP) returns (PdfiumPageBoundsPResultP){}
   rpc Pdfium_Page_MergePageObjectsAppend(PdfiumMergePageObjectsAppendRequestP) returns (EmptyResultP){}
 
