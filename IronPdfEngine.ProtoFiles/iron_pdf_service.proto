@@ -150,6 +150,7 @@ service IronPdfService {
   rpc Pdfium_Page_ExtendPage(PdfiumExtendPageRequestP) returns(EmptyResultP){}
   rpc Pdfium_Page_GetPageBounds(PdfiumGetPageBoundsRequestP) returns (PdfiumPageBoundsPResultP){}
   rpc Pdfium_Page_MergePageObjectsAppend(PdfiumMergePageObjectsAppendRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Page_TransformPage(PdfiumTransformPageRequestP) returns (EmptyResultP){}
 
   //PDFIUM_PdfDocument
   rpc Pdfium_Dispose(PdfDocumentP) returns (EmptyResultP){}
@@ -165,6 +166,7 @@ service IronPdfService {
   rpc Pdfium_Form_GetFontInfoCollection(PdfiumGetFontInfoCollectionRequestP) returns(PdfiumGetFontInfoCollectionResultP){}
   rpc Pdfium_Form_GetTextObjectCollection(PdfiumGetTextObjectCollectionRequestP) returns(PdfiumGetTextObjectCollectionResultP){}
   rpc Pdfium_Form_GetCharObjectCollection(PdfiumGetCharObjectCollectionRequestP) returns(PdfiumGetCharObjectCollectionResultP){}
+  rpc Pdfium_Form_PagenateDocument(PdfiumPagenateDocumentRequestP) returns(PdfDocumentResultP){}
 
   //PDFIUM_Security
   rpc Pdfium_Security_RemovePasswordsAndEncryption(PdfiumRemovePasswordsAndEncryptionRequestP) returns (EmptyResultP){}

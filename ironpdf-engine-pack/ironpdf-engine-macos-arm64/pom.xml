@@ -108,7 +108,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ironpdf.engine.version>2024.7.8</ironpdf.engine.version>
+        <ironpdf.engine.version>2024.8.3</ironpdf.engine.version>
     </properties>
 
     <build>
