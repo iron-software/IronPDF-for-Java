@@ -56,6 +56,15 @@ message PdfiumCopyPagesRequestP {
   repeated int32 page_indexes = 2;
 }
 
+message PdfiumTransformPageRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  double translate_x = 3;
+  double translate_y = 4;
+  double scale_x = 5;
+  double scale_y = 6;
+}
+
 message PdfiumPdfDocumentInsertRequestP {
   PdfDocumentP main_document = 1;
   int32  insertion_index = 2;

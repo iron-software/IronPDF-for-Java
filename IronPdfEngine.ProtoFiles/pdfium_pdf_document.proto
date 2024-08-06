@@ -31,6 +31,14 @@ message PdfiumGetCharObjectCollectionResultP {
   }
 }
 
+message PdfiumPagenateDocumentRequestP {
+  PdfDocumentP document = 1;
+  double new_width = 2;
+  double new_height = 3;
+  int32 cols = 4;
+  int32 rows = 5;
+}
+
 message PdfiumGetCharObjectCollectionRequestP {
   PdfDocumentP document = 1;
   int32 page_index = 2;
