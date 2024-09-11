@@ -39,7 +39,12 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          
+      - name: Publish Cloud to Maven Central Repository
+        run: mvn deploy --batch-mode --activate-profiles cloud --no-transfer-progress --file IronPdf/pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}  
       - name: Upload JARs to GitHub Release
         uses: AButler/upload-release-assets@v2.0
         with:
