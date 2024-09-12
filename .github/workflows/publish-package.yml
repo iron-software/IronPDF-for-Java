@@ -7,12 +7,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4.0.0
-      - name: Replace credentials
+      - name: Replace credentials #ironpdf-cloud will copy config.properties in mvn step
         run: |
           sed -i 's/TEST_LICENSE_KEY/${{ secrets.IRONPDF_LICENSE_KEY }}/g' IronPdf/src/test/resources/config.properties
       - name: Replace version with release tag
         run: |
           sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' IronPdf/pom.xml
+          sed -i 's/please-replace-version/${{ github.event.release.tag_name }}/g' ironpdf-cloud/pom.xml
       - name: Install Linux packages
         run: |
           sudo apt update
@@ -40,7 +41,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish Cloud to Maven Central Repository
-        run: mvn deploy --batch-mode --activate-profiles cloud --no-transfer-progress --file IronPdf/pom.xml
+        run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-cloud/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
@@ -48,7 +49,7 @@ jobs:
       - name: Upload JARs to GitHub Release
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'IronPdf/target/*.jar'
+          files: 'IronPdf/target/*.jar;ironpdf-cloud/target/*.jar;'
           repo-token: ${{ secrets.GITHUB_TOKEN }}    
   publish-ironpdf-engine-pack:
     needs: publish-ironpdf
