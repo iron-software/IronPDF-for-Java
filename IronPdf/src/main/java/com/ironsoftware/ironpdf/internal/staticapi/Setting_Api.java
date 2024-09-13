@@ -1,11 +1,11 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * The type Setting api.
@@ -144,7 +144,7 @@ public final class Setting_Api {
     /**
      * The constant IRON_PDF_ENGINE_VERSION.
      */
-    public static final String IRON_PDF_ENGINE_VERSION = "2024.8.3";
+    public static final String IRON_PDF_ENGINE_VERSION = "2024.9.3";
 
     public static boolean singleProcess = false;
 

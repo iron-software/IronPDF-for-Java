@@ -133,6 +133,14 @@ message PdfiumMergePageObjectsAppendRequestP {
   bool copy_annotations = 5;
 }
 
+message PdfiumMergePageObjectsPrependRequestP {
+  PdfDocumentP src_document = 1;
+  int32 src_page_index = 2;
+  PdfDocumentP dest_document = 3;
+  int32 dest_page_index = 4;
+  bool copy_annotations = 5;
+}
+
 message PdfiumPageBoundsPResultP {
   oneof result_or_exception {
     PdfiumPageBoundsP result = 1;
