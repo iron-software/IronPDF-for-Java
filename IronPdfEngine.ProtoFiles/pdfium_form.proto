@@ -10,11 +10,21 @@ message PdfiumComboBoxFieldP {
   int32 selected_index = 2;
 }
 
+message PdfiumRadioFieldP {
+  repeated string options = 1;
+  int32 selected_index = 2;
+}
+
+
 message PdfiumCheckBoxFieldP {
   bool BooleanValue = 1;
 }
 
+message PdfiumSignatureFieldP {}
+
 message PdfiumTextFieldP {}
+
+message PdfiumImageFieldP {}
 
 message PdfiumUnknownFieldP {}
 
@@ -34,6 +44,9 @@ message PdfiumFormFieldP {
     PdfiumCheckBoxFieldP check_box_field = 12;
     PdfiumTextFieldP text_field = 13;
     PdfiumUnknownFieldP unknown_field = 14;
+    PdfiumRadioFieldP radio_field = 15;
+    PdfiumImageFieldP image_field = 16;
+    PdfiumSignatureFieldP signature_field = 17;
   }
 }
 
