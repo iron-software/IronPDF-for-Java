@@ -41,14 +41,24 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <grpc.version>1.59.0</grpc.version>
+        <grpc.version>1.66.0</grpc.version>
         <protobuf.version>3.25.0</protobuf.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>MM/dd/yyyy</maven.build.timestamp.format>
     </properties>
 
     <profiles>
+<!--DEV-->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+<!--RELEASE-->
         <profile>
             <id>release</id>
             <build>
@@ -81,6 +91,7 @@
                 </plugins>
             </build>
         </profile>
+<!--JAVA11 DOC-->
         <profile>
             <id>javadoc-java11</id>
             <build>
@@ -92,6 +103,8 @@
                         <configuration>
                             <source>11</source>
                             <finalName>ironpdf-please-replace-version-javadoc-java11</finalName>
+                            <show>public</show>
+                            <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
                         </configuration>
                         <executions>
                             <execution>
@@ -115,6 +128,32 @@
             </extension>
         </extensions>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>update-build-timestamp</id>
+                        <phase>generate-sources</phase> <!-- Before compilation -->
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Updating build timestamp with: ${timestamp}"/>
+                                <echo file="${basedir}/src/main/java/com/ironsoftware/ironpdf/internal/staticapi/BuildInfo.java" append="false">
+package com.ironsoftware.ironpdf.internal.staticapi;
+class BuildInfo {
+    static final String BUILD_TIMESTAMP = "${timestamp}";
+}
+                                </echo>
+                                <echo message="Update build timestamp completed"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -200,6 +239,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <show>public</show>
+                    <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -278,7 +321,7 @@
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
+            <artifactId>grpc-okhttp</artifactId>
             <version>${grpc.version}</version>
         </dependency>
         <dependency>

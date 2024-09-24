@@ -25,7 +25,7 @@ public final class Form_Api {
         PdfiumGetFormRequestP.Builder request = PdfiumGetFormRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
 
-        PdfiumGetFormResultP response = client.blockingStub.pdfiumFormGetForm(request.build());
+        PdfiumGetFormResultP response = client.GetBlockingStub("getFields").pdfiumFormGetForm(request.build());
         if (response.getResultOrExceptionCase() == PdfiumGetFormResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(response.getException());
         }
@@ -50,7 +50,7 @@ public final class Form_Api {
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setCurrentFieldName(currentFieldName);
         request.setNewFieldName(newFieldName);
-        PdfiumRenameFormFieldResultP response = client.blockingStub.pdfiumFormRenameField(
+        PdfiumRenameFormFieldResultP response = client.GetBlockingStub("renameField").pdfiumFormRenameField(
                 request.build());
         if (response.getResultOrExceptionCase() == PdfiumRenameFormFieldResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(response.getException());
@@ -73,7 +73,7 @@ public final class Form_Api {
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setAnnotationIndex(annotationIndex);
         request.setFormFieldValue(value);
-        EmptyResultP response = client.blockingStub.pdfiumFormSetFieldValue(
+        EmptyResultP response = client.GetBlockingStub("setFieldValue").pdfiumFormSetFieldValue(
                 request.build());
         Utils_Util.handleEmptyResult(response);
     }
@@ -120,7 +120,7 @@ public final class Form_Api {
         }
         req.addAllPageIndexes(pageIndexes);
 
-        EmptyResultP res = client.blockingStub.pdfiumFormFlattenForm(req.build());
+        EmptyResultP res = client.GetBlockingStub("flattenPdfFrom").pdfiumFormFlattenForm(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -139,7 +139,7 @@ public final class Form_Api {
         request.setDocument(internalPdfDocument.remoteDocument);
         request.setAnnotationIndex(annotationIndex);
         request.setIsReadOnly(isReadOnly);
-        EmptyResultP response = client.blockingStub.pdfiumFormSetFormFieldIsReadOnly(
+        EmptyResultP response = client.GetBlockingStub("setFormFieldIsReadOnly").pdfiumFormSetFormFieldIsReadOnly(
                 request.build());
         Utils_Util.handleEmptyResult(response);
     }

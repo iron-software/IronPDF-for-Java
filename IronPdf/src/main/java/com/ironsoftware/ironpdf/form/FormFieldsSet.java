@@ -12,6 +12,12 @@ public class FormFieldsSet {
     private final List<CheckBoxField> checkBoxFields;
     private final List<TextField> textFields;
     private final List<ComboBoxField> comboBoxFields;
+
+    private final List<ImageField> imageFields;
+
+    private final List<RadioField> radioFields;
+
+    private final List<SignatureField> signatureFields;
     private final List<FormField> unknownFields;
 
     /**
@@ -25,10 +31,16 @@ public class FormFieldsSet {
     public FormFieldsSet(List<CheckBoxField> checkBoxFields,
                          List<TextField> textFields,
                          List<ComboBoxField> comboBoxFields,
+                         List<ImageField> imageFields,
+                         List<RadioField> radioFields,
+                         List<SignatureField> signatureFields,
                          List<FormField> unknownFields) {
         this.checkBoxFields = checkBoxFields;
         this.textFields = textFields;
         this.comboBoxFields = comboBoxFields;
+        this.imageFields = imageFields;
+        this.radioFields = radioFields;
+        this.signatureFields = signatureFields;
         this.unknownFields = unknownFields;
     }
 
@@ -60,6 +72,33 @@ public class FormFieldsSet {
     }
 
     /**
+     * Gets image fields.
+     *
+     * @return a new list of image fields
+     */
+    public List<ImageField> getImageFields() {
+        return new ArrayList<>(imageFields);
+    }
+
+    /**
+     * Gets radio fields.
+     *
+     * @return a new list of radio fields
+     */
+    public List<RadioField> getRadioFields() {
+        return new ArrayList<>(radioFields);
+    }
+
+    /**
+     * Gets signature fields.
+     *
+     * @return a new list of signature form fields
+     */
+    public List<SignatureField> getSignatureFields() {
+        return new ArrayList<>(signatureFields);
+    }
+
+    /**
      * Gets unknown fields.
      *
      * @return a new list of unknown form fields
@@ -77,6 +116,9 @@ public class FormFieldsSet {
         List<FormField> newList = new ArrayList<>(checkBoxFields);
         newList.addAll(comboBoxFields);
         newList.addAll(textFields);
+        newList.addAll(imageFields);
+        newList.addAll(radioFields);
+        newList.addAll(signatureFields);
         newList.addAll(unknownFields);
         return newList;
     }

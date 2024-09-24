@@ -37,6 +37,12 @@ message PdfiumPagenateDocumentRequestP {
   double new_height = 3;
   int32 cols = 4;
   int32 rows = 5;
+  bool draw_borders = 6;
+}
+
+message PdfiumOpenNewDocumentRequestP {
+  double width = 1;
+  double height = 2;
 }
 
 message PdfiumGetCharObjectCollectionRequestP {
@@ -52,6 +58,13 @@ message PdfiumTextObjectP
   double bottom = 4;
   string contents = 5;
   string color = 6;
+  int32 PageIndex = 7;
+  double MatrixA = 8;
+  double MatrixB = 9;
+  double MatrixC = 10;
+  double MatrixD = 11;
+  double MatrixE = 12;
+  double MatrixF = 13;
 }
 
 message PdfiumTextObjectCollectionP
@@ -67,6 +80,84 @@ message PdfiumGetTextObjectCollectionResultP {
 }
 
 message PdfiumGetTextObjectCollectionRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
+message PdfiumPathSegmentObjectP
+{
+    double x = 1;
+    double y = 2;
+    bool is_close = 3;
+    int32 type = 4;
+}
+
+message PdfiumPathObjectP
+{
+  double left = 1;
+  double right = 2;
+  double top = 3;
+  double bottom = 4;
+  string FillColor = 5;
+  string StrokeColor = 6;
+  int32 PageIndex = 7;
+  double MatrixA = 8;
+  double MatrixB = 9;
+  double MatrixC = 10;
+  double MatrixD = 11;
+  double MatrixE = 12;
+  double MatrixF = 13;
+  repeated PdfiumPathSegmentObjectP points = 14;
+  int32 FillMode = 15;
+  bool IsStroked = 16;
+}
+
+message PdfiumPathObjectCollectionP
+{
+  repeated PdfiumPathObjectP value = 1;
+}
+
+message PdfiumGetPathObjectCollectionResultP {
+  oneof result_or_exception {
+    PdfiumPathObjectCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetPathObjectCollectionRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+}
+
+message PdfiumImageObjectP
+{
+  double left = 1;
+  double right = 2;
+  double top = 3;
+  double bottom = 4;
+  int32 page_index = 5;
+  bytes image_data = 6;
+  double MatrixA = 7;
+  double MatrixB = 8;
+  double MatrixC = 9;
+  double MatrixD = 10;
+  double MatrixE = 11;
+  double MatrixF = 12;
+}
+
+message PdfiumImageObjectCollectionP
+{
+  repeated PdfiumImageObjectP value = 1;
+}
+
+message PdfiumGetImageObjectCollectionResultP {
+  oneof result_or_exception {
+    PdfiumImageObjectCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumGetImageObjectCollectionRequestP {
   PdfDocumentP document = 1;
   int32 page_index = 2;
 }

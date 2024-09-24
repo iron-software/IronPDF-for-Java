@@ -88,7 +88,7 @@ public final class Render_Api {
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
         io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromHtmlRequestStreamP> requestStream =
-                client.stub.chromeRenderFromHtml(
+                client.GetStub("renderHtmlAsPdf").chromeRenderFromHtml(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         ChromeRenderPdfDocumentFromHtmlRequestStreamP.InfoP.Builder info =
@@ -189,7 +189,7 @@ public final class Render_Api {
         }
         request.setHttpOptions(Render_Converter.toProto(loginCredentials));
 
-        PdfDocumentResultP res = client.blockingStub.chromeRenderFromUri(request.build());
+        PdfDocumentResultP res = client.GetBlockingStub("renderUrlAsPdf").chromeRenderFromUri(request.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -268,7 +268,7 @@ public final class Render_Api {
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
         io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromRtfStringRequestStreamP> requestStream =
-                client.stub.chromeRenderRtfToPdf(
+                client.GetStub("renderRtfAsPdf").chromeRenderRtfToPdf(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         ChromeRenderPdfDocumentFromRtfStringRequestStreamP.InfoP.Builder info = ChromeRenderPdfDocumentFromRtfStringRequestStreamP.InfoP.newBuilder();
@@ -323,7 +323,7 @@ public final class Render_Api {
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
         io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromZipFileRequestStreamP> requestStream =
-                client.stub.chromeRenderFromZipFile(
+                client.GetStub("renderZipAsPdf").chromeRenderFromZipFile(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         requestStream.onNext(infoMsg.build());

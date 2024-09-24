@@ -47,7 +47,7 @@ public final class Text_Api {
         }
         req.addAllPageIndexes(pageIndexes);
 
-        StringResultP res = client.blockingStub.pdfiumTextExtractAllText(req.build());
+        StringResultP res = client.GetBlockingStub("extractAllText").pdfiumTextExtractAllText(req.build());
 
         if (res.getResultOrExceptionCase() == StringResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
@@ -74,7 +74,7 @@ public final class Text_Api {
         req.setCurrentText(oldText);
         req.setNewText(newText);
 
-        EmptyResultP res = client.blockingStub.pdfiumTextReplaceText(req.build());
+        EmptyResultP res = client.GetBlockingStub("replaceTextOnPage").pdfiumTextReplaceText(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

@@ -53,7 +53,7 @@ public final class Image_Api {
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
         io.grpc.stub.StreamObserver<ChromeImageFilesToPdfRequestStreamP> requestStream =
-                client.stub.chromeImageImageFilesToPdf(
+                client.GetStub("imageToPdf").chromeImageImageFilesToPdf(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         ChromeImageFilesToPdfRequestStreamP.Builder infoMsg =
@@ -110,7 +110,7 @@ public final class Image_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
-        io.grpc.stub.StreamObserver<PdfiumDrawBitmapRequestStreamP> requestStream = client.stub.pdfiumImageDrawBitmap(
+        io.grpc.stub.StreamObserver<PdfiumDrawBitmapRequestStreamP> requestStream = client.GetStub("drawImage").pdfiumImageDrawBitmap(
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         requestStream.onNext(PdfiumDrawBitmapRequestStreamP.newBuilder().setInfo(info).build());
@@ -162,7 +162,7 @@ public final class Image_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<ImagesResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfiumImageExtractAllRawImages(req.build(),
+        client.GetStub("extractAllImages").pdfiumImageExtractAllRawImages(req.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
@@ -225,7 +225,7 @@ public final class Image_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<ImagesResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfiumImagePdfToImages(request.build(),
+        client.GetStub("pdfToImage").pdfiumImagePdfToImages(request.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
@@ -301,7 +301,7 @@ public final class Image_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<ImageResultStreamP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfiumImagePdfToMultiPageTiffImage(request.build(),
+        client.GetStub("toMultiPageTiff").pdfiumImagePdfToMultiPageTiffImage(request.build(),
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);

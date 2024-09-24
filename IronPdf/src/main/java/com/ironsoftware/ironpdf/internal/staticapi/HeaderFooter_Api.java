@@ -61,7 +61,7 @@ public final class HeaderFooter_Api {
                 firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, pdfTitle, true);
 
-        EmptyResultP emptyResult = client.blockingStub.pdfiumHeaderFooterAddTextHeaderFooter(
+        EmptyResultP emptyResult = client.GetBlockingStub("addTextHeader").pdfiumHeaderFooterAddTextHeaderFooter(
                 req);
         Utils_Util.handleEmptyResult(emptyResult);
     }
@@ -208,7 +208,7 @@ public final class HeaderFooter_Api {
                 firstPageNumber, pageIndexesToAddFootersTo, marginLeftMm,
                 marginRightMm, marginTopMm, marginBottomMm, pdfTitle, false);
 
-        EmptyResultP emptyResult = client.blockingStub.pdfiumHeaderFooterAddTextHeaderFooter(
+        EmptyResultP emptyResult = client.GetBlockingStub("addTextFooter").pdfiumHeaderFooterAddTextHeaderFooter(
                 req);
 
         Utils_Util.handleEmptyResult(emptyResult);
@@ -427,7 +427,7 @@ public final class HeaderFooter_Api {
         ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
 
-        client.stub.chromeHeaderFooterAddHtmlHeaderFooter(req,
+        client.GetStub("addHtmlHeaderFooter").chromeHeaderFooterAddHtmlHeaderFooter(req,
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
