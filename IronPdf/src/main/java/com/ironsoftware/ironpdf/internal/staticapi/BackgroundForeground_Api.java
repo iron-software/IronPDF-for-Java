@@ -51,7 +51,7 @@ public final class BackgroundForeground_Api {
         req.addAllDestPageIndices(basePdfPageIndexes);
         req.setLayerMode(PdfiumLayerModesP.newBuilder().setEnumValue(1).build()); // Background = 1
 
-        EmptyResultP res = client.blockingStub.pdfiumBackgroundForegroundAddBackgroundForeground(
+        EmptyResultP res = client.GetBlockingStub("addBackground").pdfiumBackgroundForegroundAddBackgroundForeground(
                 req.build());
         Utils_Util.handleEmptyResult(res);
     }
@@ -107,7 +107,7 @@ public final class BackgroundForeground_Api {
         req.addAllDestPageIndices(basePdfPageIndexes);
         req.setLayerMode(PdfiumLayerModesP.newBuilder().setEnumValue(0).build()); // Foreground = 0
 
-        EmptyResultP res = client.blockingStub.pdfiumBackgroundForegroundAddBackgroundForeground(
+        EmptyResultP res = client.GetBlockingStub("addForeground").pdfiumBackgroundForegroundAddBackgroundForeground(
                 req.build());
         Utils_Util.handleEmptyResult(res);
     }

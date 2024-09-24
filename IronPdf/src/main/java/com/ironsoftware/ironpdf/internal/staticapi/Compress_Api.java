@@ -25,7 +25,7 @@ public final class Compress_Api {
         req.setQuality(quality);
         req.setScaleToVisibleSize(scaleToVisibleSize);
 
-        EmptyResultP res = client.blockingStub.pdfiumCompressCompressImages(req.build());
+        EmptyResultP res = client.GetBlockingStub("compressImages").pdfiumCompressCompressImages(req.build());
 
         Utils_Util.handleEmptyResult(res);
     }
@@ -36,7 +36,7 @@ public final class Compress_Api {
         PdfiumRemoveStructTreeRequestP.Builder req = PdfiumRemoveStructTreeRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        EmptyResultP res = client.blockingStub.pdfiumCompressRemoveStructTree(req.build());
+        EmptyResultP res = client.GetBlockingStub("compressStructTree").pdfiumCompressRemoveStructTree(req.build());
 
         Utils_Util.handleEmptyResult(res);
     }

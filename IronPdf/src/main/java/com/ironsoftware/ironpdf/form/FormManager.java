@@ -52,6 +52,9 @@ public class FormManager {
         List<CheckBoxField> checkBoxFields = new ArrayList<>();
         List<TextField> textFields = new ArrayList<>();
         List<ComboBoxField> comboBoxFields = new ArrayList<>();
+        List<ImageField> imageFields = new ArrayList<>();
+        List<RadioField> radioFields = new ArrayList<>();
+        List<SignatureField> signatureFields = new ArrayList<>();
         List<FormField> unknownFields = new ArrayList<>();
         for (FormField anyField : Form_Api.getFields(
                 internalPdfDocument)) {
@@ -61,11 +64,17 @@ public class FormManager {
                 textFields.add((TextField) anyField);
             } else if (anyField instanceof ComboBoxField) {
                 comboBoxFields.add((ComboBoxField) anyField);
+            } else if (anyField instanceof ImageField) {
+                imageFields.add((ImageField) anyField);
+            } else if (anyField instanceof RadioField) {
+                radioFields.add((RadioField) anyField);
+            } else if (anyField instanceof SignatureField) {
+                signatureFields.add((SignatureField) anyField);
             } else {
                 unknownFields.add(anyField);
             }
         }
-        return new FormFieldsSet(checkBoxFields, textFields, comboBoxFields, unknownFields);
+        return new FormFieldsSet(checkBoxFields, textFields, comboBoxFields, imageFields, radioFields, signatureFields ,unknownFields);
     }
 
     /**
@@ -88,6 +97,7 @@ public class FormManager {
      * @param value     New value
      */
     public void setFieldValue(String fieldName, String value) {
+        List<FormField> ss =this.getFields().getAllFields();
         Optional<FormField> optionalFormField = this.getFields().getAllFields().stream().filter(f->f.getName().equalsIgnoreCase(fieldName)).findFirst();
         if(optionalFormField.isPresent())
             Form_Api.setFieldValue(internalPdfDocument, optionalFormField.get().getAnnotationIndex(),

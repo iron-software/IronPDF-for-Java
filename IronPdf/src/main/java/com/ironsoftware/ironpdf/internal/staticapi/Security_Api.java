@@ -26,7 +26,7 @@ public final class Security_Api {
         PdfiumRemovePasswordsAndEncryptionRequestP.Builder req = PdfiumRemovePasswordsAndEncryptionRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        EmptyResultP res = client.blockingStub.pdfiumSecurityRemovePasswordsAndEncryption(
+        EmptyResultP res = client.GetBlockingStub("removePasswordsAndEncryption").pdfiumSecurityRemovePasswordsAndEncryption(
                 req.buildPartial());
         Utils_Util.handleEmptyResult(res);
         internalPdfDocument.userPassword = "";
@@ -46,7 +46,7 @@ public final class Security_Api {
         PdfiumGetPdfSecuritySettingsRequestP.Builder req = PdfiumGetPdfSecuritySettingsRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        PdfiumGetPdfSecuritySettingsResultP res = client.blockingStub.pdfiumSecurityGetPdfSecuritySettings(
+        PdfiumGetPdfSecuritySettingsResultP res = client.GetBlockingStub("getPdfSecurityOptions").pdfiumSecurityGetPdfSecuritySettings(
                 req.build());
         if (res.getResultOrExceptionCase()
                 == PdfiumGetPdfSecuritySettingsResultP.ResultOrExceptionCase.EXCEPTION) {
@@ -115,7 +115,7 @@ public final class Security_Api {
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setSettings(Security_Converter.toProto(securityOptions));
 
-        PdfDocumentResultP res = client.blockingStub.pdfiumSecuritySetPdfSecuritySettings(
+        PdfDocumentResultP res = client.GetBlockingStub("setPdfSecuritySettings").pdfiumSecuritySetPdfSecuritySettings(
                 req.buildPartial());
 
         if (res.getResultOrExceptionCase() == PdfDocumentResultP.ResultOrExceptionCase.EXCEPTION) {

@@ -24,7 +24,7 @@ public final class Page_Api {
         req.setDocument(internalPdfDocument.remoteDocument);
         req.addAllPageIndexes(pageIndexes);
 
-        PdfiumRemovePagesResultP res = client.blockingStub.pdfiumPageRemovePages(req.build());
+        PdfiumRemovePagesResultP res = client.GetBlockingStub("removePage").pdfiumPageRemovePages(req.build());
 
         if (res.getResultOrExceptionCase() == PdfiumRemovePagesResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
@@ -46,7 +46,7 @@ public final class Page_Api {
         req.addAllDocuments(
                 pdfDocuments.stream().map(x -> x.remoteDocument).collect(Collectors.toList()));
 
-        PdfDocumentResultP res = client.blockingStub.pdfiumPageMerge(req.build());
+        PdfDocumentResultP res = client.GetBlockingStub("mergePage").pdfiumPageMerge(req.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -80,7 +80,7 @@ public final class Page_Api {
         req.setInsertionIndex(atIndex);
         req.setInsertedDocument(anotherPdf.remoteDocument);
 
-        EmptyResultP res = client.blockingStub.pdfiumPageInsertPdf(req.build());
+        EmptyResultP res = client.GetBlockingStub("insertPage").pdfiumPageInsertPdf(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -99,7 +99,7 @@ public final class Page_Api {
         req.setInsertionIndex(getPagesInfo(mainPdfDocument).size());
         req.setInsertedDocument(anotherPdf.remoteDocument);
 
-        EmptyResultP res = client.blockingStub.pdfiumPageInsertPdf(req.build());
+        EmptyResultP res = client.GetBlockingStub("appendPdf").pdfiumPageInsertPdf(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -114,7 +114,7 @@ public final class Page_Api {
         PdfiumGetPagesRequestP.Builder req = PdfiumGetPagesRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        PdfiumGetPagesResultP res = client.blockingStub.pdfiumPageGetPages(req.build());
+        PdfiumGetPagesResultP res = client.GetBlockingStub("getPagesInfo").pdfiumPageGetPages(req.build());
 
         if (res.getResultOrExceptionCase() == PdfiumGetPagesResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
@@ -152,7 +152,7 @@ public final class Page_Api {
         }
         req.addAllPageIndexes(pageIndexes);
 
-        EmptyResultP res = client.blockingStub.pdfiumPageSetPagesRotation(req.build());
+        EmptyResultP res = client.GetBlockingStub("setPageRotation").pdfiumPageSetPagesRotation(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -171,7 +171,7 @@ public final class Page_Api {
 
         req.addAllPageIndexes(pageIndexes);
 
-        PdfDocumentResultP res = client.blockingStub.pdfiumPageCopyPages(req.build());
+        PdfDocumentResultP res = client.GetBlockingStub("copyPage").pdfiumPageCopyPages(req.build());
 
         return Utils_Util.handlePdfDocumentResult(res);
     }
@@ -192,7 +192,7 @@ public final class Page_Api {
         req.setPageWidth(pageWidth);
         req.setPageIndex(pageIndex);
 
-        EmptyResultP res = client.blockingStub.pdfiumPageResizePage(req.build());
+        EmptyResultP res = client.GetBlockingStub("resizePage").pdfiumPageResizePage(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

@@ -106,7 +106,7 @@ public final class PdfDocument_Api {
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
         io.grpc.stub.StreamObserver<PdfiumPdfDocumentConstructorStreamP> requestStream =
-                client.stub.pdfiumFromBytes(
+                client.GetStub("fromBytes").pdfiumFromBytes(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         // sending request
@@ -187,7 +187,7 @@ public final class PdfDocument_Api {
         infoP.setDocument(internalPdfDocument.remoteDocument);
         infoP.setIsIncremental(isIncremental);
 
-        StreamObserver<PdfiumGetBinaryDataRequestStreamP> requestStream = client.stub.pdfiumGetBinaryData(
+        StreamObserver<PdfiumGetBinaryDataRequestStreamP> requestStream = client.GetStub("getBytes").pdfiumGetBinaryData(
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
 
@@ -239,7 +239,7 @@ public final class PdfDocument_Api {
         req.setIndex(index);
         req.setDocument(internalPdfDocument.remoteDocument);
 
-        client.stub.pdfiumGetRevision(req.build(),
+        client.GetStub("getRevision").pdfiumGetRevision(req.build(),
                 //response handler
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
@@ -305,7 +305,7 @@ public final class PdfDocument_Api {
         req.setInfo(infoP);
 
 
-        StreamObserver<PdfiumConvertToPdfARequestStreamP> requestStream = client.stub.pdfiumConvertToPdfA(
+        StreamObserver<PdfiumConvertToPdfARequestStreamP> requestStream = client.GetStub("toPdfA").pdfiumConvertToPdfA(
                 //response handler
                 new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
@@ -337,7 +337,7 @@ public final class PdfDocument_Api {
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setLang(naturalLanguages);
 
-        EmptyResultP res = client.blockingStub.pdfiumConvertToPdfUA(req.build());
+        EmptyResultP res = client.GetBlockingStub("toPdfUA").pdfiumConvertToPdfUA(req.build());
 
         Utils_Util.handleEmptyResult(res);
 

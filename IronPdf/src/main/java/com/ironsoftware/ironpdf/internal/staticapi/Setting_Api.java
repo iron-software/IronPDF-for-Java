@@ -1,61 +1,74 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import com.ironsoftware.ironpdf.IronPdfEngineConnection;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * The type Setting api.
  */
 public final class Setting_Api {
-
-    /**
-     * The Logger.
-     */
     static final Logger logger = LoggerFactory.getLogger(Setting_Api.class);
 
-    /**
-     * The constant subProcessPort.
-     */
-//will use unique port numbers to avoid conflicts with other instances of IronPdf
-    public static int subProcessPort = getDefaultPort();
-    /**
-     * The constant licenseKey.
-     */
     public static String licenseKey = "";
-    /**
-     * The constant enableDebug.
-     */
+
+    public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withSubprocess();
+
+    public static final String IRON_PDF_ENGINE_VERSION = "2024.10.2";
+
+    public static int ironPdfEngineTimeout = 120;
+
+    //region ---------------------SubProcess options---------------------
+
     public static boolean enableDebug = false;
 
-    static boolean isIronPdfEngineDocker = false;
-
-    /**
-     * Path to IronPdfEngine log.
-     */
     public static Path logPath = Paths.get("ironpdfengine.log");
-    /**
-     * Path to IronPdfEngine working directory. default is current directory.
-     * If IronPdfEngine binary does not exist, we will download automatically to this folder.
-     */
+
     public static Path ironPdfEngineWorkingDirectory = Paths.get(System.getProperty("user.dir"));
-    /**
-     * The constant subProcessHost.
-     */
-    public static String subProcessHost = "127.0.0.1";
 
     public static Path tempFolderPath = null;
 
+    public static boolean singleProcess = false;
+
+    public static int chromeBrowserLimit = 30;
+
+    public static Path chromeBrowserCachePath = null;
+
+    public static int chromeGpuMode = 0;
+
+    public static boolean linuxAndDockerAutoConfig = true;
+
+    public static String getIronPdfEngineZipName() {
+        return getIronPdfEngineFolderName() + ".zip";
+    }
+
+    public static String getIronPdfEngineExecutableFileName() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "IronPdfEngineConsole.exe";
+        } else if (SystemUtils.IS_OS_LINUX) {
+            return "IronPdfEngineConsole";
+        } else if (SystemUtils.IS_OS_MAC) {
+            //todo also check for M1
+            return "IronPdfEngineConsole";
+        } else {
+            //default, should not reach
+            return "IronPdfEngineConsole";
+        }
+    }
+
     /**
-     * Find free port int.
+     * Gets custom iron pdf engine path.
      *
-     * @return the int
+     * @return the custom iron pdf engine path
      */
-    public static int getDefaultPort() {
-        return 33350;
+    public static Path getIronPdfEngineExecutablePath(Path workingDir) {
+        return Paths.get(workingDir.toAbsolutePath().toString()
+                , getIronPdfEngineFolderName()
+                , getIronPdfEngineExecutableFileName());
     }
 
     /**
@@ -105,56 +118,37 @@ public final class Setting_Api {
                 currentOsArch();
     }
 
-    public static String getIronPdfEngineZipName() {
-        return getIronPdfEngineFolderName() + ".zip";
-    }
 
-    public static String getIronPdfEngineExecutableFileName() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "IronPdfEngineConsole.exe";
-        } else if (SystemUtils.IS_OS_LINUX) {
-            return "IronPdfEngineConsole";
-        } else if (SystemUtils.IS_OS_MAC) {
-            //todo also check for M1
-            return "IronPdfEngineConsole";
-        } else {
-            //default, should not reach
-            return "IronPdfEngineConsole";
-        }
-    }
+    //endregion
+
+    //region ---------------------Deprecated---------------------
 
     /**
-     * Gets custom iron pdf engine path.
-     *
-     * @return the custom iron pdf engine path
+     * just for support deprecated host port configuration.
+     * should be removed in the future.
      */
-    public static Path getIronPdfEngineExecutablePath(Path workingDir) {
-        return Paths.get(workingDir.toAbsolutePath().toString()
-                , getIronPdfEngineFolderName()
-                , getIronPdfEngineExecutableFileName());
+    public static boolean useDeprecatedConnectionSettings = false;
+
+    static boolean isIronPdfEngineDocker = false;
+
+    public static String subProcessHost = "127.0.0.1";
+
+//will use unique port numbers to avoid conflicts with other instances of IronPdf
+    public static int subProcessPort = getDefaultPort();
+
+    /**
+     * Find free port int.
+     *
+     * @return the int
+     */
+    public static int getDefaultPort() {
+        return 33350;
     }
 
-
     public static void useIronPdfEngineDocker(int port){
-        logger.info("Using IronPdfEngine Docker port:" +port);
+        logger.info("Using IronPdfEngine Docker port:" + port);
         subProcessPort = port;
         isIronPdfEngineDocker = true;
     }
-
-    /**
-     * The constant IRON_PDF_ENGINE_VERSION.
-     */
-    public static final String IRON_PDF_ENGINE_VERSION = "2024.9.3";
-
-    public static boolean singleProcess = false;
-
-    public static int chromeBrowserLimit = 30;
-
-    public static Path chromeBrowserCachePath = null;
-
-    public static int chromeGpuMode = 0;
-
-    public static boolean linuxAndDockerAutoConfig = true;
-
-    public static int ironPdfEngineTimeout = 120;
+    //endregion
 }

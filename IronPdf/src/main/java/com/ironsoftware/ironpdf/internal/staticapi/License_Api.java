@@ -20,7 +20,7 @@ public final class License_Api {
         SystemIsValidLicenseRequestP.Builder req = SystemIsValidLicenseRequestP.newBuilder();
         req.setLicenseKey(licenseKey);
 
-        BooleanResultP res = client.blockingStub.systemLicenseIsValidLicense(req.build());
+        BooleanResultP res = client.GetBlockingStub("isValidLicensed").systemLicenseIsValidLicense(req.build());
 
         return Utils_Util.handleBooleanResult(res);
     }
@@ -38,7 +38,7 @@ public final class License_Api {
 
         SystemIsLicensedRequestP.Builder req = SystemIsLicensedRequestP.newBuilder();
 
-        BooleanResultP res = client.blockingStub.systemLicenseIsLicensed(req.build());
+        BooleanResultP res = client.GetBlockingStub("isLicensed").systemLicenseIsLicensed(req.build());
 
         return Utils_Util.handleBooleanResult(res);
     }
@@ -52,7 +52,7 @@ public final class License_Api {
         SystemSetLicenseKeyRequestP.Builder req = SystemSetLicenseKeyRequestP.newBuilder();
         req.setLicenseKey(licenseKey);
 
-        EmptyResultP res = client.blockingStub.systemLicenseSetLicenseKey(req.build());
+        EmptyResultP res = client.GetBlockingStub("SetLicensed").systemLicenseSetLicenseKey(req.build());
 
         Utils_Util.handleEmptyResult(res);
     }

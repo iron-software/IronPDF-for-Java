@@ -99,7 +99,7 @@ public final class Stamp_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
         io.grpc.stub.StreamObserver<ChromeApplyStampRequestStreamP> requestStream =
-                client.stub.chromeStampApplyStamp(
+                client.GetStub("applyStamp").chromeStampApplyStamp(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         ChromeApplyStampRequestStreamP.Builder infoMsg =
