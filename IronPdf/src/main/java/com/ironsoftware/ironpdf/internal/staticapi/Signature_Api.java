@@ -23,7 +23,7 @@ public final class Signature_Api {
 
         PdfiumGetVerifiedSignatureRequestStreamP.InfoP.Builder infoP = PdfiumGetVerifiedSignatureRequestStreamP.InfoP.newBuilder();
         infoP.setDocument(internalPdfDocument.remoteDocument);
-        StreamObserver<PdfiumGetVerifiedSignatureRequestStreamP> requestStream = client.stub.pdfiumSignatureGetVerifiedSignature(new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+        StreamObserver<PdfiumGetVerifiedSignatureRequestStreamP> requestStream = client.GetStub("getVerifiedSignatures").pdfiumSignatureGetVerifiedSignature(new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder().setInfo(infoP).build());
 
@@ -79,7 +79,7 @@ public final class Signature_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<PdfiumSignResultP> resultChunks = new ArrayList<>();
         io.grpc.stub.StreamObserver<PdfiumSignRequestStreamP> requestStream =
-                client.stub.pdfiumSignatureSign(
+                client.GetStub("signPdfWithSignatureFile").pdfiumSignatureSign(
                         new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         PdfiumSignRequestStreamP.Builder infoMsg =
@@ -135,7 +135,7 @@ public final class Signature_Api {
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<EmptyResultP> resultChunks = new ArrayList<>();
 
-        client.stub.pdfiumSignatureRemoveSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+        client.GetStub("removeSignature").pdfiumSignatureRemoveSignatures(req.build(), new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
 
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 

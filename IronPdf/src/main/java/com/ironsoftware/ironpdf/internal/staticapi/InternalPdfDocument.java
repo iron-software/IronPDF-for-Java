@@ -63,7 +63,7 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
         try {
             RpcClient client = Access.ensureConnection();
 
-            EmptyResultP res = client.blockingStub.pdfiumDispose(remoteDocument);
+            EmptyResultP res = client.GetBlockingStub("close").pdfiumDispose(remoteDocument);
 
             Utils_Util.handleEmptyResult(res);
         } catch (Exception ignored) {

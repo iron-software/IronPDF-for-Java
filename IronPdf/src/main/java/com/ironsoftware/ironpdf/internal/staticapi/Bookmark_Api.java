@@ -28,7 +28,7 @@ public final class Bookmark_Api {
 
         PdfiumGetBookmarksDescriptorRequestP.Builder request = PdfiumGetBookmarksDescriptorRequestP.newBuilder();
         request.setDocument(internalPdfDocument.remoteDocument);
-        PdfiumGetBookmarksDescriptorResultP result = client.blockingStub.pdfiumBookmarkGetBookmarksDescriptor(
+        PdfiumGetBookmarksDescriptorResultP result = client.GetBlockingStub("getBookmarks").pdfiumBookmarkGetBookmarksDescriptor(
                 request.build());
 
         if (result.getResultOrExceptionCase() == PdfiumGetBookmarksDescriptorResultP.ResultOrExceptionCase.EXCEPTION) {
@@ -76,7 +76,7 @@ public final class Bookmark_Api {
             request.setPreviousText(previousText);
         }
 
-        EmptyResultP res = client.blockingStub.pdfiumBookmarkInsertBookmark(
+        EmptyResultP res = client.GetBlockingStub("insertBookmark").pdfiumBookmarkInsertBookmark(
                 request.build());
         Utils_Util.handleEmptyResult(res);
     }

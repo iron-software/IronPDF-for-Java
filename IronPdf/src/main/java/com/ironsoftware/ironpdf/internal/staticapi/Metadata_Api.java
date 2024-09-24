@@ -32,7 +32,7 @@ public final class Metadata_Api {
         PdfiumGetMetadataRequestP.Builder req = PdfiumGetMetadataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
-        PdfiumMetadataFieldResultP res = client.blockingStub.pdfiumMetadataGetMetadata(
+        PdfiumMetadataFieldResultP res = client.GetBlockingStub("getMetadata").pdfiumMetadataGetMetadata(
                 req.build());
 
         if (res.getResultOrExceptionCase() == PdfiumMetadataFieldResultP.ResultOrExceptionCase.EXCEPTION) {
@@ -66,7 +66,7 @@ public final class Metadata_Api {
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
         req.setValue(value);
-        EmptyResultP res = client.blockingStub.pdfiumMetadataSetMetadata(req.build());
+        EmptyResultP res = client.GetBlockingStub("setMetadata").pdfiumMetadataSetMetadata(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 
@@ -228,7 +228,7 @@ public final class Metadata_Api {
         PdfiumRemoveMetadataRequestP.Builder req = PdfiumRemoveMetadataRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setKey(key);
-        EmptyResultP res = client.blockingStub.pdfiumMetadataRemoveMetadata(req.build());
+        EmptyResultP res = client.GetBlockingStub("removeMetadata").pdfiumMetadataRemoveMetadata(req.build());
         Utils_Util.handleEmptyResult(res);
     }
 }

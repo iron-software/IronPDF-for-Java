@@ -1,15 +1,20 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.exception.IronPdfDeploymentException;
+import com.ironsoftware.ironpdf.IronPdfEngineConnection;
 import com.ironsoftware.ironpdf.internal.proto.HandshakeRequestP;
 import com.ironsoftware.ironpdf.internal.proto.HandshakeResponseP;
-import com.ironsoftware.ironpdf.internal.proto.IronPdfServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.grpc.okhttp.OkHttpChannelBuilder;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -43,19 +48,60 @@ final class Access {
         Exception lastException = new Exception("unknown reason");
         while (attempts < MAX_RETRY_ATTEMPTS) {
             try {
-                return ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
-                        Setting_Api.subProcessPort).usePlaintext().build();
+                if (useDeprecatedConnectionSettings) {
+                    //remove this in the future
+                    return ManagedChannelBuilder.forAddress(Setting_Api.subProcessHost,
+                            Setting_Api.subProcessPort).usePlaintext().build();
+                } else {
+                    logger.info("Connecting to " + Setting_Api.connectionMode.toString());
+                    switch (Setting_Api.connectionMode.getMode()){
+                        case SUBPROCESS:
+                        case HOST_PORT:
+
+                            if(isAndroid()){
+                                return OkHttpChannelBuilder.forAddress(Setting_Api.connectionMode.getHost(),
+                                                Setting_Api.connectionMode.getPort())
+                                                .usePlaintext().build();
+                            } else {
+                                return ManagedChannelBuilder.forAddress(Setting_Api.connectionMode.getHost(),
+                                        Setting_Api.connectionMode.getPort()).usePlaintext().build();
+                            }
+
+                        case TARGET:
+                        case OFFICIAL_CLOUD:
+                            if(isAndroid()){
+                                SSLContext sslContext = SSLContext.getInstance("TLS");
+                                sslContext.init(null, InsecureTrustManagerFactory.INSTANCE.getTrustManagers(), null);
+                                return OkHttpChannelBuilder.forTarget(connectionMode.getTarget())
+                                        .sslSocketFactory(sslContext.getSocketFactory())  // Set the SSL socket factory
+                                        .build();
+                            }else{
+                                return NettyChannelBuilder.forTarget(connectionMode.getTarget())
+                                        .negotiationType(NegotiationType.TLS)
+                                        .useTransportSecurity()
+                                        .sslContext(GrpcSslContexts.forClient()
+                                                .trustManager(InsecureTrustManagerFactory.INSTANCE).build())
+                                        .build();
+                            }
+                        case CUSTOM:
+                            return connectionMode.getCustomChannel();
+                    }
+                }
             } catch (Exception e) {
                 lastException = e;
                 attempts++;
-                logger.info("Connect to IronPdfEngine failed. (Retry "+attempts+"/"+MAX_RETRY_ATTEMPTS+")");
+                logger.info("Failed to connect IronPdfEngine. (Retry "+attempts+"/"+MAX_RETRY_ATTEMPTS+")");
                 try {
                     TimeUnit.SECONDS.sleep(2); // Wait for 2 seconds before retrying
                 } catch (InterruptedException ignored) {
                 }
             }
         }
-        throw new RuntimeException(String.format("Cannot connected to IronPdfEngine: %s:%d", subProcessHost, subProcessPort), lastException);
+        if(useDeprecatedConnectionSettings){
+            throw new RuntimeException(String.format("Cannot connected to IronPdfEngine: %s:%d", subProcessHost, subProcessPort), lastException);
+        }else {
+            throw new RuntimeException(String.format("Cannot connected to %s", Setting_Api.connectionMode.toString()), lastException);
+        }
     }
 
     private static HandshakeResponseP handshakeWithRetry(RpcClient newClient){
@@ -63,12 +109,11 @@ final class Access {
         handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
         handshakeRequest.setProgLang("java");
 
-        HandshakeResponseP handshakeResult = null;
         int attempts = 0;
         Exception lastException = new Exception("unknown reason");
         while (attempts < MAX_RETRY_ATTEMPTS) {
             try{
-                return newClient.blockingStub.handshake(
+                return newClient.GetBlockingStub("handshake").handshake(
                         handshakeRequest.build());
             }catch (Exception exception){
                 lastException=exception;
@@ -88,7 +133,11 @@ final class Access {
             return client;
         }
 
-        if (!isIronPdfEngineDocker) {
+        if (useDeprecatedConnectionSettings) {
+            if (!isIronPdfEngineDocker) {
+                startServer();
+            }
+        } else if (Setting_Api.connectionMode.getMode() == IronPdfEngineConnection.ConnectionMode.SUBPROCESS) {
             startServer();
         }
 
@@ -96,10 +145,7 @@ final class Access {
             channel = createChannel();
         }
 
-        RpcClient newClient = new RpcClient(
-                IronPdfServiceGrpc.newBlockingStub(channel),
-                IronPdfServiceGrpc.newFutureStub(channel),
-                IronPdfServiceGrpc.newStub(channel));
+        RpcClient newClient = new RpcClient(channel);
 
         logger.debug("Handshaking, Expected IronPdfEngine Version : " + Setting_Api.IRON_PDF_ENGINE_VERSION);
 
@@ -113,14 +159,23 @@ final class Access {
                 setLicenseKey();
                 return client;
             case REQUIREDVERSION:
-                logger.error(String.format("Mismatch IronPdfEngine version expected: %s but found: %s", Setting_Api.IRON_PDF_ENGINE_VERSION, handshakeResult.getRequiredVersion()));
+                logger.warn(String.format("Mismatch IronPdfEngine version expected: %s but found: %s", Setting_Api.IRON_PDF_ENGINE_VERSION, handshakeResult.getRequiredVersion()));
 //                //todo download new Binary
-                if (!isIronPdfEngineDocker && tryAgain) {
-                    tryAgain = false;
-                    stopIronPdfEngine();
-                    downloadIronPdfEngine();
-                    Setting_Api.subProcessPort = Setting_Api.getDefaultPort();
-                    return ensureConnection();
+                if (tryAgain) {
+                    //try download if it is a subprocess mode
+                    if (useDeprecatedConnectionSettings) {
+                        if (!isIronPdfEngineDocker) {
+                            tryAgain = false;
+                            stopIronPdfEngine();
+                            downloadIronPdfEngine();
+                            return ensureConnection();
+                        }
+                    } else if (Setting_Api.connectionMode.getMode() == IronPdfEngineConnection.ConnectionMode.SUBPROCESS) {
+                        tryAgain = false;
+                        stopIronPdfEngine();
+                        downloadIronPdfEngine();
+                        return ensureConnection();
+                    }
                 }
                 client = newClient;
                 setLicenseKey();
@@ -202,6 +257,10 @@ final class Access {
 
     static synchronized void startServer() {
         try {
+
+            String serverHost = useDeprecatedConnectionSettings ? Setting_Api.subProcessHost : connectionMode.getHost();
+            int serverPort = useDeprecatedConnectionSettings ? Setting_Api.subProcessPort : connectionMode.getPort();
+
             Optional<File> selectedFile = getAvailableIronPdfEngineFile();
             if (selectedFile.isPresent()) {
                 logger.info("Using IronPdfEngine from: " + selectedFile.get().getAbsolutePath());
@@ -231,8 +290,8 @@ final class Access {
                 List<String> cmdList = new ArrayList<>();
 
                 cmdList.add(selectedFile.get().toPath().toAbsolutePath().toString());
-                cmdList.add("host=" + Setting_Api.subProcessHost);
-                cmdList.add("port=" + Setting_Api.subProcessPort);
+                cmdList.add("host=" + serverHost);
+                cmdList.add("port=" + serverPort);
                 cmdList.add("enable_debug=" + Setting_Api.enableDebug);
                 cmdList.add("log_path=" + Setting_Api.logPath);
                 cmdList.add("programming_language=" + "java");
@@ -299,7 +358,6 @@ final class Access {
                                     .toAbsolutePath())
                             + " An alternative approach is to install one of ironpdf-engine packages https://search.maven.org/search?q=ironpdf%20engine, more information: https://github.com/iron-software/IronPDF-for-Java#install-ironpdf-engine-as-a-maven-dependency");
                 }
-
             }
         } catch (Exception e) {
             logger.error("Cannot start IronPdfEngine (working dir: " + ironPdfEngineWorkingDirectory.toAbsolutePath() + ")", e);
@@ -453,5 +511,15 @@ final class Access {
 
 
         return Optional.empty();
+    }
+
+    public static boolean isAndroid() {
+        try {
+            // Try to load an Android-specific class
+            Class.forName("android.os.Build");
+            return true;  // It's Android if this class is found
+        } catch (ClassNotFoundException e) {
+            return false; // Not Android
+        }
     }
 }

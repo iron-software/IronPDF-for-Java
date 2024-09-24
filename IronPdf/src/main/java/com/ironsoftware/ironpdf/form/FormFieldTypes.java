@@ -19,7 +19,8 @@ public enum FormFieldTypes {
     XFA_LIST_BOX("Unknown"),
     XFA_PUSH_BUTTON("Unknown"),
     XFA_SIGNATURE("Unknown"),
-    XFA_TEXT_FIELD("Unknown");
+    XFA_TEXT_FIELD("Unknown"),
+    IMAGE("Btn");
 
     private final String formType;
 

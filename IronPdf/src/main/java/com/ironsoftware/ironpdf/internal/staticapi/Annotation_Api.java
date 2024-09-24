@@ -77,7 +77,7 @@ public final class Annotation_Api {
         PdfiumAddTextAnnotationRequestP.Builder req = PdfiumAddTextAnnotationRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setAnnotation(annotation);
-        IntResultP res = client.blockingStub.pdfiumAnnotationAddTextAnnotation(
+        IntResultP res = client.GetBlockingStub("addTextAnnotation").pdfiumAnnotationAddTextAnnotation(
                 req.build());
 
         if (res.getResultOrExceptionCase() == IntResultP.ResultOrExceptionCase.EXCEPTION) {
@@ -99,7 +99,7 @@ public final class Annotation_Api {
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setPageIndex(pageIndex);
 
-        IntResultP res = client.blockingStub.pdfiumAnnotationGetAnnotationCountRequestP(
+        IntResultP res = client.GetBlockingStub("getAnnotationCount").pdfiumAnnotationGetAnnotationCountRequestP(
                 req.build());
 
         if (res.getResultOrExceptionCase() == IntResultP.ResultOrExceptionCase.EXCEPTION) {
@@ -124,7 +124,7 @@ public final class Annotation_Api {
                 req.setPageIndex(pageIndex);
                 req.setAnnotIndex(annotationIndex);
 
-                PdfiumGetTextAnnotationResultP res = client.blockingStub.pdfiumAnnotationGetTextAnnotationRequestP(req.build());
+                PdfiumGetTextAnnotationResultP res = client.GetBlockingStub("getAnnotaionList").pdfiumAnnotationGetTextAnnotationRequestP(req.build());
 
                 if (res.getResultOrExceptionCase() == PdfiumGetTextAnnotationResultP.ResultOrExceptionCase.EXCEPTION) {
                     throw Exception_Converter.fromProto(res.getException());

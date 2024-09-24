@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <groupId>com.ironsoftware</groupId>
-    <artifactId>ironpdf</artifactId>
+    <artifactId>ironpdf-cloud</artifactId>
     <version>please-replace-version</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>IronPDF Java library offers an extensive compatibility range, making it a go-to solution for a wide array of developers. It fully supports JVM languages like Java, Scala, and Kotlin, making it incredibly versatile. This Java PDF  library is also compatible with Java 8 and above, providing optimum performance across multiple platforms. It's been designed with a wide range of users in mind Here's a look at what it supports: JVM Languages: Java, Scala, Kotlin.Platforms: Java 8 and above.Operating Systems: Microsoft Windows, Linux, Docker, Azure, AWS.IDEs: Jetbrains IntelliJ IDEA, Eclipse. You can deploy IronPDF Java across various platforms, including Microsoft Windows, Linux, Docker, Azure, and AWS. It is also fully compatible with popular IDEs like Jetbrains IntelliJ IDEA and Eclipse, facilitating smooth project development and management. Your pom.xml file is essentially the backbone of your project when you're using Maven. It's here where you introduce new dependencies that you wish to include. To make IronPDF Java package a part of your Maven project, you simply need to add the following snippets to your pom.xml: Remember to replace '20xx.xx.xxxx' with the latest version of IronPDF. IronPDF Java simplifies the process of creating PDF files. Convert HTML files, HTML strings, or URLs directly to new PDF documents in a few lines of code. The variety of file formats it handles is vast, as it can even transform images into PDF documents and vice versa. Need to use base 64 encoding, base URLs, or custom file paths? No problem! IronPDF Java has got you coveredFor more detail about installing and using IronPDF Java. When you run your project for the first time post-integration, IronPDF's engine binaries will automatically be downloaded. The engine starts its journey when you call any IronPDF function for the first time and takes a breather when your application is either closed or enters an idle state. It is not an open source java PDF library but here's the best part - IronPDF Java is offering a 30-day free trial. So, why wait? Give it a go and boost your PDF operations today.</description>
+    <description>IronPDF Java Cloud library offers an extensive compatibility range, making it a go-to solution for a wide array of developers. It fully supports JVM languages like Java, Scala, and Kotlin, making it incredibly versatile. This Java PDF  library is also compatible with Java 8 and above, providing optimum performance across multiple platforms. It's been designed with a wide range of users in mind Here's a look at what it supports: JVM Languages: Java, Scala, Kotlin.Platforms: Java 8 and above.Operating Systems: Microsoft Windows, Linux, Docker, Azure, AWS.IDEs: Jetbrains IntelliJ IDEA, Eclipse. You can deploy IronPDF Java Cloud across various platforms, including Microsoft Windows, Linux, Docker, Azure, and AWS. It is also fully compatible with popular IDEs like Jetbrains IntelliJ IDEA and Eclipse, facilitating smooth project development and management. Your pom.xml file is essentially the backbone of your project when you're using Maven. It's here where you introduce new dependencies that you wish to include. To make IronPDF Java Cloud package a part of your Maven project, you simply need to add the following snippets to your pom.xml: Remember to replace '20xx.xx.xxxx' with the latest version of IronPDF. IronPDF Java Cloud simplifies the process of creating PDF files. Convert HTML files, HTML strings, or URLs directly to new PDF documents in a few lines of code. The variety of file formats it handles is vast, as it can even transform images into PDF documents and vice versa. Need to use base 64 encoding, base URLs, or custom file paths? No problem! IronPDF Java Cloud has got you coveredFor more detail about installing and using IronPDF Java Cloud. When you run your project for the first time post-integration, IronPDF's engine binaries will automatically be downloaded. The engine starts its journey when you call any IronPDF function for the first time and takes a breather when your application is either closed or enters an idle state. It is not an open source java PDF library but here's the best part - IronPDF Java is offering a 30-day free trial. So, why wait? Give it a go and boost your PDF operations today.</description>
     <url>https://ironpdf.com/java/</url>
     <inceptionYear>2022</inceptionYear>
     <organization>
@@ -91,48 +91,44 @@
                 </plugins>
             </build>
         </profile>
-<!--JAVA11 DOC-->
-        <profile>
-            <id>javadoc-java11</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.1</version>
-                        <configuration>
-                            <source>11</source>
-                            <finalName>ironpdf-please-replace-version-javadoc-java11</finalName>
-                            <show>public</show>
-                            <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <build>
-        <extensions>
-            <extension>
-                <artifactId>os-maven-plugin</artifactId>
-                <groupId>kr.motd.maven</groupId>
-                <version>1.6.2</version>
-            </extension>
-        </extensions>
+    <extensions>
+        <extension>
+            <artifactId>os-maven-plugin</artifactId>
+            <groupId>kr.motd.maven</groupId>
+            <version>1.6.2</version>
+        </extension>
+    </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <executions>
+                    <execution>
+                        <id>patch-IronPDF-Java-Cloud</id>
+                        <phase>generate-sources</phase> <!-- Before compilation -->
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Copying IronPDF src"/>
+                                <copy todir="${basedir}/src" overwrite="true">
+                                    <fileset dir="../ironpdf/src" includes="**/*.*"/>
+                                </copy>
+                                <echo message="Copy IronPDF src completed"/>
+
+                                <echo message="Patch IronPDF-Java-Cloud files to: ${basedir}"/>
+                                <copy todir="${basedir}" overwrite="true">
+                                    <fileset dir="./patch" includes="**/*.*"/>
+                                </copy>
+                                <echo message="Patch IronPDF-Java-Cloud files completed"/>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>update-build-timestamp</id>
                         <phase>generate-sources</phase> <!-- Before compilation -->
@@ -145,7 +141,7 @@
                                 <echo file="${basedir}/src/main/java/com/ironsoftware/ironpdf/internal/staticapi/BuildInfo.java" append="false">
 package com.ironsoftware.ironpdf.internal.staticapi;
 class BuildInfo {
-    static final String BUILD_TIMESTAMP = "${timestamp}";
+static final String BUILD_TIMESTAMP = "${timestamp}";
 }
                                 </echo>
                                 <echo message="Update build timestamp completed"/>
@@ -247,7 +243,7 @@ class BuildInfo {
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <configuration>
                     <createSourcesJar>true</createSourcesJar>
                     <shadeSourcesContent>true</shadeSourcesContent>
@@ -270,7 +266,7 @@ class BuildInfo {
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}-fat-jar</finalName>
+                            <finalName>${project.artifactId}-${project.version}-cloud-fat-jar</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
@@ -280,11 +276,6 @@ class BuildInfo {
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
     </build>
     <dependencies>
         <dependency>
@@ -303,7 +294,6 @@ class BuildInfo {
             <groupId>org.apache.commons</groupId>
             <version>3.12.0</version>
         </dependency>
-
         <dependency>
             <artifactId>grpc-netty-shaded</artifactId>
             <groupId>io.grpc</groupId>

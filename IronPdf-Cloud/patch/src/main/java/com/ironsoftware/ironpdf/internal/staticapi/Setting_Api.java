@@ -16,7 +16,7 @@ public final class Setting_Api {
 
     public static String licenseKey = "";
 
-    public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withSubprocess();
+    public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withOfficialCloud();
 
     public static final String IRON_PDF_ENGINE_VERSION = "2024.10.2";
 
@@ -133,7 +133,7 @@ public final class Setting_Api {
 
     public static String subProcessHost = "127.0.0.1";
 
-//will use unique port numbers to avoid conflicts with other instances of IronPdf
+    //will use unique port numbers to avoid conflicts with other instances of IronPdf
     public static int subProcessPort = getDefaultPort();
 
     /**
