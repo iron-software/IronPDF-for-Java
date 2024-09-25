@@ -41,7 +41,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish Cloud to Maven Central Repository
-        run: mvn deploy -DskipTests --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-cloud/pom.xml
+        run: mvn deploy -Dmaven.test.skip=true --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-cloud/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
