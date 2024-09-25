@@ -49,7 +49,7 @@ jobs:
       - name: Upload JARs to GitHub Release
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'ironpdf/target/*.jar;ironpdf-cloud/target/*.jar;'
+          files: 'ironpdf/target/*.jar;ironpdf-cloud/target/*.jar'
           repo-token: ${{ secrets.GITHUB_TOKEN }}    
   publish-ironpdf-engine-pack:
     needs: publish-ironpdf
