@@ -171,6 +171,7 @@ service IronPdfService {
   rpc Pdfium_Form_GetCharObjectCollection(PdfiumGetCharObjectCollectionRequestP) returns(PdfiumGetCharObjectCollectionResultP){}
   rpc Pdfium_Form_PagenateDocument(PdfiumPagenateDocumentRequestP) returns(PdfDocumentResultP){}
   rpc Pdfium_OpenNewDocument(stream PdfiumOpenNewDocumentRequestP)returns (PdfDocumentResultP){}
+  rpc Pdfium_EmbedFileToPdfA(stream PdfiumEmbedFileToPdfARequestStreamP) returns (PdfDocumentResultP){}
 
   //PDFIUM_Security
   rpc Pdfium_Security_RemovePasswordsAndEncryption(PdfiumRemovePasswordsAndEncryptionRequestP) returns (EmptyResultP){}

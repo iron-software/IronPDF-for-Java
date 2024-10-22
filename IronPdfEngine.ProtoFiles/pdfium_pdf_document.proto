@@ -210,6 +210,17 @@ message PdfiumConvertToPdfARequestStreamP {
   }
 }
 
+message PdfiumEmbedFileToPdfARequestStreamP {
+    oneof request {
+        InfoP info = 1;
+        bytes embedFileBytesChunk = 2;
+    }
+    message InfoP {
+        PdfDocumentP document = 1;
+        string embedFileName = 2;
+    }
+}
+
 message PdfiumConvertToPdfUARequestP {
   PdfDocumentP document = 1;
   int32 lang = 2;
