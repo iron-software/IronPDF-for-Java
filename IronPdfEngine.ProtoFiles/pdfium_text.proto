@@ -16,6 +16,8 @@ message PdfiumReplaceTextRequestP {
   int32 page_index = 2;
   string current_text = 3;
   string new_text = 4;
+  optional string font_name = 5;
+  optional float custom_font_size = 6;
 }
 
 message PdfiumDrawTextRequestP {

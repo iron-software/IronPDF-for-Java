@@ -1,12 +1,13 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.IronPdfEngineConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import com.ironsoftware.ironpdf.IronPdfEngineConnection;
 
 /**
  * The type Setting api.
@@ -18,7 +19,7 @@ public final class Setting_Api {
 
     public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withOfficialCloud();
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2024.10.8";
+    public static final String IRON_PDF_ENGINE_VERSION = "2024.11.4";
 
     public static int ironPdfEngineTimeout = 120;
 

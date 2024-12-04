@@ -104,6 +104,7 @@
                             <source>11</source>
                             <finalName>ironpdf-please-replace-version-javadoc-java11</finalName>
                             <show>public</show>
+                            <excludePackageNames>com.ironsoftware.ironpdf.internal.*,grpc.*</excludePackageNames>
                             <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
                         </configuration>
                         <executions>
@@ -173,7 +174,9 @@ class BuildInfo {
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
+                <version>0.6.1</version>
                 <configuration>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
                     </pluginArtifact>
@@ -193,8 +196,6 @@ class BuildInfo {
                         </goals>
                     </execution>
                 </executions>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <version>0.6.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

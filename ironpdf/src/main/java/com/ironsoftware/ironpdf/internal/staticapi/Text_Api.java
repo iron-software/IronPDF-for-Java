@@ -1,14 +1,16 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.ironsoftware.ironpdf.edit.PageSelection;
+import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumExtractAllTextRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumFontInfoP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumReplaceTextRequestP;
 import com.ironsoftware.ironpdf.internal.proto.StringResultP;
 import com.ironsoftware.ironpdf.page.PageInfo;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type Text api.
@@ -59,13 +61,15 @@ public final class Text_Api {
     /**
      * Replace the specified old text with new text on a given page
      *
-     * @param internalPdfDocument the internal pdf document
-     * @param pageIndex           Page index to search for old text to replace
-     * @param oldText             Old text to remove
-     * @param newText             New text to add
+     * @param internalPdfDocument   The internal pdf document
+     * @param pageIndex             Page index to search for old text to replace
+     * @param oldText               Old text to remove
+     * @param newText               New text to add
+     * @param fontName              The font to use for the new text
+     * @param customFontSize        The font size to use for the new text
      */
     public static void replaceTextOnPage(InternalPdfDocument internalPdfDocument, int pageIndex,
-                                         String oldText, String newText) {
+    String oldText, String newText, String fontName, Float customFontSize) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumReplaceTextRequestP.Builder req = PdfiumReplaceTextRequestP.newBuilder();
@@ -73,6 +77,16 @@ public final class Text_Api {
         req.setPageIndex(pageIndex);
         req.setCurrentText(oldText);
         req.setNewText(newText);
+
+        if (fontName != null) {
+            req.setFontName(fontName);
+        }else{
+            req.setFontName("TimesNewRoman");
+        }
+    
+        if (customFontSize != null) {
+            req.setCustomFontSize(customFontSize);
+        }
 
         EmptyResultP res = client.GetBlockingStub("replaceTextOnPage").pdfiumTextReplaceText(req.build());
         Utils_Util.handleEmptyResult(res);
