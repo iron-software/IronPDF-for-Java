@@ -1,12 +1,11 @@
 package com.ironsoftware.ironpdf;
 
-import com.ironsoftware.ironpdf.edit.PageSelection;
-import com.ironsoftware.ironpdf.internal.staticapi.Text_Api;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.nio.file.Paths;
+import com.ironsoftware.ironpdf.edit.PageSelection;
 
 public class TextTests extends TestBase {
 

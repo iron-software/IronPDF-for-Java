@@ -1,5 +1,29 @@
 package com.ironsoftware.ironpdf;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ironsoftware.ironpdf.annotation.AnnotationManager;
 import com.ironsoftware.ironpdf.attachment.AttachmentManager;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;
@@ -12,7 +36,17 @@ import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import com.ironsoftware.ironpdf.image.DrawImageOptions;
 import com.ironsoftware.ironpdf.image.ImageBehavior;
 import com.ironsoftware.ironpdf.image.ToImageOptions;
-import com.ironsoftware.ironpdf.internal.staticapi.*;
+import com.ironsoftware.ironpdf.internal.staticapi.BackgroundForeground_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Compress_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.HeaderFooter_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Image_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
+import com.ironsoftware.ironpdf.internal.staticapi.Page_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.PdfDocument_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Print_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Render_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Stamp_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Text_Api;
 import com.ironsoftware.ironpdf.metadata.MetadataManager;
 import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.page.PageRotation;
@@ -25,26 +59,6 @@ import com.ironsoftware.ironpdf.stamp.HorizontalAlignment;
 import com.ironsoftware.ironpdf.stamp.HtmlStamper;
 import com.ironsoftware.ironpdf.stamp.Stamper;
 import com.ironsoftware.ironpdf.stamp.VerticalAlignment;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents a PDF document. Allows: loading, editing, manipulating, merging, signing printing and saving PDFs.
@@ -1762,14 +1776,26 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Replace the specified old text with new text on a given page.
      *
-     * @param pageSelection The selected page index(es).
-     * @param oldText       Old text to remove
-     * @param newText       New text to add
+     * @param pageSelection     The selected page index(es).
+     * @param oldText           Old text to remove.
+     * @param newText           New text to add.
      */
     public final void replaceText(PageSelection pageSelection, String oldText, String newText) {
+        replaceText(pageSelection, oldText, newText, null, null);
+    }
+
+    /**
+     * Replace the specified old text with new text on a given page.
+     *
+     * @param pageSelection     The selected page index(es).
+     * @param oldText           Old text to remove.
+     * @param newText           New text to add.
+     * @param fontName          The font to use for the new text (nullable).
+     * @param customFontSize    The font size to use for the new text (nullable).
+     */
+    public final void replaceText(PageSelection pageSelection, String oldText, String newText, String fontName, Float customFontSize) {
         internalPdfDocument.getPageList(pageSelection).forEach(page -> {
-            Text_Api.replaceTextOnPage(internalPdfDocument, page,
-                    oldText, newText);
+            Text_Api.replaceTextOnPage(internalPdfDocument, page, oldText, newText, fontName, customFontSize);
         });
     }
 
