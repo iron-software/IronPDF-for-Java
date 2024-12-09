@@ -29,6 +29,7 @@ import com.ironsoftware.ironpdf.attachment.AttachmentManager;
 import com.ironsoftware.ironpdf.bookmark.BookmarkManager;
 import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import com.ironsoftware.ironpdf.edit.PageSelection;
+import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.form.FormManager;
 import com.ironsoftware.ironpdf.headerfooter.HeaderFooterOptions;
 import com.ironsoftware.ironpdf.headerfooter.HtmlHeaderFooter;
@@ -1790,12 +1791,12 @@ public class PdfDocument implements Printable, AutoCloseable {
      * @param pageSelection     The selected page index(es).
      * @param oldText           Old text to remove.
      * @param newText           New text to add.
-     * @param fontName          The font to use for the new text (nullable).
+     * @param customFont        The font to use for the new text (nullable).
      * @param customFontSize    The font size to use for the new text (nullable).
      */
-    public final void replaceText(PageSelection pageSelection, String oldText, String newText, String fontName, Float customFontSize) {
+    public final void replaceText(PageSelection pageSelection, String oldText, String newText, FontTypes customFont, Float customFontSize) {
         internalPdfDocument.getPageList(pageSelection).forEach(page -> {
-            Text_Api.replaceTextOnPage(internalPdfDocument, page, oldText, newText, fontName, customFontSize);
+            Text_Api.replaceTextOnPage(internalPdfDocument, page, oldText, newText, customFont, customFontSize);
         });
     }
 

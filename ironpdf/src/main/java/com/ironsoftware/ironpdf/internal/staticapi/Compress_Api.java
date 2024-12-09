@@ -14,7 +14,7 @@ public final class Compress_Api {
      *
      * @param internalPdfDocument the internal pdf document
      * @param quality             (1 - 100) to use during compression
-     * @param scaleToVisibleSize  Scale down the image resolution according to its visible size in the                           PDF document; may cause distortion with some image configurations.                           Default is false.
+     * @param scaleToVisibleSize  Scale down the image resolution according to its visible size in the PDF document; may cause distortion with some image configurations. Default is false.
      */
     public static void compressImages(InternalPdfDocument internalPdfDocument, int quality,
                                       boolean scaleToVisibleSize) {

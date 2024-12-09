@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "basic.proto";
+import "pdfium_pdf_document.proto";
 package ironpdfengineproto;
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
@@ -16,7 +17,7 @@ message PdfiumReplaceTextRequestP {
   int32 page_index = 2;
   string current_text = 3;
   string new_text = 4;
-  optional string font_name = 5;
+  optional PdfiumFontInfoP custom_font = 5;
   optional float custom_font_size = 6;
 }
 
@@ -24,7 +25,7 @@ message PdfiumDrawTextRequestP {
   PdfDocumentP document = 1;
   int32 page_index = 2;
   string text = 3;
-  string font_name = 4;
+  PdfiumFontInfoP font = 4;
   double font_size = 5;
   double x = 6;
   double y = 7;
