@@ -65,11 +65,11 @@ public final class Text_Api {
      * @param pageIndex             Page index to search for old text to replace
      * @param oldText               Old text to remove
      * @param newText               New text to add
-     * @param fontName              The font to use for the new text
+     * @param customFont            The font to use for the new text
      * @param customFontSize        The font size to use for the new text
      */
     public static void replaceTextOnPage(InternalPdfDocument internalPdfDocument, int pageIndex,
-    String oldText, String newText, String fontName, Float customFontSize) {
+    String oldText, String newText, FontTypes customFont, Float customFontSize) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumReplaceTextRequestP.Builder req = PdfiumReplaceTextRequestP.newBuilder();
@@ -78,12 +78,12 @@ public final class Text_Api {
         req.setCurrentText(oldText);
         req.setNewText(newText);
 
-        if (fontName != null) {
-            req.setFontName(fontName);
-        }else{
-            req.setFontName("TimesNewRoman");
+        PdfiumFontInfoP fontProto = FontTypes_Converter.toProto(FontTypes.getTimesNewRoman());;
+        if (customFont != null) {
+            fontProto = FontTypes_Converter.toProto(customFont);
         }
-    
+        req.setCustomFont(fontProto);
+
         if (customFontSize != null) {
             req.setCustomFontSize(customFontSize);
         }

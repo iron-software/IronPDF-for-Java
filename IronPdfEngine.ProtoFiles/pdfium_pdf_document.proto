@@ -169,6 +169,7 @@ message PdfiumFontInfoP
   string name = 3;
   int32 type = 4;
   uint32 descendant_font_obj_num = 5;
+  bool is_subsetted = 6;
 }
 
 message PdfiumFontInfoCollectionP
