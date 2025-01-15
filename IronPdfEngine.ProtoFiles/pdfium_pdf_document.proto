@@ -227,6 +227,12 @@ message PdfiumConvertToPdfUARequestP {
   int32 lang = 2;
 }
 
+message PdfiumConvertToPdfUAForScreenReaderRequestP {
+    PdfDocumentP document = 1;
+    string html_dom = 2;
+    int32 lang = 3;
+}
+
 message PdfiumGetPaperSizePresetRequestP {
   string name = 1;
 }

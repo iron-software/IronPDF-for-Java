@@ -157,6 +157,7 @@ service IronPdfService {
   rpc Pdfium_Dispose(PdfDocumentP) returns (EmptyResultP){}
   rpc Pdfium_ConvertToPdfA(stream PdfiumConvertToPdfARequestStreamP)  returns (PdfDocumentResultP){}
   rpc Pdfium_ConvertToPdfUA(PdfiumConvertToPdfUARequestP)  returns (EmptyResultP){}
+  rpc Pdfium_ConvertToPdfUAForScreenReader(PdfiumConvertToPdfUAForScreenReaderRequestP) returns (EmptyResultP){}
   rpc Pdfium_GetBinaryData(stream PdfiumGetBinaryDataRequestStreamP)  returns (stream BytesResultStreamP){}
   rpc Pdfium_FromBytes(stream PdfiumPdfDocumentConstructorStreamP)returns (PdfDocumentResultP){}
   rpc Pdfium_IncrementReference(PdfDocumentP)returns (IntResultP){}

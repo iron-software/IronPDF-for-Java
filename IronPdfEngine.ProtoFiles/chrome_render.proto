@@ -133,6 +133,7 @@ message ChromePdfRenderOptionsP {
   optional StringDictionaryP custom_cookies = 35;
   optional ChromeTableOfContentsTypesP table_of_contents = 36;
   optional bool enable_mathematical_latex = 37;
+  optional string custom_request_headers = 38;
 }
 
 message ChromeCefRenderSettingsP {
