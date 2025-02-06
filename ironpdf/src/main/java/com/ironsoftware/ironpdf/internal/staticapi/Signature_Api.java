@@ -71,6 +71,12 @@ public final class Signature_Api {
 
         info.setSignaturePermission(Signature_Converter.toProto(permissions));
 
+        if(signature.getSignatureImageRectangle() != null){
+            info.setSignatureImageW(signature.getSignatureImageRectangle().width);
+            info.setSignatureImageH(signature.getSignatureImageRectangle().height);
+            info.setSignatureImageX(signature.getSignatureImageRectangle().x);
+            info.setSignatureImageY(signature.getSignatureImageRectangle().y);
+        }
 
         if (signature.getTimeStampUrl() != null) {
             info.setTimeStampUrl(signature.getTimeStampUrl());

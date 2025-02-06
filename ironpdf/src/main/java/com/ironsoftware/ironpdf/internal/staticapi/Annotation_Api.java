@@ -1,11 +1,15 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
-import com.ironsoftware.ironpdf.annotation.AnnotationManager;
-import com.ironsoftware.ironpdf.annotation.TextAnnotation;
-import com.ironsoftware.ironpdf.internal.proto.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ironsoftware.ironpdf.annotation.TextAnnotation;
+import com.ironsoftware.ironpdf.internal.proto.IntResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumAddTextAnnotationRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumGetAnnotationCountRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumGetAnnotationRequestP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumGetTextAnnotationResultP;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumTextAnnotationP;
 
 /**
  * The type Annotation api.
@@ -17,11 +21,14 @@ public final class Annotation_Api {
      *
      * @param internalPdfDocument the internal pdf document
      * @param textAnnotation      The annotation as a {@link TextAnnotation} object.
+     * @param pageIndex           Index of the page to add the annotation. The first page has a PageIndex of 0
+     * @param x                   The horizontal X position of the annotation on your page in pixels
+     * @param y                   The vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
      */
     public static void addTextAnnotation(InternalPdfDocument internalPdfDocument,
                                          TextAnnotation textAnnotation,
-                                         int pageIndex, int x, int y, int width) {
-        addTextAnnotation(internalPdfDocument, textAnnotation, pageIndex, x, y, width, 30);
+                                         int pageIndex, int x, int y) {
+        addTextAnnotation(internalPdfDocument, textAnnotation, pageIndex, new java.awt.Rectangle(x, y, 30, 30));
     }
 
     /**
@@ -29,21 +36,28 @@ public final class Annotation_Api {
      *
      * @param internalPdfDocument the internal pdf document
      * @param textAnnotation      The annotation as a {@link TextAnnotation} object.
-     * @param pageIndex           Index of the page to add the annotation. The first page has a PageIndex                       of 0
+     */
+    public static void addTextAnnotation(InternalPdfDocument internalPdfDocument,
+                                         TextAnnotation textAnnotation,
+                                         int pageIndex, int x, int y, int width) {
+        addTextAnnotation(internalPdfDocument, textAnnotation, pageIndex, new java.awt.Rectangle(x, y, width, 30));
+    }
+
+    /**
+     * Adds an annotation to a page of this {@link InternalPdfDocument}
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param textAnnotation      The annotation as a {@link TextAnnotation} object.
+     * @param pageIndex           Index of the page to add the annotation. The first page has a PageIndex of 0
      * @param x                   The horizontal X position of the annotation on your page in pixels
-     * @param y                   The vertical Y position of the annotation on your page in pixels.                       Measured from bottom upwards.
+     * @param y                   The vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
      * @param width               The width of your annotation's icon and interactive area in pixels
      * @param height              The height of your annotation's icon and interactive area in pixels
      */
     public static void addTextAnnotation(InternalPdfDocument internalPdfDocument,
                                          TextAnnotation textAnnotation,
                                          int pageIndex, int x, int y, int width, int height) {
-        textAnnotation.setPageIndex(pageIndex);
-        textAnnotation.setX(x);
-        textAnnotation.setY(y);
-        textAnnotation.setWidth(width);
-        textAnnotation.setHeight(height);
-        addTextAnnotation(internalPdfDocument, textAnnotation);
+        addTextAnnotation(internalPdfDocument, textAnnotation, pageIndex, new java.awt.Rectangle(x, y, width, height));
     }
 
     /**
@@ -51,16 +65,16 @@ public final class Annotation_Api {
      *
      * @param internalPdfDocument the internal pdf document
      * @param textAnnotation      The annotation as a {@link TextAnnotation} object.
-     * @param pageIndex           Index of the page to add the annotation. The first page has a PageIndex                       of 0
-     * @param x                   The horizontal X position of the annotation on your page in pixels
-     * @param y                   The vertical Y position of the annotation on your page in pixels.                       Measured from bottom upwards.
+     * @param pageIndex           Index of the page to add the annotation. The first page has a PageIndex of 0
+     * @param rectangle           The rectangle defines the X and Y coordinates and the dimensions of the annotation on your page in pixels.
      */
     public static void addTextAnnotation(InternalPdfDocument internalPdfDocument,
                                          TextAnnotation textAnnotation,
-                                         int pageIndex, int x, int y) {
-        addTextAnnotation(internalPdfDocument, textAnnotation, pageIndex, x, y, 30, 30);
+                                         int pageIndex, java.awt.Rectangle rectangle) {
+        textAnnotation.setPageIndex(pageIndex);
+        textAnnotation.setRectangle(rectangle);
+        addTextAnnotation(internalPdfDocument, textAnnotation);
     }
-
 
     /**
      * Adds an annotation to a page of this {@link InternalPdfDocument}

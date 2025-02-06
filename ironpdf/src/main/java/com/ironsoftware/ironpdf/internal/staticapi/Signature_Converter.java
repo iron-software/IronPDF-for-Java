@@ -21,7 +21,7 @@ final class Signature_Converter {
 
     static com.ironsoftware.ironpdf.internal.proto.PdfiumSignaturePermissionsP toProto(SignaturePermissions input) {
         com.ironsoftware.ironpdf.internal.proto.PdfiumSignaturePermissionsP.Builder tempVar = com.ironsoftware.ironpdf.internal.proto.PdfiumSignaturePermissionsP.newBuilder();
-        tempVar.setEnumValue(input.ordinal());
+        tempVar.setEnumValue(input.getValue());
         return tempVar.build();
     }
 

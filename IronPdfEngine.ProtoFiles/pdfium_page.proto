@@ -147,3 +147,16 @@ message PdfiumPageBoundsPResultP {
     RemoteExceptionP exception = 2;
   }
 }
+
+message PdfiumAddPageRequestP {
+  PdfDocumentP document = 1;
+  double width = 2;
+  double height = 3;
+}
+
+message PdfiumAddPageResultP {
+  oneof result_or_exception {
+    int32 result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}

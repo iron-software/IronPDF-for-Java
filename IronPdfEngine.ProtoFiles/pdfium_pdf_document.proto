@@ -219,6 +219,13 @@ message PdfiumEmbedFileToPdfARequestStreamP {
     message InfoP {
         PdfDocumentP document = 1;
         string embedFileName = 2;
+        string afDesc = 3;
+        int32 conformLvlIdx = 4;
+        int32 docTypeIdx = 5;
+        int32 propVeridx = 6;
+        int32 schNamespaceIdx = 7;
+        int32 schPrefixIdx = 8;
+        int32 afRelIdx = 9;
     }
 }
 

@@ -1,15 +1,16 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import java.awt.Rectangle;
+
 import com.ironsoftware.ironpdf.annotation.AnnotationIcon;
 import com.ironsoftware.ironpdf.annotation.TextAnnotation;
-import com.ironsoftware.ironpdf.form.FormFieldTypes;
+import com.ironsoftware.ironpdf.internal.proto.PdfiumTextAnnotationP;
 
 final class Annotation_Converter {
 
     static com.ironsoftware.ironpdf.internal.proto.PdfiumTextAnnotationP toProto(
             TextAnnotation iron) {
-        com.ironsoftware.ironpdf.internal.proto.PdfiumTextAnnotationP.Builder proto =
-                com.ironsoftware.ironpdf.internal.proto.PdfiumTextAnnotationP.newBuilder();
+        PdfiumTextAnnotationP.Builder proto = PdfiumTextAnnotationP.newBuilder();
         proto.setContents(iron.getContents());
         proto.setHidden(iron.isHidden());
         proto.setOpacity(iron.getOpacity());
@@ -20,12 +21,14 @@ final class Annotation_Converter {
         proto.setSubject(iron.getSubject());
         proto.setTitle(iron.getTitle());
         proto.setIcon(toProto(iron.getIcon()));
-        proto.setY(iron.getX());
-        proto.setY(iron.getY());
+        com.ironsoftware.ironpdf.internal.proto.Rectangle.Builder rectangleProto = com.ironsoftware.ironpdf.internal.proto.Rectangle.newBuilder();
+        rectangleProto.setX(iron.getRectangle().getX());
+        rectangleProto.setY(iron.getRectangle().getY());
+        rectangleProto.setHeight(iron.getRectangle().getWidth());
+        rectangleProto.setWidth(iron.getRectangle().getHeight());
+        proto.setRectangle(rectangleProto);
         proto.setPageIndex(iron.getPageIndex());
         proto.setAnnotIndex(iron.getAnnotationIndex());
-        proto.setWidth(iron.getWidth());
-        proto.setHeight(iron.getWidth());
 
         if (!Utils_StringHelper.isNullOrWhiteSpace(iron.getColorCode())) {
             proto.setColorCode(iron.getColorCode());
@@ -47,12 +50,14 @@ final class Annotation_Converter {
         textAnnotation.setSubject(proto.getSubject());
         textAnnotation.setTitle(proto.getTitle());
         textAnnotation.setIcon(Annotation_Converter.fromProto(proto.getIcon()));
-        textAnnotation.setX(proto.getX());
-        textAnnotation.setY(proto.getY());
+        Rectangle rectangle = new Rectangle(
+            (int)proto.getRectangle().getX(),
+            (int)proto.getRectangle().getY(),
+            (int)proto.getRectangle().getWidth(),
+            (int)proto.getRectangle().getHeight());
+        textAnnotation.setRectangle(rectangle);
         textAnnotation.setPageIndex(proto.getPageIndex());
         textAnnotation.setAnnotationIndex(proto.getAnnotIndex());
-        textAnnotation.setWidth(proto.getWidth());
-        textAnnotation.setHeight(proto.getHeight());
         textAnnotation.setColorCode(proto.getColorCode());
 
         return textAnnotation;
