@@ -8,13 +8,23 @@ public enum SignaturePermissions
     /**
      No changes are allowed
      */
-    NoChangesAllowed,
+    NoChangesAllowed(1) ,
     /**
      Changing form field values is allowed
      */
-    FormFillingAllowed,
+    FormFillingAllowed(2),
     /**
      Changing form field values and modifying annotations are allowed
      */
-    FormFillingAndAnnotationsAllowed;
+    FormFillingAndAnnotationsAllowed(3);
+
+    private final int value;
+
+    private SignaturePermissions(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 }

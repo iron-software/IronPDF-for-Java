@@ -152,6 +152,7 @@ service IronPdfService {
   rpc Pdfium_Page_MergePageObjectsAppend(PdfiumMergePageObjectsAppendRequestP) returns (EmptyResultP){}
   rpc Pdfium_Page_MergePageObjectsPrepend(PdfiumMergePageObjectsPrependRequestP) returns (EmptyResultP){}
   rpc Pdfium_Page_TransformPage(PdfiumTransformPageRequestP) returns (EmptyResultP){}
+  rpc Pdfium_Page_AddPage(PdfiumAddPageRequestP) returns(PdfiumAddPageResultP){}
 
   //PDFIUM_PdfDocument
   rpc Pdfium_Dispose(PdfDocumentP) returns (EmptyResultP){}

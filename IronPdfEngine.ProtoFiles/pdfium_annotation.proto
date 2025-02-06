@@ -17,12 +17,11 @@ message PdfiumAnnotationSubTypesP {
 
 message PdfiumPdfAnnotationP {
   PdfiumAnnotationSubTypesP subtype = 2;
-  double x = 3;
-  double y = 4;
-  double width = 5;
-  double height = 6;
-  optional string contents = 7;
-  optional string name = 8;  
+  Rectangle rectangle = 3;
+  optional string contents = 4;
+  optional string name = 5;
+  optional string color_code = 6;
+  optional bool Hidden = 7;
 }
 
 message PdfiumPdfTextAnnotationP {
@@ -82,10 +81,7 @@ message PdfiumTextAnnotationP {
   optional string subject = 12;
   optional string title = 13;
   optional PdfiumAnnotationIconP icon = 14;
-  optional int32 x = 15;
-  optional int32 y = 16;
-  optional int32 width = 17;
-  optional int32 height = 18;
+  optional Rectangle rectangle = 15;
 }
 
 message PdfiumAddTextAnnotationRequestP {
@@ -118,9 +114,7 @@ message PdfiumAddLinkAnnotationRequestP {
   string name = 2;
   string url = 3;
   int32 page_index = 4;
-  int32 x = 5;
-  int32 y = 6;
-  int32 width = 7;
-  int32 height = 8;
-  optional bool show_border = 9;
+  Rectangle rectangle = 5;
+  optional string color_code = 6;
+  optional bool Hidden = 7;
 }

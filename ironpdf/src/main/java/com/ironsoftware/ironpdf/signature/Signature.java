@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf.signature;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +28,8 @@ public class Signature {
      * appends a visual signature in addition to  cryptographic signing.</p>
      */
     private byte[] signatureImage = null;
+
+    private Rectangle signatureImageRectangle = null;
 
     /**
      * The contact person or email address for signing related inquiries (optional).
@@ -100,7 +103,7 @@ public class Signature {
      * @param signingReason      the reason the PDF was signed (optional).
      */
     public Signature(byte[] certificateRawData, String password, Instant signatureDate, byte[] signatureImage,
-                     String signingContact, String signingLocation, String signingReason) {
+                     String signingContact, String signingLocation, String signingReason, Rectangle signatureImageRectangle) {
 
         this.certificateRawData = certificateRawData;
         this.password = password;
@@ -109,6 +112,7 @@ public class Signature {
         this.signingContact = signingContact;
         this.signingLocation = signingLocation;
         this.signingReason = signingReason;
+        this.signatureImageRectangle = signatureImageRectangle;
     }
 
     /**
@@ -160,13 +164,33 @@ public class Signature {
     }
 
     /**
+     * Get signature image Rectangle. A position of visual image for the sign</p>
+     *
+     * @return Rectangle
+     */
+    public Rectangle getSignatureImageRectangle() {
+        return signatureImageRectangle;
+    }
+
+    /**
+     * Set signature image Rectangle. A position of visual image for the sign</p>
+     *
+     * @return Rectangle
+     */
+    public void setSignatureImageRectangle(Rectangle rectangle) {
+        this.signatureImageRectangle = rectangle;
+    }
+
+    /**
      * Sets signature image. A visual image for the sign, often a PNG of a human signature or company stamp (optional). <p>This
      * appends a visual signature in addition to  cryptographic signing.</p>
      *
      * @param signatureImage the signature image
+     * @param rectangle Rectangle to display image
      */
-    public void setSignatureImage(byte[] signatureImage) {
+    public void setSignatureImage(byte[] signatureImage, Rectangle rectangle) {
         this.signatureImage = signatureImage;
+        this.signatureImageRectangle = rectangle;
     }
 
     /**

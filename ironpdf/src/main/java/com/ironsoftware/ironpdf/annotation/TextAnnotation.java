@@ -1,5 +1,7 @@
 package com.ironsoftware.ironpdf.annotation;
 
+import java.awt.Rectangle;
+
 import com.ironsoftware.ironpdf.internal.staticapi.Annotation_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 
@@ -59,28 +61,16 @@ public final class TextAnnotation {
      */
     private AnnotationIcon icon = AnnotationIcon.COMMENT;
 
-
     /**
      * Index of the page to add the annotation. The first page has a PageIndex of 0
      */
     private int pageIndex = 0;
-    /**
-     * The horizontal X position of the annotation on your page in pixels
-     */
-    private int x = 0;
-    /**
-     * The vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
-     */
-    private int y = 0;
-    /**
-     * The width of your annotation's icon and interactive area in pixels. Default 30
-     */
-    private int width = 30;
 
     /**
-     * The height of your annotation's icon and interactive area in pixels. Default 30
+     * The rectangle defines the X and Y coordinates and the dimensions of the annotation on your page in pixels. 
+     * The default values are (0,0) for the position, with a width of 30 and a height of 30.
      */
-    private int height = 30;
+    private Rectangle rectangle = new Rectangle(0, 0, 30, 30);
 
     /**
      * Instantiates a new text annotation.
@@ -306,59 +296,17 @@ public final class TextAnnotation {
     }
 
     /**
-     * Gets the height of your annotation's icon and interactive area in pixels
+     * Gets the X and Y coordinates, as well as the width and height, of the annotation's icon and interactive area in pixels.
      */
-    public int getHeight() {
-        return height;
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 
     /**
-     * Sets the height of your annotation's icon and interactive area in pixels
+     * Sets the X and Y coordinates, as well as the width and height, of the annotation's icon and interactive area in pixels.
      */
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    /**
-     * Gets the width of your annotation's icon and interactive area in pixels
-     */
-    public int getWidth() {
-        return width;
-    }
-
-    /**
-     * Sets the width of your annotation's icon and interactive area in pixels
-     */
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    /**
-     * Gets the vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
-     */
-    public int getY() {
-        return y;
-    }
-
-    /**
-     * Sets the vertical Y position of the annotation on your page in pixels. Measured from bottom upwards.
-     */
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    /**
-     * Gets the horizontal X position of the annotation on your page in pixels
-     */
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Sets the horizontal X position of the annotation on your page in pixels
-     */
-    public void setX(int x) {
-        this.x = x;
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
     }
 
     /**
