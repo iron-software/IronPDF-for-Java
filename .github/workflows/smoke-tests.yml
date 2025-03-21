@@ -74,7 +74,7 @@ jobs:
         fail-on-error: true      
       
   test_on_ubuntu:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v4.0.0
@@ -109,7 +109,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: Ubuntu-20.04 Tests
+        name: Ubuntu-22.04 Tests
         path: IronPdf.SmokeTests/target/surefire-reports/*.xml
         reporter: java-junit
         fail-on-error: true
