@@ -45,6 +45,15 @@ message PdfiumPdfToImagesRequestP {
   optional bool flatten = 6;
 }
 
+message PdfiumPdfToImagesHighQualityRequestP {
+  PdfDocumentP document = 1;
+  repeated int32 page_indexes = 2; // null/empty for all pages
+  optional int32 dpi = 3;
+  optional int32 max_width = 4;
+  optional int32 max_height = 5;
+  optional bool flatten = 6;
+}
+
 message PdfiumPdfToMultiPageTiffImageRequestP {
   PdfDocumentP document = 1;
   repeated int32 page_indexes = 2; // null/empty for all pages

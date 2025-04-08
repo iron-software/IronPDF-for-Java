@@ -127,6 +127,7 @@ service IronPdfService {
   rpc Pdfium_Image_ExtractAllImages(PdfiumExtractAllImagesRequestP) returns (stream ImagesResultStreamP){}
   rpc Pdfium_Image_ExtractAllRawImages(PdfiumExtractAllRawImagesRequestP) returns (stream ImagesResultStreamP){}
   rpc Pdfium_Image_PdfToImages(PdfiumPdfToImagesRequestP)returns(stream ImagesResultStreamP){}
+  rpc Pdfium_Image_PdfToImagesHighQuality(PdfiumPdfToImagesHighQualityRequestP)returns(stream ImagesResultStreamP){}
   rpc Pdfium_Image_PdfToMultiPageTiffImage(PdfiumPdfToMultiPageTiffImageRequestP)returns(stream ImageResultStreamP){}
 
   //PDFIUM_Metadata
