@@ -4,7 +4,7 @@ on:
     types: [created]
 jobs:
   publish-ironpdf:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.0.0
       - name: Replace credentials #ironpdf-cloud will copy config.properties in mvn step
@@ -53,7 +53,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}    
   publish-ironpdf-engine-pack:
     needs: publish-ironpdf
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.0.0
       - name: Replace linux-x64 version with release tag
@@ -112,7 +112,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
   publish-javadoc-from-java11:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.0.0
       - name: Setup Java JDK
