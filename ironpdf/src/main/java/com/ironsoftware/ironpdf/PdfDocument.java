@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import com.ironsoftware.ironpdf.standard.PdfAVersions;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2090,8 +2091,9 @@ public class PdfDocument implements Printable, AutoCloseable {
     //region pdfA
 
     /**
-     * Save the current document into the specified PDF-A standard format
+     * Save the current document into the PDF-A (PDF/A-3B ISO 19005-3) standard format
      *
+     * @param filePath Target file path string
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
@@ -2100,8 +2102,9 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
-     * Save the current document into the specified PDF-A standard format
+     * Save the current document into the PDF-A (PDF/A-3B ISO 19005-3) standard format
      *
+     * @param filePath Target file path string
      * @param customICCFilePath (Optional) Custom color profile file path
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
@@ -2111,30 +2114,80 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
-     * Convert the current document into the specified PDF-A standard format
+     * Save the current document into the specified PDF-A standard format
+     *
+     * @param filePath Target file path string
+     * @param pdfAVersion PDF-A standard version
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument saveAsPdfA(String filePath, PdfAVersions pdfAVersion) throws IOException {
+        return convertToPdfA(pdfAVersion).saveAs(filePath);
+    }
+
+    /**
+     * Save the current document into the specified PDF-A standard format
+     *
+     * @param filePath Target file path string
+     * @param pdfAVersion PDF-A standard version
+     * @param customICCFilePath (Optional) Custom color profile file path
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument saveAsPdfA(String filePath, PdfAVersions pdfAVersion, String customICCFilePath) throws IOException {
+        return convertToPdfA(pdfAVersion, customICCFilePath).saveAs(filePath);
+    }
+
+    /**
+     * Convert the current document into the PDF-A (PDF/A-3B ISO 19005-3) standard format
      *
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
     public PdfDocument convertToPdfA() throws IOException {
-        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, new byte[0]);
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, new byte[0], PdfAVersions.PdfA3b);
         return this;
     }
 
     /**
-     * Convert the current document into the specified PDF-A standard format
+     * Convert the current document into the PDF-A (PDF/A-3B ISO 19005-3) standard format
      *
      * @param customICCFilePath (Optional) Custom color profile file path
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
     public PdfDocument convertToPdfA(String customICCFilePath) throws IOException {
-        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, Files.readAllBytes(Paths.get(customICCFilePath)));
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, Files.readAllBytes(Paths.get(customICCFilePath)), PdfAVersions.PdfA3b);
         return this;
     }
 
     /**
-     * Save the current document into the specified PDF/UA standard format
+     * Convert the current document into the specified PDF-A standard format
+     *
+     * @param pdfAVersion PDF-A standard version
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfA(PdfAVersions pdfAVersion) throws IOException {
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, new byte[0], pdfAVersion);
+        return this;
+    }
+
+    /**
+     * Convert the current document into the specified PDF-A standard format
+     *
+     * @param pdfAVersion PDF-A standard version
+     * @param customICCFilePath (Optional) Custom color profile file path
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfA(PdfAVersions pdfAVersion, String customICCFilePath) throws IOException {
+        internalPdfDocument = PdfDocument_Api.toPdfA(internalPdfDocument, Files.readAllBytes(Paths.get(customICCFilePath)), pdfAVersion);
+        return this;
+    }
+
+    /**
+     * Save the current document into the specified PDF/UA standard format. Compliant with the ISO 14289-1 (PDF/UA-1)
      * @param naturalLanguages Natural Languages Specification
      * @return A {@link PdfDocument}
      * @throws IOException the io exception

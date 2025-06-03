@@ -169,6 +169,7 @@ service IronPdfService {
   rpc Pdfium_GetPaperSizePreset(PdfiumGetPaperSizePresetRequestP) returns(PdfiumGetPaperSizePresetResultP){}
   rpc Pdfium_Form_GetFontInfoCollection(PdfiumGetFontInfoCollectionRequestP) returns(PdfiumGetFontInfoCollectionResultP){}
   rpc Pdfium_Form_GetTextObjectCollection(PdfiumGetTextObjectCollectionRequestP) returns(PdfiumGetTextObjectCollectionResultP){}
+  rpc Pdfium_Form_GetConsolidatedTextObjectCollection(PdfiumGetTextObjectCollectionRequestP) returns(PdfiumGetTextObjectCollectionResultP){}
   rpc Pdfium_Form_GetImageObjectCollection(PdfiumGetImageObjectCollectionRequestP) returns(stream PdfiumGetImageObjectCollectionResultP){}
   rpc Pdfium_Form_GetPathObjectCollection(PdfiumGetPathObjectCollectionRequestP) returns(PdfiumGetPathObjectCollectionResultP){}
   rpc Pdfium_Form_GetCharObjectCollection(PdfiumGetCharObjectCollectionRequestP) returns(PdfiumGetCharObjectCollectionResultP){}

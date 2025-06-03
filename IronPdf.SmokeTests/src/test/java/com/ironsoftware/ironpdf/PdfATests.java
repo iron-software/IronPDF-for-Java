@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PdfATests extends TestBase {
 
@@ -17,6 +20,17 @@ public class PdfATests extends TestBase {
 
         Assertions.assertTrue(originalBytesSize != pdfAByteSize);
     }
+
+    @Test
+    public final void PdfATest_PDF_1825() throws IOException {
+        //PDF-1825
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google.pdf"));
+
+        byte[] pdfAByte = doc.convertToPdfA().getBinaryData();
+        String rawString = new String(pdfAByte, StandardCharsets.UTF_8);
+        Assertions.assertTrue(rawString.toString().contains("<pdfaid:part>3</pdfaid:part>"));
+    }
+
 
     @Test
     public final void PdfUATest() throws IOException {
