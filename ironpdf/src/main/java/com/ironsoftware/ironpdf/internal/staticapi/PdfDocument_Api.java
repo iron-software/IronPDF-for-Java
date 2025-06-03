@@ -6,6 +6,7 @@ import com.ironsoftware.ironpdf.PdfDocument;
 import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.signature.Signature;
+import com.ironsoftware.ironpdf.standard.PdfAVersions;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -291,7 +292,7 @@ public final class PdfDocument_Api {
         return fromBytes(pdfFileBytes, null, null, ChangeTrackingModes.AUTO_CHANGE_TRACKING);
     }
 
-    public static InternalPdfDocument toPdfA(InternalPdfDocument internalPdfDocument, byte[] customICCFileBytes) {
+    public static InternalPdfDocument toPdfA(InternalPdfDocument internalPdfDocument, byte[] customICCFileBytes, PdfAVersions pdfAVersion) {
         RpcClient client = Access.ensureConnection();
 
         //for checking that the response stream is finished
@@ -299,8 +300,39 @@ public final class PdfDocument_Api {
 
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
+        int convtVer = 3; // default
+        boolean isAVariant = true; // default
+        switch (pdfAVersion){
+            case PdfA1b:
+                convtVer = 1;
+                isAVariant = false;
+                break;
+            case PdfA2b:
+                convtVer = 2;
+                isAVariant = false;
+                break;
+            case PdfA3b:
+                convtVer = 3;
+                isAVariant = false;
+                break;
+            case PdfA1a:
+                convtVer = 1;
+                isAVariant = true;
+                break;
+            case PdfA2a:
+                convtVer = 2;
+                isAVariant = true;
+                break;
+            case PdfA3a:
+                convtVer = 3;
+                isAVariant = true;
+                break;
+        }
+
         PdfiumConvertToPdfARequestStreamP.InfoP.Builder infoP = PdfiumConvertToPdfARequestStreamP.InfoP.newBuilder();
         infoP.setDocument(internalPdfDocument.remoteDocument);
+        infoP.setConvtVer(convtVer);
+        infoP.setIsAVariant(isAVariant);
         PdfiumConvertToPdfARequestStreamP.Builder req = PdfiumConvertToPdfARequestStreamP.newBuilder();
         req.setInfo(infoP);
 
