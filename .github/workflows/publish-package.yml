@@ -29,7 +29,7 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -37,14 +37,14 @@ jobs:
       - name: Publish to Maven Central Repository
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish Cloud to Maven Central Repository
         run: mvn deploy -Dmaven.test.skip=true --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-cloud/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}  
       - name: Upload JARs to GitHub Release
         uses: AButler/upload-release-assets@v2.0
@@ -76,7 +76,7 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -84,32 +84,32 @@ jobs:
       - name: Publish linux-x64 to Maven Central Repository
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-linux-x64/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish windows-x64 to Maven Central Repository
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-windows-x64/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}  
-      - name: Publish windows-x86 to Maven Central Repository   
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Publish windows-x86 to Maven Central Repository
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-windows-x86/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish macos-arm64 to Maven Central Repository   
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-macos-arm64/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Publish macos-x64 to Maven Central Repository   
         run: mvn deploy --batch-mode --activate-profiles release --no-transfer-progress --file ironpdf-engine-pack/ironpdf-engine-macos-x64/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
   publish-javadoc-from-java11:
     runs-on: ubuntu-22.04
@@ -128,7 +128,7 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -136,8 +136,8 @@ jobs:
       - name: Build Java doc .jar
         run: mvn compile javadoc:jar -Pjavadoc-java11 --file ironpdf/pom.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME2 }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD2 }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Upload JARs to GitHub Release
         uses: AButler/upload-release-assets@v2.0
