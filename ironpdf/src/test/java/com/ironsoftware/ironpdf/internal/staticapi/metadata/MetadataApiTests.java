@@ -8,6 +8,10 @@ import com.ironsoftware.ironpdf.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 
 public class MetadataApiTests extends TestBase {
@@ -26,22 +30,41 @@ public class MetadataApiTests extends TestBase {
         AssertNullOrEmpty(Metadata_Api.getSubject(doc));
         AssertNullOrEmpty(Metadata_Api.getTitle(doc));
 
+        // 1. Create a OffsetDateTime for July 23, 2025, at 10:30 AM in the +07:00 timezone.
+        OffsetDateTime dateTime = OffsetDateTime.of(
+                LocalDateTime.of(2025, 7, 23, 10, 30, 0),
+                ZoneOffset.ofHours(7)
+        );
+
+        // 2. Use a formatter that produces a standard offset format like +07:00.
+        // The 'xxx' pattern provides the offset as +HH:mm.
+        DateTimeFormatter baseFormatter = DateTimeFormatter.ofPattern("'D:'yyyyMMddHHmmssxxx");
+        String almostCorrectFormat = dateTime.format(baseFormatter);
+        // This produces: "D:20250723103000+07:00"
+
+        // 3. Replace the last colon (:) with an apostrophe (') and append another apostrophe.
+        int lastColonIndex = almostCorrectFormat.lastIndexOf(':');
+        String finalPdfDateFormat = new StringBuilder(almostCorrectFormat)
+                .replace(lastColonIndex, lastColonIndex + 1, "'")
+                .append("'")
+                .toString();
+
         Metadata_Api.setAuthor(doc, "1");
-        Metadata_Api.setCreationDate(doc, "1");
+        Metadata_Api.setCreationDate(doc, finalPdfDateFormat);
         Metadata_Api.setCreator(doc, "1");
         Metadata_Api.setKeywords(doc, "1");
         Metadata_Api.setMetadata(doc, "Custom", "1");
-        Metadata_Api.setModifiedDate(doc, "1");
+        Metadata_Api.setModifiedDate(doc, finalPdfDateFormat);
         Metadata_Api.setProducer(doc, "1");
         Metadata_Api.setSubject(doc, "1");
         Metadata_Api.setTitle(doc, "1");
 
         Assertions.assertEquals("1", Metadata_Api.getAuthor(doc));
-        Assertions.assertEquals("1", Metadata_Api.getCreationDate(doc));
+        Assertions.assertEquals(finalPdfDateFormat, Metadata_Api.getCreationDate(doc));
         Assertions.assertEquals("1", Metadata_Api.getCreator(doc));
         Assertions.assertEquals("1", Metadata_Api.getKeywords(doc));
         Assertions.assertEquals("1", Metadata_Api.getMetadata(doc, "Custom"));
-        Assertions.assertEquals("1", Metadata_Api.getModifiedDate(doc));
+        Assertions.assertEquals(finalPdfDateFormat, Metadata_Api.getModifiedDate(doc));
         Assertions.assertEquals("1", Metadata_Api.getProducer(doc));
         Assertions.assertEquals("1", Metadata_Api.getSubject(doc));
         Assertions.assertEquals("1", Metadata_Api.getAuthor(doc));
