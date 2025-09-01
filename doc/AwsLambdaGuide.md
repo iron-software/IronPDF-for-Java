@@ -50,7 +50,7 @@ Setting.setIronPdfEngineWorkingDirectory(Paths.get("/tmp/"));
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-simple</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.17</version>
 </dependency>
 
 <dependency>

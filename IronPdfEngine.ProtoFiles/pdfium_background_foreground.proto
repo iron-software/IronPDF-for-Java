@@ -15,4 +15,5 @@ message PdfiumAddBackgroundForegroundRequestP {
   PdfiumLayerModesP layer_mode = 3;
   repeated int32 dest_page_indices = 4;
   int32 src_page_index = 5;
+  bool copy_annot = 6;
 }
