@@ -24,12 +24,12 @@ public class BookmarkApiTests extends TestBase {
     public final void InsertBookmarkTest() throws IOException {
         InternalPdfDocument doc = PdfDocument_Api.fromFile(getTestFile("/Data/empty.pdf"));
         Bookmark_Api.insertBookmarkAtStart(doc, 0, "B1");
-//        Bookmark_Api.insertBookmarkAsFirstChild(doc, 0, "B2", "B1");
+        
         Bookmark_Api.insertBookmarkAsFirstChild(doc, 0, "B3", "B1");
-
         Bookmark_Api.insertBookmark(doc, 0, "B4", "B1", "B3");
         Bookmark_Api.insertBookmark(doc, 0, "B2", "B1", "B4");
         Bookmark_Api.insertBookmarkAtStart(doc, 0, "B5");
+
         List<Bookmark> bookmarkCollection = Bookmark_Api.getBookmarks(doc);
 
         Assertions.assertEquals("B5", bookmarkCollection.get(0).getText());

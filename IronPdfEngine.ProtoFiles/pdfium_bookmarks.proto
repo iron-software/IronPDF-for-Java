@@ -16,12 +16,15 @@ message PdfiumBookmarkDescriptorP {
   string text = 1;
   int32 page_index = 2;
   string hierarchy = 3;
+  string item_id = 4;
+  string parent_item_id = 5;
 }
 message PdfiumBookmarkP {
   int32 page_index = 2;
   string text = 3;
   optional string parent_text = 4;
   optional string previous_text = 5;
+  string item_id = 6;
 }
 
 message PdfiumInsertBookmarkRequestP {
@@ -30,6 +33,8 @@ message PdfiumInsertBookmarkRequestP {
   string text = 3;
   optional string parent_text = 4;
   optional string previous_text = 5;
+  string item_id = 6;
+  optional PdfiumBookmarkP parent = 7;
 }
 message PdfiumRemoveBookmarksRequestP {
   PdfDocumentP document = 1;

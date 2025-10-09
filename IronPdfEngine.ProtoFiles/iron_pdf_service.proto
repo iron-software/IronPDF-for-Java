@@ -24,6 +24,7 @@ import "pdfium_text.proto";
 import "pdfium_image.proto";
 import "pdfium_stamp.proto";
 import "pdfium_font.proto";
+import "qpdf.proto";
 import "cleaner.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
@@ -51,6 +52,13 @@ service IronPdfService {
 
   //CHROME_StampHtml
   rpc Chrome_Stamp_ApplyStamp(stream ChromeApplyStampRequestStreamP) returns(EmptyResultP){}
+
+  ////////////////////QPDF////////////////////
+
+  // QPdf_Linearization
+  rpc QPdf_Linearization_IsLinearized(stream QPdfIsLinearizedRequestStreamP) returns (BooleanResultP) {}
+  rpc QPdf_Linearization_SaveAsLinearized(QPdfSaveAsLinearizedRequestP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Linearization_SaveAsLinearizedFromBytes(stream QPdfSaveAsLinearizedFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
 
   ///////////////////PDFIUM///////////////////
 

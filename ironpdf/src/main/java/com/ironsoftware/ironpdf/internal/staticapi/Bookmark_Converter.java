@@ -20,9 +20,13 @@ final class Bookmark_Converter {
     }
 
     static BookmarkDescriptor fromProto(com.ironsoftware.ironpdf.internal.proto.PdfiumBookmarkDescriptorP proto) {
-        return new BookmarkDescriptor(proto.getHierarchy(),
-                proto.getPageIndex(),
-                proto.getText());
+        return new BookmarkDescriptor(
+            proto.getHierarchy(),
+            proto.getPageIndex(),
+            proto.getText(),
+            proto.getItemId(),
+            proto.getParentItemId()
+        );
     }
 
     public static List<Bookmark> convertDescriptorsToBookmarks(List<BookmarkDescriptor> descriptors) {
