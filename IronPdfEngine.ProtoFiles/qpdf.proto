@@ -1,0 +1,35 @@
+syntax = "proto3";
+package ironpdfengineproto;
+import "basic.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+message QPdfIsLinearizedRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+  message InfoP {
+    string password = 1;
+  }
+}
+
+message QPdfSaveAsLinearizedRequestP {
+  PdfDocumentP document = 1;
+  string output_path = 2;
+  string password = 3;
+}
+
+message QPdfSaveAsLinearizedFromBytesRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    string output_path = 1;
+    string password = 2;
+  }
+}
+
