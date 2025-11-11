@@ -300,46 +300,49 @@ public final class PdfDocument_Api {
 
         ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
 
-        int convtVer = 3; // default
-        boolean isAVariant = true; // default
+        int pdfaVersionValue = 0;
         switch (pdfAVersion){
             case PdfA1b:
-                convtVer = 1;
-                isAVariant = false;
+                pdfaVersionValue = 1;
                 break;
             case PdfA2b:
-                convtVer = 2;
-                isAVariant = false;
+                pdfaVersionValue = 2;
                 break;
             case PdfA3b:
-                convtVer = 3;
-                isAVariant = false;
+                pdfaVersionValue = 3;
                 break;
             case PdfA1a:
-                convtVer = 1;
-                isAVariant = true;
+                pdfaVersionValue = 5;
                 break;
             case PdfA2a:
-                convtVer = 2;
-                isAVariant = true;
+                pdfaVersionValue = 6;
                 break;
             case PdfA3a:
-                convtVer = 3;
-                isAVariant = true;
+                pdfaVersionValue = 7;
                 break;
+            case PdfA4:
+                pdfaVersionValue = 8;
+                break;
+            case PdfA4e:
+                pdfaVersionValue = 9;
+                break;
+            case PdfA4f:
+                pdfaVersionValue = 10;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported PDF/A version: " + pdfAVersion);
         }
 
         PdfiumConvertToPdfARequestStreamP.InfoP.Builder infoP = PdfiumConvertToPdfARequestStreamP.InfoP.newBuilder();
         infoP.setDocument(internalPdfDocument.remoteDocument);
-        infoP.setConvtVer(convtVer);
-        infoP.setIsAVariant(isAVariant);
+        infoP.setPdfaVersion(pdfaVersionValue);
+        
         PdfiumConvertToPdfARequestStreamP.Builder req = PdfiumConvertToPdfARequestStreamP.newBuilder();
         req.setInfo(infoP);
 
-
         StreamObserver<PdfiumConvertToPdfARequestStreamP> requestStream = client.GetStub("toPdfA").pdfiumConvertToPdfA(
-                //response handler
-                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
+            //response handler
+            new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
         );
 
         requestStream.onNext(req.build());

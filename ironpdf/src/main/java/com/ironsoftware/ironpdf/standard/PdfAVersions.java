@@ -28,7 +28,19 @@ public enum PdfAVersions
     /**
      A PDF compliant with the ISO 19005-3 (PDF/A-3A)
      */
-    PdfA3a(7);
+    PdfA3a(7),
+    /**
+     A PDF compliant with ISO 19005-4 (PDF/A-4)
+     */
+    PdfA4(8),
+    /**
+     A PDF compliant with ISO 19005-4 (PDF/A-4E — engineering documents)
+     */
+    PdfA4e(9),
+    /**
+     A PDF compliant with ISO 19005-4 (PDF/A-4F — embedded files allowed)
+     */
+    PdfA4f(10);
 
     private final int value;
 

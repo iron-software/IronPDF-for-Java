@@ -60,6 +60,11 @@ service IronPdfService {
   rpc QPdf_Linearization_SaveAsLinearized(QPdfSaveAsLinearizedRequestP) returns (stream BytesResultStreamP) {}
   rpc QPdf_Linearization_SaveAsLinearizedFromBytes(stream QPdfSaveAsLinearizedFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
 
+
+  // QPdf_PdfA_Compliance
+  rpc QPdf_PdfA_CompleteSavingAsPdfA4(QPdfCompleteSavingAsPdfA4RequestP) returns (stream BytesResultStreamP) {}
+  
+
   ///////////////////PDFIUM///////////////////
 
   //PDFIUM_Annotation
@@ -198,10 +203,14 @@ service IronPdfService {
   rpc Pdfium_Signature_AddSignatureImage(stream PdfiumAddSignatureImageRequestStreamP) returns (EmptyResultP);
   rpc Pdfium_Signature_GetSignatureByteRange(PdfiumGetSignatureByteRangeRequestP) returns (IntListResultP);
 
+  //HSM_Signature
+  rpc Get_Data_To_Sign(stream GetDataToSignRequestStreamP) returns (GetDataToSignResultP){}
+
   //PDFIUM_Text
   rpc Pdfium_Text_ExtractAllText(PdfiumExtractAllTextRequestP)returns(StringResultP){}
   rpc Pdfium_Text_ReplaceText(PdfiumReplaceTextRequestP)returns(EmptyResultP){}
   rpc Pdfium_Text_DrawText(PdfiumDrawTextRequestP)returns(EmptyResultP){}
+  rpc Pdfium_Text_DrawTexts(stream PdfiumDrawTextsRequestStreamP)returns(EmptyResultP){}
   rpc Pdfium_Text_RedactText(PdfiumRedactTextRequestP)returns(EmptyResultP){}
   rpc Pdfium_Text_RedactRegions(PdfiumRedactRegionsRequestP)returns(EmptyResultP){}
 

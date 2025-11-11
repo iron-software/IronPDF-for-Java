@@ -50,3 +50,27 @@ message PdfiumRedactRegionsRequestP {
 	repeated Rectangle regions = 3;
 	bool is_draw_boxes = 4;
 }
+
+// DrawTexts batch operation proto definitions
+message PdfiumDrawTextObjectP {
+  string text = 1;
+  double x = 2;
+  double y = 3;
+  PdfiumFontInfoP font = 4;
+  double font_size = 5;
+  double scale = 6;
+  double rotation = 7;
+  string color = 8;
+}
+
+message PdfiumDrawTextsRequestStreamP {
+  message InfoP {
+    PdfDocumentP document = 1;
+    int32 page_index = 2;
+    int32 text_count = 3;
+  }
+  oneof request_data {
+    InfoP info = 1;
+    PdfiumDrawTextObjectP text_object = 2;
+  }
+}
