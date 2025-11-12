@@ -33,3 +33,9 @@ message QPdfSaveAsLinearizedFromBytesRequestStreamP {
   }
 }
 
+message QPdfCompleteSavingAsPdfA4RequestP {
+  PdfDocumentP document = 1;
+  string output_path = 2;
+  string password = 3;
+}
+

@@ -30,11 +30,50 @@ message PdfiumSignRequestStreamP {
     optional string contact_information = 15;
   }
 }
+
+message GetDataToSignRequestStreamP {
+    PdfDocumentP document = 1;
+    optional int32 page_index = 2;
+    PdfiumSignaturePermissionsP signature_permission = 3;
+    string internal_name = 4;
+    string signing_name = 5;
+    string signing_contact = 6;
+    string signing_location = 7;
+    string filter = 8;
+    string sub_filter = 9;
+    int32 sign_placeholder_len = 10;
+    bytes img_bytes = 11;
+    bytes img_alpha = 12;
+    int32 img_x = 13;
+    int32 img_y = 14;
+    int32 img_wight = 15;
+    int32 img_height = 16;
+    int32 img_d_width = 17;
+    int32 img_d_height = 18;
+    int32 bytes_per_pixel = 19;
+    int32 is_jpeg = 20;
+}
+
 message PdfiumSignResultP {
   oneof result_or_exception{
     int32 result = 1;
     RemoteExceptionP exception = 2;
   }
+}
+
+message GetDataToSignResultP {
+  oneof result_or_exception{
+    DataToSignResultP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message DataToSignResultP {
+   bytes data_to_sign = 1;
+   bytes pdf_bytes = 2;
+   int32 sign_start_in_bytes = 3;
+   int32 sign_end_in_bytes = 4;
+   int32 signature_index = 5;
 }
 
 message PdfiumRemoveSignaturesRequestP {
