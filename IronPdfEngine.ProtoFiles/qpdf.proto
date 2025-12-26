@@ -39,3 +39,56 @@ message QPdfCompleteSavingAsPdfA4RequestP {
   string password = 3;
 }
 
+message QPdfCompressAndSaveAsRequestP {
+  PdfDocumentP document = 1;
+  string output_path = 2;
+  string password = 3;
+  optional int32 jpeg = 4;
+}
+
+message QPdfCompressAndSaveAsFromBytesRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    string output_path = 1;
+    string password = 2;
+    optional int32 jpeg_quality = 3;
+  }
+}
+message QPdfCompleteSavingAsPdfUA2RequestP {
+  PdfDocumentP document = 1;
+  string output_path = 2;
+  string password = 3;
+}
+
+message QPdfToJsonRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    string password = 1;
+    bool pretty_print = 2;
+    bool mask_metadata = 3;
+    int32 stream_data_mode = 4; // 0=None, 1=Hash, 2=Full
+  }
+}
+
+message QPdfSaveAsJsonRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    string output_path = 1;
+    string password = 2;
+    bool pretty_print = 3;
+    bool mask_metadata = 4;
+    int32 stream_data_mode = 5; // 0=None, 1=Hash, 2=Full
+  }
+}

@@ -41,7 +41,7 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <grpc.version>1.74.0</grpc.version>
+        <grpc.version>1.77.0</grpc.version>
         <protobuf.version>3.25.8</protobuf.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

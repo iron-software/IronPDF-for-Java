@@ -54,6 +54,8 @@ message PdfiumGetPagesResultP {
 message PdfiumCopyPagesRequestP {
   PdfDocumentP document = 1;
   repeated int32 page_indexes = 2;
+  optional string password = 3;
+  optional bool copy_bookmarks = 4;
 }
 
 message PdfiumTransformPageRequestP {

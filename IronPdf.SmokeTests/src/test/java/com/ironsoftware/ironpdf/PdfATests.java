@@ -1,5 +1,6 @@
 package com.ironsoftware.ironpdf;
 
+import com.ironsoftware.ironpdf.standard.PdfUAVersions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,28 @@ public class PdfATests extends TestBase {
         int originalBytesSize = doc.getBinaryData().length;
 
         int pdfUAByteSize = doc.convertToPdfUA(NaturalLanguages.English).getBinaryData().length;
+
+        Assertions.assertTrue(originalBytesSize != pdfUAByteSize);
+    }
+
+    @Test
+    public final void PdfUA1WithVersionTest() throws IOException {
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google.pdf"));
+
+        int originalBytesSize = doc.getBinaryData().length;
+
+        int pdfUAByteSize = doc.convertToPdfUA(NaturalLanguages.English, PdfUAVersions.PdfUA1).getBinaryData().length;
+
+        Assertions.assertTrue(originalBytesSize != pdfUAByteSize);
+    }
+
+    @Test
+    public final void PdfUA2WithVersionTest() throws IOException {
+        PdfDocument doc = PdfDocument.fromFile(getTestPath("/Data/google.pdf"));
+
+        int originalBytesSize = doc.getBinaryData().length;
+
+        int pdfUAByteSize = doc.convertToPdfUA(NaturalLanguages.English, PdfUAVersions.PdfUA2).getBinaryData().length;
 
         Assertions.assertTrue(originalBytesSize != pdfUAByteSize);
     }

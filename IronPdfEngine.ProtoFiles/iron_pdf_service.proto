@@ -49,6 +49,7 @@ service IronPdfService {
   rpc Chrome_Render_ClearCookies(ChromeClearCookiesRequestP) returns (EmptyResultP){}
   rpc Chrome_Render_ApplyCookies(ChromeApplyCookiesRequestP) returns (EmptyResultP){}
   rpc Chrome_Render_RtfToPdf(stream ChromeRenderPdfDocumentFromRtfStringRequestStreamP) returns (PdfDocumentResultP){}
+  rpc Chrome_Render_FromHtmlFile(stream ChromeRenderPdfDocumentFromHtmlFileRequestStreamP) returns (PdfDocumentResultP){}
 
   //CHROME_StampHtml
   rpc Chrome_Stamp_ApplyStamp(stream ChromeApplyStampRequestStreamP) returns(EmptyResultP){}
@@ -64,8 +65,18 @@ service IronPdfService {
   // QPdf_PdfA_Compliance
   rpc QPdf_PdfA_CompleteSavingAsPdfA4(QPdfCompleteSavingAsPdfA4RequestP) returns (stream BytesResultStreamP) {}
   
+  // QPdf_PdfUA_Compliance
+  rpc QPdf_PdfUA_CompleteSavingAsPdfUA2(QPdfCompleteSavingAsPdfUA2RequestP) returns (stream BytesResultStreamP) {}
+  
+  // QPdf_Compression
+  rpc QPdf_Compression_CompressAndSaveAs(QPdfCompressAndSaveAsRequestP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Compression_CompressAndSaveAsFromBytes(stream QPdfCompressAndSaveAsFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
 
-  ///////////////////PDFIUM///////////////////
+  // QPdf_json
+  rpc QPdf_Json_ToJson(stream QPdfToJsonRequestStreamP) returns (StringResultP) {}
+  rpc QPdf_Json_SaveAsJson(stream QPdfSaveAsJsonRequestStreamP) returns (stream BytesResultStreamP) {}
+
+  ///////////////////PDFIUM//////////////////
 
   //PDFIUM_Annotation
   rpc Pdfium_Annotation_AddTextAnnotation(PdfiumAddTextAnnotationRequestP) returns (IntResultP){}

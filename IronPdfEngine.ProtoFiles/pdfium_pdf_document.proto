@@ -231,6 +231,7 @@ message PdfiumEmbedFileToPdfARequestStreamP {
 message PdfiumConvertToPdfUARequestP {
   PdfDocumentP document = 1;
   int32 lang = 2;
+  int32 pdf_ua_version = 3;
 }
 
 message PdfiumConvertToPdfUAForScreenReaderRequestP {

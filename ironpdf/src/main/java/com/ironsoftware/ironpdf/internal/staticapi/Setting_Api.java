@@ -19,7 +19,7 @@ public final class Setting_Api {
 
     public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withSubprocess();
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2025.11.12";
+    public static final String IRON_PDF_ENGINE_VERSION = "2025.12.2";
 
     public static int ironPdfEngineTimeout = 120;
 

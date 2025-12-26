@@ -7,6 +7,7 @@ import com.ironsoftware.ironpdf.edit.ChangeTrackingModes;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.signature.Signature;
 import com.ironsoftware.ironpdf.standard.PdfAVersions;
+import com.ironsoftware.ironpdf.standard.PdfUAVersions;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,11 +367,16 @@ public final class PdfDocument_Api {
     }
 
     public static InternalPdfDocument toPdfUA(InternalPdfDocument internalPdfDocument, int naturalLanguages) {
+        return toPdfUA(internalPdfDocument, naturalLanguages, PdfUAVersions.PdfUA1);
+    }
+
+    public static InternalPdfDocument toPdfUA(InternalPdfDocument internalPdfDocument, int naturalLanguages, PdfUAVersions pdfUaVersion) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumConvertToPdfUARequestP.Builder req = PdfiumConvertToPdfUARequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
         req.setLang(naturalLanguages);
+        req.setPdfUaVersion(pdfUaVersion.getValue());
 
         EmptyResultP res = client.GetBlockingStub("toPdfUA").pdfiumConvertToPdfUA(req.build());
 

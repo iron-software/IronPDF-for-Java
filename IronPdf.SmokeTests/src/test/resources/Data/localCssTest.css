@@ -1,0 +1,19 @@
+body {
+    background-color: #FF0000;
+    margin: 0;
+    padding: 20px;
+}
+
+.styled-box {
+    background-color: #FF0000;
+    padding: 20px;
+    color: white;
+}
+
+h1 {
+    color: white;
+}
+
+p {
+    color: white;
+}

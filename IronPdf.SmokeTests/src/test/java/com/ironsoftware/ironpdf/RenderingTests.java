@@ -72,4 +72,27 @@ public class RenderingTests extends TestBase {
         Assertions.assertEquals(420, info.get(0).getWidth(), 1);
     }
 
+    @Test
+    public final void RenderHtmlFileWithLocalCssTest() throws IOException {
+        // This test verifies that local CSS files are loaded when rendering HTML files
+        // The HTML file references a local CSS file that sets a red background
+        PdfDocument doc = PdfDocument.renderHtmlFileAsPdf(getTestFile("/Data/localCssTest.html"));
+        Assertions.assertEquals(1, doc.getPagesInfo().size());
+
+        // Convert PDF to image and check the average color
+        // If CSS is loaded correctly, the background should be red
+        List<java.awt.image.BufferedImage> images = doc.toBufferedImages();
+        Assertions.assertFalse(images.isEmpty());
+
+        byte[] imageBytes = toByteArray(images.get(0));
+        java.awt.Color avgColor = GetAvgColor(imageBytes);
+
+        // The red component should be significantly higher than others if CSS was applied
+        // Red background (#FF0000) should give high red value
+        Assertions.assertTrue(avgColor.getRed() > 150,
+                "Red component should be high if CSS is applied. Actual red: " + avgColor.getRed());
+        Assertions.assertTrue(avgColor.getRed() > avgColor.getBlue(),
+                "Red should be greater than blue if CSS is applied");
+    }
+
 }
