@@ -7,8 +7,10 @@ import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +35,24 @@ public final class Render_Api {
      */
     public static InternalPdfDocument renderHtmlFileAsPdf(String htmlFilePath) throws IOException {
         return renderHtmlFileAsPdf(htmlFilePath, null, null);
+    }
+
+    public static boolean isIronPdfProcessRunning() {
+        try {
+            boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+            String[] cmd = isWindows ? new String[]{"cmd", "/c", "tasklist"} : new String[]{"bash", "-c", "ps aux"};
+            Process process = Runtime.getRuntime().exec(cmd);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().contains("IronPdfEngineConsole")) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -66,7 +86,50 @@ public final class Render_Api {
                     htmlFilePath));
         }
 
-        return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
+        RpcClient client = Access.ensureConnection();
+
+        if(!isIronPdfProcessRunning()) {
+            return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
+        }
+
+        try {
+            final CountDownLatch finishLatch = new CountDownLatch(1);
+
+            ArrayList<PdfDocumentResultP> resultChunks = new ArrayList<>();
+
+            io.grpc.stub.StreamObserver<ChromeRenderPdfDocumentFromHtmlFileRequestStreamP> requestStream =
+                    client.GetStub("renderHtmlFileAsPdf").chromeRenderFromHtmlFile(
+                            new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+            ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.InfoP.Builder info = ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.InfoP.newBuilder();
+
+            com.ironsoftware.ironpdf.internal.proto.ChromePdfRenderOptionsP renderOp = Render_Converter.toProto(renderOptions);
+            if (renderOp != null) {
+                info.setRenderOptions(renderOp);
+            }
+
+            com.ironsoftware.ironpdf.internal.proto.ChromeHttpLoginCredentialsP login = Render_Converter.toProto(loginCredentials);
+            if (login != null) {
+                info.setHttpOptions(login);
+            }
+
+            ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.Builder infoMsg = ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.newBuilder();
+            infoMsg.setInfo(info);
+            requestStream.onNext(infoMsg.build());
+
+            ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.Builder dataMsg = ChromeRenderPdfDocumentFromHtmlFileRequestStreamP.newBuilder();
+            dataMsg.setHtmlPath(htmlFilePath);
+            requestStream.onNext(dataMsg.build());
+
+            requestStream.onCompleted();
+
+            Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+            return Utils_Util.handlePdfDocumentChunks(resultChunks);
+        } catch(Exception ex) {
+            logger.info(ex.getMessage());
+            return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
+        }
     }
 
     /**

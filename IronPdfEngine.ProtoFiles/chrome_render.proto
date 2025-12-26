@@ -28,7 +28,16 @@ message ChromeRenderMeasureHtmlRequestStreamP {
     optional ChromeHttpLoginCredentialsP http_options = 2;
   }
 }
-
+message ChromeRenderPdfDocumentFromHtmlFileRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    string html_path = 2;
+  }
+  message InfoP {
+    optional ChromePdfRenderOptionsP render_options = 1;
+    optional ChromeHttpLoginCredentialsP http_options = 2;
+  }
+}
 message ChromeRenderPdfDocumentFromHtmlRequestStreamP {
   oneof request {
     InfoP info = 1;

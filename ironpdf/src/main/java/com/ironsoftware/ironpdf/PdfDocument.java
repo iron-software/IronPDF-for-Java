@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import com.ironsoftware.ironpdf.standard.PdfAVersions;
+import com.ironsoftware.ironpdf.standard.PdfUAVersions;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1892,13 +1893,35 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
-     * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     * Creates a PDF file from a local HTML file and returns it as a {@link PdfDocument}.
      *
-     * @param htmlFilePath  Path to a Html to be rendered as a PDF.
-     * @param renderOptions Rendering options
-     * @return A {@link PdfDocument}
-     * @throws IOException the io exception
+     * <p>------------------------------------------------</p>
+     *
+     * <p><b>Usage:</b></p>
+     * <pre>
+     * PdfDocument pdf = renderHtmlAsPdf(htmlFilePath, renderOptions);
+     * </pre>
+     *
+     * <p>------------------------------------------------</p>
+     *
+     * @param htmlFilePath   The path to the local HTML file to be rendered as a PDF.
+     * @param renderOptions  Rendering options used for PDF generation.
+     * @return               A {@link PdfDocument} generated from the provided HTML file.
+     * @throws IOException   If an I/O error occurs while accessing the file or generating the PDF.
+     *
+     * <p><b>Important Notes:</b></p>
+     *
+     * <p>🐳 <b>Docker Limitation:</b>
+     * This method does <b>not</b> work when the application is running inside a Docker environment
+     * due to rendering engine limitations.
+     * In such cases, use <code>renderZipAsPdf()</code> instead.</p>
+     *
+     * <p>📄 <b>Input:</b> Requires access to a local HTML file on disk.</p>
+     *
+     * <p><b>Related Methods:</b></p>
+     * <p>📌 <code>renderZipAsPdf()</code> — Recommended alternative when running inside Docker.</p>
      */
+
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
                                                   ChromePdfRenderOptions renderOptions
     ) throws IOException {
@@ -2197,13 +2220,24 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
-     * Convert the current document into the specified PDF/UA standard format
+     * Convert the current document into the specified PDF/UA standard format (defaults to PDF/UA-1)
      * @param naturalLanguages Natural Languages Specification
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
      */
     public PdfDocument convertToPdfUA(NaturalLanguages naturalLanguages) throws IOException {
-        PdfDocument_Api.toPdfUA(internalPdfDocument, naturalLanguages.getValue());
+        return convertToPdfUA(naturalLanguages, PdfUAVersions.PdfUA1);
+    }
+
+    /**
+     * Convert the current document into the specified PDF/UA standard format
+     * @param naturalLanguages Natural Languages Specification
+     * @param pdfUaVersion PDF/UA standard version
+     * @return A {@link PdfDocument}
+     * @throws IOException the io exception
+     */
+    public PdfDocument convertToPdfUA(NaturalLanguages naturalLanguages, PdfUAVersions pdfUaVersion) throws IOException {
+        PdfDocument_Api.toPdfUA(internalPdfDocument, naturalLanguages.getValue(), pdfUaVersion);
         return this;
     }
 
