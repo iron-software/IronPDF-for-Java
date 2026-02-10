@@ -131,7 +131,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>update-build-timestamp</id>
@@ -241,6 +241,7 @@ class BuildInfo {
                 </executions>
                 <configuration>
                     <show>public</show>
+                    <excludePackageNames>com.ironsoftware.ironpdf.internal.*,grpc.*</excludePackageNames>
                     <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
                 </configuration>
             </plugin>
