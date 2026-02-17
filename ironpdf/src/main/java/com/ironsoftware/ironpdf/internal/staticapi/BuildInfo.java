@@ -1,4 +1,4 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 class BuildInfo {
-    static final String BUILD_TIMESTAMP = "12/23/2025";
+    static final String BUILD_TIMESTAMP = "02/17/2026";
 }
