@@ -46,6 +46,11 @@ message QPdfCompressAndSaveAsRequestP {
   optional int32 jpeg = 4;
 }
 
+message QPdfCompressInMemoryRequestIdP {
+  PdfDocumentP document = 1;
+  string password = 2;
+}
+
 message QPdfCompressAndSaveAsFromBytesRequestStreamP {
   oneof request {
     InfoP info = 1;
@@ -58,6 +63,18 @@ message QPdfCompressAndSaveAsFromBytesRequestStreamP {
     optional int32 jpeg_quality = 3;
   }
 }
+
+message QPdfCompressInMemoryRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes pdf_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    string password = 1;
+  }
+}
+
 message QPdfCompleteSavingAsPdfUA2RequestP {
   PdfDocumentP document = 1;
   string output_path = 2;

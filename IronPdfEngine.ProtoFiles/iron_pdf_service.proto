@@ -71,6 +71,8 @@ service IronPdfService {
   // QPdf_Compression
   rpc QPdf_Compression_CompressAndSaveAs(QPdfCompressAndSaveAsRequestP) returns (stream BytesResultStreamP) {}
   rpc QPdf_Compression_CompressAndSaveAsFromBytes(stream QPdfCompressAndSaveAsFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Compression_CompressInMemoryFromId(QPdfCompressInMemoryRequestIdP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Compression_CompressInMemory(stream QPdfCompressInMemoryRequestStreamP) returns (stream BytesResultStreamP) {}
 
   // QPdf_json
   rpc QPdf_Json_ToJson(stream QPdfToJsonRequestStreamP) returns (StringResultP) {}

@@ -1479,6 +1479,48 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
+     * Compresses the PDF using QPdf smart compression and returns the compressed bytes in memory.
+     * Unlike {@link #compressImages(int)}, this uses QPdf's full compression pipeline without saving to disk.
+     *
+     * @return the compressed PDF as a byte array
+     */
+    public final byte[] compressPdfToBytes() {
+        return Compress_Api.compressInMemory(internalPdfDocument);
+    }
+
+    /**
+     * Compresses the PDF using QPdf smart compression and returns the compressed bytes in memory.
+     * Unlike {@link #compressImages(int)}, this uses QPdf's full compression pipeline without saving to disk.
+     *
+     * @param password the PDF password (empty string if none)
+     * @return the compressed PDF as a byte array
+     */
+    public final byte[] compressPdfToBytes(String password) {
+        return Compress_Api.compressInMemory(internalPdfDocument, password);
+    }
+
+    /**
+     * Compresses the PDF using QPdf smart compression and returns the result as an InputStream.
+     * This is the stream equivalent of {@link #compressPdfToBytes()}.
+     *
+     * @return the compressed PDF as an InputStream
+     */
+    public final InputStream compressPdfToStream() {
+        return new ByteArrayInputStream(compressPdfToBytes());
+    }
+
+    /**
+     * Compresses the PDF using QPdf smart compression and returns the result as an InputStream.
+     * This is the stream equivalent of {@link #compressPdfToBytes(String)}.
+     *
+     * @param password the PDF password (empty string if none)
+     * @return the compressed PDF as an InputStream
+     */
+    public final InputStream compressPdfToStream(String password) {
+        return new ByteArrayInputStream(compressPdfToBytes(password));
+    }
+
+    /**
      * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
      * @return The extracted images as {@link BufferedImage} objects.
