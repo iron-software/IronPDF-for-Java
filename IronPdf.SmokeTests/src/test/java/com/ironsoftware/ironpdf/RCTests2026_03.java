@@ -13,6 +13,7 @@ import com.ironsoftware.ironpdf.standard.PdfAVersions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -96,8 +97,14 @@ public class RCTests2026_03 extends TestBase {
         byte[] originalBytes = pdf.getBinaryData();
 
         InputStream compressedStream = pdf.compressPdfToStream();
-        byte[] streamBytes = compressedStream.readAllBytes();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] tmp = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = compressedStream.read(tmp)) != -1) {
+            buffer.write(tmp, 0, bytesRead);
+        }
         compressedStream.close();
+        byte[] streamBytes = buffer.toByteArray();
 
         Assertions.assertTrue(streamBytes.length > 0, "Compressed stream should have content");
         Assertions.assertTrue(streamBytes.length <= originalBytes.length,
