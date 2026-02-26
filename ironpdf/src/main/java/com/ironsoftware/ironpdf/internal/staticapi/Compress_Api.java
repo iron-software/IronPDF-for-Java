@@ -1,8 +1,14 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import com.ironsoftware.ironpdf.internal.proto.BytesResultStreamP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumCompressImagesRequestP;
 import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumRemoveStructTreeRequestP;
+import com.ironsoftware.ironpdf.internal.proto.QPdfCompressInMemoryRequestIdP;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The type Compress api.
@@ -28,6 +34,42 @@ public final class Compress_Api {
         EmptyResultP res = client.GetBlockingStub("compressImages").pdfiumCompressCompressImages(req.build());
 
         Utils_Util.handleEmptyResult(res);
+    }
+
+    /**
+     * Compress the PDF in memory using QPdf smart compression and return the compressed bytes.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @return the compressed pdf byte array
+     */
+    public static byte[] compressInMemory(InternalPdfDocument internalPdfDocument) {
+        return compressInMemory(internalPdfDocument, "");
+    }
+
+    /**
+     * Compress the PDF in memory using QPdf smart compression and return the compressed bytes.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param password            the pdf password (empty string if none)
+     * @return the compressed pdf byte array
+     */
+    public static byte[] compressInMemory(InternalPdfDocument internalPdfDocument, String password) {
+        RpcClient client = Access.ensureConnection();
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        List<BytesResultStreamP> resultChunks = new ArrayList<>();
+
+        QPdfCompressInMemoryRequestIdP.Builder req = QPdfCompressInMemoryRequestIdP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setPassword(password);
+
+        client.GetStub("compressInMemory").qPdfCompressionCompressInMemoryFromId(req.build(),
+                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
+        );
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        return Utils_Util.handleByteChunks(resultChunks);
     }
 
     public static void compressStructTree(InternalPdfDocument internalPdfDocument) {
