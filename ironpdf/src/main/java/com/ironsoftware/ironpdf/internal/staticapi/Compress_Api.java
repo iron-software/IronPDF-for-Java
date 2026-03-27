@@ -4,8 +4,12 @@ import com.ironsoftware.ironpdf.internal.proto.BytesResultStreamP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumCompressImagesRequestP;
 import com.ironsoftware.ironpdf.internal.proto.EmptyResultP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumRemoveStructTreeRequestP;
+import com.ironsoftware.ironpdf.internal.proto.QPdfCompressAndSaveAsRequestP;
 import com.ironsoftware.ironpdf.internal.proto.QPdfCompressInMemoryRequestIdP;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -70,6 +74,65 @@ public final class Compress_Api {
         Utils_Util.waitAndCheck(finishLatch, resultChunks);
 
         return Utils_Util.handleByteChunks(resultChunks);
+    }
+
+    /**
+     * Compress the PDF using QPdf smart compression and save to a file path.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param outputFilePath      the output file path
+     */
+    public static void compressAndSaveAs(InternalPdfDocument internalPdfDocument, String outputFilePath) {
+        compressAndSaveAs(internalPdfDocument, outputFilePath, "", -1);
+    }
+
+    /**
+     * Compress the PDF using QPdf smart compression and save to a file path.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param outputFilePath      the output file path
+     * @param jpegQuality         JPEG quality (1-100) for image recompression, or -1 to skip image recompression
+     */
+    public static void compressAndSaveAs(InternalPdfDocument internalPdfDocument, String outputFilePath, int jpegQuality) {
+        compressAndSaveAs(internalPdfDocument, outputFilePath, "", jpegQuality);
+    }
+
+    /**
+     * Compress the PDF using QPdf smart compression and save to a file path.
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param outputFilePath      the output file path
+     * @param password            the pdf password (empty string if none)
+     * @param jpegQuality         JPEG quality (1-100) for image recompression, or -1 to skip image recompression
+     */
+    public static void compressAndSaveAs(InternalPdfDocument internalPdfDocument, String outputFilePath, String password, int jpegQuality) {
+        RpcClient client = Access.ensureConnection();
+
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        List<BytesResultStreamP> resultChunks = new ArrayList<>();
+
+        QPdfCompressAndSaveAsRequestP.Builder req = QPdfCompressAndSaveAsRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setOutputPath(outputFilePath);
+        req.setPassword(password);
+        if (jpegQuality >= 1 && jpegQuality <= 100) {
+            req.setJpeg(jpegQuality);
+        }
+
+        client.GetStub("compressAndSaveAs").qPdfCompressionCompressAndSaveAs(req.build(),
+                new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks)
+        );
+
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        byte[] compressedBytes = Utils_Util.handleByteChunks(resultChunks);
+
+        // Write the compressed bytes to the output file
+        try {
+            Files.write(Paths.get(outputFilePath), compressedBytes);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write compressed PDF to " + outputFilePath, e);
+        }
     }
 
     public static void compressStructTree(InternalPdfDocument internalPdfDocument) {

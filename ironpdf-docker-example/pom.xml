@@ -24,12 +24,12 @@
         <dependency>
             <groupId>com.ironsoftware</groupId>
             <artifactId>ironpdf</artifactId>
-            <version>2022.11.1</version>
+            <version>2026.4.1</version>
         </dependency>
         <dependency>
             <groupId>com.ironsoftware</groupId>
             <artifactId>ironpdf-engine-linux-x64</artifactId>
-            <version>2022.11.1</version>
+            <version>2026.4.1</version>
         </dependency>
     </dependencies>
 
@@ -39,7 +39,7 @@
                 <!-- Build an executable JAR -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -54,7 +54,7 @@
                 <!-- Build fat Jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

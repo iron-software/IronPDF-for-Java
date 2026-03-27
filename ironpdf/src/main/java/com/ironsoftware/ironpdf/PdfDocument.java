@@ -1448,7 +1448,9 @@ public class PdfDocument implements Printable, AutoCloseable {
      * Reduces the PDF's file size by compressing existing images using JPEG encoding and the specified quality setting.
      *
      * @param quality Quality (1 - 100) to use during compression
+     * @deprecated Use {@link #compressAndSaveAs(String)} or {@link #compressPdfToBytes()} for QPdf smart compression.
      */
+    @Deprecated
     public final void compressImages(int quality) {
         compressImages(quality, false);
     }
@@ -1458,7 +1460,9 @@ public class PdfDocument implements Printable, AutoCloseable {
      *
      * @param quality            Quality (1 - 100) to use during compression
      * @param scaleToVisibleSize Scale down the image resolution according to its visible size in the                           PDF document; may cause distortion with some image configurations.                           Default is false.
+     * @deprecated Use {@link #compressAndSaveAs(String)} or {@link #compressPdfToBytes()} for QPdf smart compression.
      */
+    @Deprecated
     public final void compressImages(int quality, boolean scaleToVisibleSize) {
         if (quality < 1 || quality > 100) {
             throw new IndexOutOfBoundsException(String.format(
@@ -1518,6 +1522,26 @@ public class PdfDocument implements Printable, AutoCloseable {
      */
     public final InputStream compressPdfToStream(String password) {
         return new ByteArrayInputStream(compressPdfToBytes(password));
+    }
+
+    /**
+     * Compresses the PDF using QPdf smart compression and saves the result to a file.
+     *
+     * @param outputFilePath the file path to save the compressed PDF
+     */
+    public final void compressAndSaveAs(String outputFilePath) {
+        Compress_Api.compressAndSaveAs(internalPdfDocument, outputFilePath);
+    }
+
+    /**
+     * Compresses the PDF using QPdf smart compression and saves the result to a file,
+     * with JPEG quality setting for image recompression.
+     *
+     * @param outputFilePath the file path to save the compressed PDF
+     * @param jpegQuality    JPEG quality (1-100) for image recompression
+     */
+    public final void compressAndSaveAs(String outputFilePath, int jpegQuality) {
+        Compress_Api.compressAndSaveAs(internalPdfDocument, outputFilePath, jpegQuality);
     }
 
     /**
