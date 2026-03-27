@@ -120,7 +120,7 @@ public class IronPdfEngineConnection {
      */
     public IronPdfEngineConnection withSubprocess(int port) {
         this.host = DEFAULT_HOST;
-        this.port = DEFAULT_PORT;
+        this.port = port;
         this.target = null;
         this.mode = ConnectionMode.SUBPROCESS;
         this.channel = null;
