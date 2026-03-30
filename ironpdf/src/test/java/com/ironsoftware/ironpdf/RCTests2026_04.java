@@ -84,10 +84,8 @@ public class RCTests2026_04 extends TestBase {
 
     /**
      * Test 02: PDF/UA structure tree tagging for forms with mixed input types (PDF-1986)
-     * Release note: Improved PDF/UA structure tree tagging for forms with mixed input
-     * types, hidden elements, deeply nested labels, and annotation ordering.
-     * Tests that converting HTML with form elements to PDF/UA does not crash and
-     * produces a valid output.
+     * Uses renderHtmlAsPdfUA which passes HTML to the engine for proper structure
+     * tree generation.
      */
     @Test
     public final void Test02_PdfUAFormMixedInputTypes() throws IOException {
@@ -124,18 +122,15 @@ public class RCTests2026_04 extends TestBase {
                 + "</form>"
                 + "</body></html>";
 
-        PdfDocument pdf = PdfDocument.renderHtmlAsPdf(html);
+        PdfDocument pdf = PdfDocument.renderHtmlAsPdfUA(html, NaturalLanguages.English);
 
         Path outputFile = Paths.get("TestOutput/Test02_PdfUA_MixedForms.pdf");
         Files.createDirectories(outputFile.getParent());
-
-        // This should NOT crash — the fix ensures correct widget-to-structure element association
-        pdf.saveAsPdfUA(outputFile.toString(), NaturalLanguages.English);
+        pdf.saveAs(outputFile);
 
         Assertions.assertTrue(Files.exists(outputFile), "PDF/UA with mixed forms should be created");
         Assertions.assertTrue(Files.size(outputFile) > 0, "PDF/UA with mixed forms should not be empty");
         System.out.println("Test02 (PDF-1986): PDF/UA mixed forms output " + Files.size(outputFile) + " bytes");
-        // Visual check: Verify tag tree in Adobe Acrobat or PAC — widgets should map to correct structure elements
     }
 
     // ==================== Bug Fix Tests ====================
@@ -217,12 +212,10 @@ public class RCTests2026_04 extends TestBase {
 
     /**
      * Test 05: PDF/UA conversion preserves CSS overflow:hidden clipping (PDF-2178)
-     * Release note: Fixed an issue where PDF/UA conversion removed CSS overflow:hidden
-     * clipping, ensuring clipped images render identically to standard PDF output.
+     * Uses renderHtmlAsPdfUA for proper structure tree generation.
      */
     @Test
     public final void Test05_PdfUAOverflowHiddenClipping() throws IOException {
-        // HTML with overflow:hidden that clips an oversized image
         String html = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>"
                 + "<style>"
                 + "body{font-family:Arial,sans-serif;margin:40px;}"
@@ -242,16 +235,16 @@ public class RCTests2026_04 extends TestBase {
                 + "</div>"
                 + "</body></html>";
 
-        // Render standard PDF
+        // Render standard PDF for comparison
         PdfDocument standardPdf = PdfDocument.renderHtmlAsPdf(html);
         Path standardFile = Paths.get("TestOutput/Test05_Standard.pdf");
         Files.createDirectories(standardFile.getParent());
         standardPdf.saveAs(standardFile);
 
-        // Render as PDF/UA
-        PdfDocument uaPdf = PdfDocument.renderHtmlAsPdf(html);
+        // Render as PDF/UA using the HTML-aware endpoint
+        PdfDocument uaPdf = PdfDocument.renderHtmlAsPdfUA(html, NaturalLanguages.English);
         Path uaFile = Paths.get("TestOutput/Test05_PdfUA_Clipping.pdf");
-        uaPdf.saveAsPdfUA(uaFile.toString(), NaturalLanguages.English);
+        uaPdf.saveAs(uaFile);
 
         Assertions.assertTrue(Files.exists(standardFile), "Standard PDF should exist");
         Assertions.assertTrue(Files.exists(uaFile), "PDF/UA file should exist");
@@ -259,7 +252,6 @@ public class RCTests2026_04 extends TestBase {
 
         System.out.println("Test05 (PDF-2178): Standard=" + Files.size(standardFile)
                 + " bytes, PDF/UA=" + Files.size(uaFile) + " bytes");
-        // Visual check: Clipped images in PDF/UA should look identical to standard PDF
     }
 
     /**

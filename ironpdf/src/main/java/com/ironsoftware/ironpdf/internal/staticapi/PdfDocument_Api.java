@@ -384,4 +384,19 @@ public final class PdfDocument_Api {
 
         return internalPdfDocument;
     }
+
+    public static InternalPdfDocument toPdfUAForScreenReader(InternalPdfDocument internalPdfDocument, String htmlDom, int naturalLanguages) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumConvertToPdfUAForScreenReaderRequestP.Builder req = PdfiumConvertToPdfUAForScreenReaderRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setHtmlDom(htmlDom);
+        req.setLang(naturalLanguages);
+
+        EmptyResultP res = client.GetBlockingStub("toPdfUAForScreenReader").pdfiumConvertToPdfUAForScreenReader(req.build());
+
+        Utils_Util.handleEmptyResult(res);
+
+        return internalPdfDocument;
+    }
 }
