@@ -2307,50 +2307,27 @@ public class PdfDocument implements Printable, AutoCloseable {
         return this;
     }
 
-    /**
-     * Renders HTML as a PDF and converts it to PDF/UA format with a proper
-     * accessibility structure tree built from the HTML source.
-     * This produces significantly better PDF/UA output than calling
-     * {@link #renderHtmlAsPdf(String)} followed by {@link #convertToPdfUA(NaturalLanguages)},
-     * because the engine uses the HTML structure to create semantic tags for
-     * headings, forms, tables, lists, and other elements.
-     *
-     * @param html The HTML string to render
-     * @return A PDF/UA compliant {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdfUA(String html) {
-        return renderHtmlAsPdfUA(html, NaturalLanguages.English);
-    }
-
-    /**
-     * Renders HTML as a PDF and converts it to PDF/UA format with a proper
-     * accessibility structure tree built from the HTML source.
-     *
-     * @param html             The HTML string to render
-     * @param naturalLanguages The document language
-     * @return A PDF/UA compliant {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages) {
-        PdfDocument pdf = renderHtmlAsPdf(html);
-        PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
-        return pdf;
-    }
-
-    /**
-     * Renders HTML as a PDF and converts it to PDF/UA format with a proper
-     * accessibility structure tree built from the HTML source.
-     *
-     * @param html             The HTML string to render
-     * @param naturalLanguages The document language
-     * @param renderOptions    Rendering options
-     * @return A PDF/UA compliant {@link PdfDocument}
-     */
-    public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages,
-                                                ChromePdfRenderOptions renderOptions) {
-        PdfDocument pdf = renderHtmlAsPdf(html, renderOptions);
-        PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
-        return pdf;
-    }
+    // TODO: Re-enable renderHtmlAsPdfUA once engine handler is fixed.
+    //  Engine bug: IronPdfServiceHandler.cs:97-108 calls ConvertToPdfUA() instead of
+    //  ConvertToPdfUAForScreenReader() and skips HtmlHelper.HtmlStructTreeDOM() preprocessing,
+    //  producing flat tag trees instead of proper semantic structure.
+    //
+    // public static PdfDocument renderHtmlAsPdfUA(String html) {
+    //     return renderHtmlAsPdfUA(html, NaturalLanguages.English);
+    // }
+    //
+    // public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages) {
+    //     PdfDocument pdf = renderHtmlAsPdf(html);
+    //     PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
+    //     return pdf;
+    // }
+    //
+    // public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages,
+    //                                             ChromePdfRenderOptions renderOptions) {
+    //     PdfDocument pdf = renderHtmlAsPdf(html, renderOptions);
+    //     PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
+    //     return pdf;
+    // }
 
     @Override
     public void close() {
