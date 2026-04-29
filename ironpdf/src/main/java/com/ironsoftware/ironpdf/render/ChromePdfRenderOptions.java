@@ -100,6 +100,44 @@ public class ChromePdfRenderOptions implements Cloneable {
     private TableOfContentsTypes tableOfContents = TableOfContentsTypes.None;
 
     /**
+     * If true, auto-generate PDF outline (bookmarks) from the HTML heading structure.
+     * Use {@link #autoBookmarkMinHeadingLevel} and {@link #autoBookmarkMaxHeadingLevel} to
+     * control which heading levels are included (1 = h1, 6 = h6).
+     * Use {@link #autoBookmarkCssSelectors} to include additional non-heading elements
+     * (e.g. {@code ".chapter-title"}).
+     */
+    private boolean autoBookmarksFromHeadings = false;
+ 
+    /**
+     * Minimum heading level (inclusive) to include in auto-generated bookmarks. 1 = h1.
+     * Only used when {@link #autoBookmarksFromHeadings} is true.
+     */
+    private int autoBookmarkMinHeadingLevel = 1;
+ 
+    /**
+     * Maximum heading level (inclusive) to include in auto-generated bookmarks. 6 = h6.
+     * Only used when {@link #autoBookmarksFromHeadings} is true.
+     */
+    private int autoBookmarkMaxHeadingLevel = 6;
+ 
+    /**
+     * Additional CSS selectors whose matching elements will be included as auto-bookmarks
+     * (in addition to headings selected via {@link #autoBookmarkMinHeadingLevel} /
+     * {@link #autoBookmarkMaxHeadingLevel}). Only used when {@link #autoBookmarksFromHeadings}
+     * is true. Example: {@code new String[]{".chapter-title", "[data-bookmark]"}}.
+     */
+    private String[] autoBookmarkCssSelectors = null;
+ 
+    /**
+     * CSS selectors whose matching HTML elements should be tracked during rendering so their
+     * rendered page positions can later be retrieved. This drives the engine-side element
+     * location tracking feature. Note: retrieval of the resulting locations from the Java
+     * client is not yet supported; setting this option still enables engine-side tracking
+     * (and any downstream effects such as auto-bookmarks).
+     */
+    private String[] elementQuerySelectors = null;
+
+    /**
      * Render timeout in seconds. Default value is 60.
      */
     private int timeout = 60;
@@ -697,5 +735,97 @@ public class ChromePdfRenderOptions implements Cloneable {
      */
     public void setTableOfContents(TableOfContentsTypes value) {
         tableOfContents = value;
+    }
+
+    /**
+     * Gets whether PDF bookmarks are automatically generated from HTML headings.
+     *
+     * @return true if auto-bookmarks from headings is enabled
+     */
+    public boolean isAutoBookmarksFromHeadings() {
+        return autoBookmarksFromHeadings;
+    }
+ 
+    /**
+     * Enables or disables automatic PDF bookmark generation from HTML headings.
+     *
+     * @param value true to enable auto-bookmark generation
+     */
+    public void setAutoBookmarksFromHeadings(boolean value) {
+        autoBookmarksFromHeadings = value;
+    }
+ 
+    /**
+     * Gets the minimum HTML heading level (inclusive) to include as an auto-bookmark.
+     *
+     * @return heading level (1 = h1, 6 = h6)
+     */
+    public int getAutoBookmarkMinHeadingLevel() {
+        return autoBookmarkMinHeadingLevel;
+    }
+ 
+    /**
+     * Sets the minimum HTML heading level (inclusive) to include as an auto-bookmark.
+     *
+     * @param value heading level (1 = h1, 6 = h6)
+     */
+    public void setAutoBookmarkMinHeadingLevel(int value) {
+        autoBookmarkMinHeadingLevel = value;
+    }
+ 
+    /**
+     * Gets the maximum HTML heading level (inclusive) to include as an auto-bookmark.
+     *
+     * @return heading level (1 = h1, 6 = h6)
+     */
+    public int getAutoBookmarkMaxHeadingLevel() {
+        return autoBookmarkMaxHeadingLevel;
+    }
+ 
+    /**
+     * Sets the maximum HTML heading level (inclusive) to include as an auto-bookmark.
+     *
+     * @param value heading level (1 = h1, 6 = h6)
+     */
+    public void setAutoBookmarkMaxHeadingLevel(int value) {
+        autoBookmarkMaxHeadingLevel = value;
+    }
+ 
+    /**
+     * Gets the additional CSS selectors used to mark non-heading elements as auto-bookmarks.
+     *
+     * @return the CSS selectors, or null if none
+     */
+    public String[] getAutoBookmarkCssSelectors() {
+        return autoBookmarkCssSelectors;
+    }
+ 
+    /**
+     * Sets the additional CSS selectors used to mark non-heading elements as auto-bookmarks.
+     *
+     * @param value the CSS selectors (may be null to clear)
+     */
+    public void setAutoBookmarkCssSelectors(String[] value) {
+        autoBookmarkCssSelectors = value;
+    }
+ 
+    /**
+     * Gets the CSS selectors whose matching elements should have their rendered page positions
+     * tracked during rendering.
+     *
+     * @return the element query CSS selectors, or null if none
+     */
+    public String[] getElementQuerySelectors() {
+        return elementQuerySelectors;
+    }
+ 
+    /**
+     * Sets the CSS selectors whose matching elements should have their rendered page positions
+     * tracked during rendering.
+     *
+     * @param value the element query CSS selectors (may be null to clear)
+     */
+    public void setElementQuerySelectors(String[] value) {
+        elementQuerySelectors = value;
     }
 }

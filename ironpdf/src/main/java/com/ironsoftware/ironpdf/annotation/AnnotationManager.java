@@ -47,6 +47,26 @@ public class AnnotationManager {
     }
 
     /**
+     * Adds a clickable link annotation that navigates to another page within the same PDF document.
+     * Useful for building custom tables of contents, cross-references, and in-document navigation.
+     *
+     * <p>The target page and display options are configured via the {@link LinkAnnotation} fields
+     * (see {@link LinkAnnotation#setDestinationPageIndex(int)},
+     * {@link LinkAnnotation#setDestinationType(com.ironsoftware.ironpdf.bookmark.BookmarkDestinations)},
+     * and related setters). The clickable area is set via
+     * {@link LinkAnnotation#setX(int)}/{@link LinkAnnotation#setY(int)}/
+     * {@link LinkAnnotation#setWidth(int)}/{@link LinkAnnotation#setHeight(int)}.</p>
+     *
+     * <p>On successful add, {@link LinkAnnotation#getAnnotationIndex()} is updated to the
+     * zero-based index of the new annotation on its page.</p>
+     *
+     * @param link the link annotation to add
+     */
+    public void addLinkAnnotation(LinkAnnotation link) {
+        Annotation_Api.addLinkAnnotation(internalPdfDocument, link);
+    }
+    
+    /**
      * Retrieves the number of annotations contained on the specified page
      *
      * @param pageIndex Index of the page to get the annotation. The first page has a PageIndex of 0

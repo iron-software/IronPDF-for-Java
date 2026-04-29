@@ -60,7 +60,8 @@ service IronPdfService {
   rpc QPdf_Linearization_IsLinearized(stream QPdfIsLinearizedRequestStreamP) returns (BooleanResultP) {}
   rpc QPdf_Linearization_SaveAsLinearized(QPdfSaveAsLinearizedRequestP) returns (stream BytesResultStreamP) {}
   rpc QPdf_Linearization_SaveAsLinearizedFromBytes(stream QPdfSaveAsLinearizedFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
-
+  rpc QPdf_Linearization_LinearizeInMemoryFromId(QPdfLinearizeInMemoryRequestIdP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Linearization_LinearizeInMemory(stream QPdfLinearizeInMemoryRequestStreamP) returns (stream BytesResultStreamP) {}
 
   // QPdf_PdfA_Compliance
   rpc QPdf_PdfA_CompleteSavingAsPdfA4(QPdfCompleteSavingAsPdfA4RequestP) returns (stream BytesResultStreamP) {}

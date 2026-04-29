@@ -6,6 +6,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +40,11 @@ import com.ironsoftware.ironpdf.headerfooter.TextHeaderFooter;
 import com.ironsoftware.ironpdf.image.DrawImageOptions;
 import com.ironsoftware.ironpdf.image.ImageBehavior;
 import com.ironsoftware.ironpdf.image.ToImageOptions;
+import com.ironsoftware.ironpdf.internal.staticapi.Annotation_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.BackgroundForeground_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.Compress_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.HeaderFooter_Api;
+import com.ironsoftware.ironpdf.internal.staticapi.Linearize_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.Image_Api;
 import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Page_Api;
@@ -55,7 +58,9 @@ import com.ironsoftware.ironpdf.page.PageInfo;
 import com.ironsoftware.ironpdf.page.PageRotation;
 import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
+import com.ironsoftware.ironpdf.render.LinearizationMode;
 import com.ironsoftware.ironpdf.render.PaperSize;
+import com.ironsoftware.ironpdf.render.RenderedElementLocation;
 import com.ironsoftware.ironpdf.security.SecurityManager;
 import com.ironsoftware.ironpdf.signature.SignatureManager;
 import com.ironsoftware.ironpdf.stamp.HorizontalAlignment;
@@ -72,6 +77,8 @@ public class PdfDocument implements Printable, AutoCloseable {
      */
     static final Logger logger = LoggerFactory.getLogger(PdfDocument.class);
     private InternalPdfDocument internalPdfDocument;
+
+    private List<RenderedElementLocation> cachedElementLocations;
 
     //region Constructor
     private final BookmarkManager bookmarkManager;
@@ -1544,6 +1551,353 @@ public class PdfDocument implements Printable, AutoCloseable {
         Compress_Api.compressAndSaveAs(internalPdfDocument, outputFilePath, jpegQuality);
     }
 
+    //region Linearization
+
+    /**
+     * Check whether the PDF file at the given path is linearized (a.k.a. "Fast Web View").
+     * A linearized PDF can be streamed and displayed incrementally by web browsers.
+     *
+     * @param pdfFilePath the path to the PDF file on disk
+     * @return true if the file is linearized, false otherwise
+     * @throws IOException if the file cannot be read
+     */
+    public static boolean isLinearized(String pdfFilePath) throws IOException {
+        return Linearize_Api.isLinearized(pdfFilePath, "");
+    }
+
+    /**
+     * Check whether the PDF file at the given path is linearized (a.k.a. "Fast Web View").
+     * A linearized PDF can be streamed and displayed incrementally by web browsers.
+     *
+     * @param pdfFilePath the path to the PDF file on disk
+     * @param password    the PDF password (empty string if none)
+     * @return true if the file is linearized, false otherwise
+     * @throws IOException if the file cannot be read
+     */
+    public static boolean isLinearized(String pdfFilePath, String password) throws IOException {
+        return Linearize_Api.isLinearized(pdfFilePath, password);
+    }
+
+    /**
+     * Check whether the PDF file at the given path is linearized (a.k.a. "Fast Web View").
+     *
+     * @param pdfFilePath the path to the PDF file on disk
+     * @return true if the file is linearized, false otherwise
+     * @throws IOException if the file cannot be read
+     */
+    public static boolean isLinearized(Path pdfFilePath) throws IOException {
+        return Linearize_Api.isLinearized(pdfFilePath.toString(), "");
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as a byte array
+     * using the {@link LinearizationMode#Automatic} strategy.
+     *
+     * @return the linearized PDF as a byte array
+     */
+    public final byte[] linearizePdfToBytes() {
+        return linearizePdfToBytes(LinearizationMode.Automatic);
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as a byte array.
+     *
+     * @param mode the linearization strategy to use; defaults to {@link LinearizationMode#Automatic} if null
+     * @return the linearized PDF as a byte array
+     */
+    public final byte[] linearizePdfToBytes(LinearizationMode mode) {
+        String pwd = internalPdfDocument.userPassword == null ? "" : internalPdfDocument.userPassword;
+        return Linearize_Api.linearizeCoreFromDocument(internalPdfDocument, pwd, mode);
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as a byte array.
+     *
+     * @param password the PDF password (empty string if none)
+     * @return the linearized PDF as a byte array
+     */
+    public final byte[] linearizePdfToBytes(String password) {
+        return linearizePdfToBytes(password, LinearizationMode.Automatic);
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as a byte array.
+     *
+     * @param password the PDF password (empty string if none)
+     * @param mode     the linearization strategy to use
+     * @return the linearized PDF as a byte array
+     */
+    public final byte[] linearizePdfToBytes(String password, LinearizationMode mode) {
+        return Linearize_Api.linearizeCoreFromDocument(internalPdfDocument, password, mode);
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as an {@link InputStream}.
+     * This is the stream equivalent of {@link #linearizePdfToBytes()}.
+     *
+     * @return the linearized PDF as an InputStream
+     */
+    public final InputStream linearizePdfToStream() {
+        return new ByteArrayInputStream(linearizePdfToBytes());
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as an {@link InputStream}.
+     *
+     * @param mode the linearization strategy to use
+     * @return the linearized PDF as an InputStream
+     */
+    public final InputStream linearizePdfToStream(LinearizationMode mode) {
+        return new ByteArrayInputStream(linearizePdfToBytes(mode));
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as an {@link InputStream}.
+     *
+     * @param password the PDF password (empty string if none)
+     * @return the linearized PDF as an InputStream
+     */
+    public final InputStream linearizePdfToStream(String password) {
+        return new ByteArrayInputStream(linearizePdfToBytes(password));
+    }
+
+    /**
+     * Linearizes the current PDF document and returns the result as an {@link InputStream}.
+     *
+     * @param password the PDF password (empty string if none)
+     * @param mode     the linearization strategy to use
+     * @return the linearized PDF as an InputStream
+     */
+    public final InputStream linearizePdfToStream(String password, LinearizationMode mode) {
+        return new ByteArrayInputStream(linearizePdfToBytes(password, mode));
+    }
+
+    /**
+     * Linearizes the current PDF document and saves the result to a file path.
+     *
+     * @param outputFilePath the file path to save the linearized PDF
+     * @throws IOException if the file cannot be written
+     */
+    public final void saveAsLinearized(String outputFilePath) throws IOException {
+        saveAsLinearized(outputFilePath, "");
+    }
+
+    /**
+     * Linearizes the current PDF document and saves the result to a file path.
+     *
+     * @param outputFilePath the file path to save the linearized PDF
+     * @param password       the PDF password (empty string if none)
+     * @throws IOException if the file cannot be written
+     */
+    public final void saveAsLinearized(String outputFilePath, String password) throws IOException {
+        if (outputFilePath == null || outputFilePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Value 'outputFilePath' cannot be null or empty.");
+        }
+        byte[] linearized = linearizePdfToBytes(password);
+        Files.write(Paths.get(outputFilePath), linearized);
+    }
+
+    /**
+     * Static helper that linearizes the given PDF bytes and returns the linearized bytes
+     * using the {@link LinearizationMode#Automatic} strategy.
+     *
+     * @param pdfBytes the PDF bytes to linearize
+     * @return the linearized PDF as a byte array
+     */
+    public static byte[] linearizePdfToBytes(byte[] pdfBytes) {
+        return Linearize_Api.linearizeCoreFromBytes(pdfBytes, "", LinearizationMode.Automatic);
+    }
+
+    /**
+     * Static helper that linearizes the given PDF bytes and returns the linearized bytes.
+     *
+     * @param pdfBytes the PDF bytes to linearize
+     * @param password the PDF password (empty string if none)
+     * @return the linearized PDF as a byte array
+     */
+    public static byte[] linearizePdfToBytes(byte[] pdfBytes, String password) {
+        return Linearize_Api.linearizeCoreFromBytes(pdfBytes, password, LinearizationMode.Automatic);
+    }
+
+    /**
+     * Static helper that linearizes the given PDF bytes and returns the linearized bytes.
+     *
+     * @param pdfBytes the PDF bytes to linearize
+     * @param password the PDF password (empty string if none)
+     * @param mode     the linearization strategy to use
+     * @return the linearized PDF as a byte array
+     */
+    public static byte[] linearizePdfToBytes(byte[] pdfBytes, String password, LinearizationMode mode) {
+        return Linearize_Api.linearizeCoreFromBytes(pdfBytes, password, mode);
+    }
+
+    /**
+     * Static helper that linearizes a PDF from an {@link InputStream} and returns the linearized bytes.
+     *
+     * @param pdfStream the input PDF stream
+     * @return the linearized PDF as a byte array
+     * @throws IOException if the stream cannot be read
+     */
+    public static byte[] linearizePdfToBytes(InputStream pdfStream) throws IOException {
+        return linearizePdfToBytes(pdfStream, "", LinearizationMode.Automatic);
+    }
+
+    /**
+     * Static helper that linearizes a PDF from an {@link InputStream} and returns the linearized bytes.
+     *
+     * @param pdfStream the input PDF stream
+     * @param password  the PDF password (empty string if none)
+     * @return the linearized PDF as a byte array
+     * @throws IOException if the stream cannot be read
+     */
+    public static byte[] linearizePdfToBytes(InputStream pdfStream, String password) throws IOException {
+        return linearizePdfToBytes(pdfStream, password, LinearizationMode.Automatic);
+    }
+
+    /**
+     * Static helper that linearizes a PDF from an {@link InputStream} and returns the linearized bytes.
+     *
+     * @param pdfStream the input PDF stream
+     * @param password  the PDF password (empty string if none)
+     * @param mode      the linearization strategy to use
+     * @return the linearized PDF as a byte array
+     * @throws IOException if the stream cannot be read
+     */
+    public static byte[] linearizePdfToBytes(InputStream pdfStream, String password, LinearizationMode mode)
+            throws IOException {
+        if (pdfStream == null) {
+            throw new IllegalArgumentException("The input stream cannot be null.");
+        }
+        byte[] pdfBytes = readAllBytes(pdfStream);
+        return Linearize_Api.linearizeCoreFromBytes(pdfBytes, password, mode);
+    }
+
+    /**
+     * Static helper that linearizes the given PDF bytes and saves the result to the given output file path.
+     *
+     * @param pdfBytes       the input PDF bytes
+     * @param outputFilePath the path to save the linearized PDF
+     * @throws IOException if the file cannot be written
+     */
+    public static void saveAsLinearized(byte[] pdfBytes, String outputFilePath) throws IOException {
+        saveAsLinearized(pdfBytes, outputFilePath, "");
+    }
+
+    /**
+     * Static helper that linearizes the given PDF bytes and saves the result to the given output file path.
+     *
+     * @param pdfBytes       the input PDF bytes
+     * @param outputFilePath the path to save the linearized PDF
+     * @param password       the PDF password (empty string if none)
+     * @throws IOException if the file cannot be written
+     */
+    public static void saveAsLinearized(byte[] pdfBytes, String outputFilePath, String password) throws IOException {
+        if (outputFilePath == null || outputFilePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Value 'outputFilePath' cannot be null or empty.");
+        }
+        byte[] linearized = Linearize_Api.linearizeCoreFromBytes(pdfBytes, password, LinearizationMode.Automatic);
+        Files.write(Paths.get(outputFilePath), linearized);
+    }
+
+    //endregion
+
+    //region ElementLocations
+
+    /**
+     * Prefix used by the engine-side element query JavaScript extension when injecting anchor
+     * markers. Must match {@code IronPdf.TableOfContents.ElementQueryJavascriptExtension.ELEMENT_QUERY_PREFIX}
+     * on the C# side.
+     */
+    private static final String ELEMENT_QUERY_PREFIX = "ironpdf-elq-";
+
+    /**
+     * Retrieves the rendered page locations of HTML elements that were tracked during rendering.
+     *
+     * <p>To use this feature, set
+     * {@link ChromePdfRenderOptions#setElementQuerySelectors(String[])}
+     * with CSS selectors before rendering. After rendering, call this method to retrieve the
+     * page index and coordinates of each matched element.</p>
+     *
+     * <p>Mirrors {@code IronPdf.PdfDocument.GetElementLocations()} on the C# side.</p>
+     *
+     * @return A list of {@link RenderedElementLocation} objects, one per matched element,
+     * sorted in document order. Returns an empty list if no element query selectors were
+     * configured or no elements matched.
+     */
+    public final List<RenderedElementLocation> getElementLocations() {
+        if (cachedElementLocations != null) {
+            return cachedElementLocations;
+        }
+        List<RenderedElementLocation> locations = new ArrayList<>();
+        int pageCount = Page_Api.getPagesInfo(internalPdfDocument).size();
+
+        for (int pageIdx = 0; pageIdx < pageCount; pageIdx++) {
+            List<com.ironsoftware.ironpdf.internal.proto.PdfiumWrappedPdfAnnotationP> annotations =
+                    Annotation_Api.getAnnotations(internalPdfDocument, pageIdx);
+
+            for (com.ironsoftware.ironpdf.internal.proto.PdfiumWrappedPdfAnnotationP wrapped : annotations) {
+                if (wrapped.getAnnotationsCase()
+                        != com.ironsoftware.ironpdf.internal.proto.PdfiumWrappedPdfAnnotationP.AnnotationsCase.LINK) {
+                    continue;
+                }
+
+                com.ironsoftware.ironpdf.internal.proto.PdfiumPdfLinkAnnotationP linkAnnotation = wrapped.getLink();
+                if (!linkAnnotation.hasDest()) {
+                    continue;
+                }
+                String dest = linkAnnotation.getDest();
+                if (dest == null || !dest.startsWith(ELEMENT_QUERY_PREFIX)) {
+                    continue;
+                }
+
+                String remainder = dest.substring(ELEMENT_QUERY_PREFIX.length());
+                int dashIdx = remainder.indexOf('-');
+                if (dashIdx <= 0) {
+                    continue;
+                }
+
+                int elementIndex;
+                try {
+                    elementIndex = Integer.parseInt(remainder.substring(0, dashIdx));
+                } catch (NumberFormatException ignored) {
+                    continue;
+                }
+
+                String encodedText = remainder.substring(dashIdx + 1);
+                String text;
+                try {
+                    text = java.net.URLDecoder.decode(encodedText, "UTF-8");
+                } catch (java.io.UnsupportedEncodingException ignored) {
+                    text = encodedText;
+                }
+
+                java.awt.geom.Rectangle2D.Double rect = null;
+                if (linkAnnotation.getAnnotation().hasRectangle()) {
+                    com.ironsoftware.ironpdf.internal.proto.Rectangle r =
+                            linkAnnotation.getAnnotation().getRectangle();
+                    rect = new java.awt.geom.Rectangle2D.Double(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+                }
+
+                locations.add(new RenderedElementLocation(text, pageIdx, rect, elementIndex));
+            }
+        }
+
+        locations.sort(java.util.Comparator.comparingInt(RenderedElementLocation::getElementIndex));
+        cachedElementLocations = locations;
+        return cachedElementLocations;
+    }
+
+    /**
+     * Clears the cached result of {@link #getElementLocations()}, forcing a fresh scan of the
+     * document's annotations on the next call. Call this if you've modified the document's
+     * annotations or structure after rendering.
+     */
+    public final void resetElementLocationCache() {
+        this.cachedElementLocations = null;
+    }
+
+    //endregion
+
     /**
      * Finds all embedded Images from within the PDF and returns them as a list of {@link BufferedImage} images.
      *
@@ -2307,27 +2661,41 @@ public class PdfDocument implements Printable, AutoCloseable {
         return this;
     }
 
-    // TODO: Re-enable renderHtmlAsPdfUA once engine handler is fixed.
-    //  Engine bug: IronPdfServiceHandler.cs:97-108 calls ConvertToPdfUA() instead of
-    //  ConvertToPdfUAForScreenReader() and skips HtmlHelper.HtmlStructTreeDOM() preprocessing,
-    //  producing flat tag trees instead of proper semantic structure.
-    //
-    // public static PdfDocument renderHtmlAsPdfUA(String html) {
-    //     return renderHtmlAsPdfUA(html, NaturalLanguages.English);
-    // }
-    //
-    // public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages) {
-    //     PdfDocument pdf = renderHtmlAsPdf(html);
-    //     PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
-    //     return pdf;
-    // }
-    //
-    // public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages,
-    //                                             ChromePdfRenderOptions renderOptions) {
-    //     PdfDocument pdf = renderHtmlAsPdf(html, renderOptions);
-    //     PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
-    //     return pdf;
-    // }
+    /**
+     * Render HTML to PDF and convert to PDF/UA format with screen reader support.
+     * Produces a proper semantic structure tree for accessibility.
+     * @param html The HTML string to render
+     * @return A {@link PdfDocument} in PDF/UA format
+     */
+    public static PdfDocument renderHtmlAsPdfUA(String html) {
+        return renderHtmlAsPdfUA(html, NaturalLanguages.English);
+    }
+
+    /**
+     * Render HTML to PDF and convert to PDF/UA format with screen reader support.
+     * @param html The HTML string to render
+     * @param naturalLanguages Document language for screen readers
+     * @return A {@link PdfDocument} in PDF/UA format
+     */
+    public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages) {
+        PdfDocument pdf = renderHtmlAsPdf(html);
+        PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
+        return pdf;
+    }
+
+    /**
+     * Render HTML to PDF and convert to PDF/UA format with screen reader support.
+     * @param html The HTML string to render
+     * @param naturalLanguages Document language for screen readers
+     * @param renderOptions Chrome PDF render options
+     * @return A {@link PdfDocument} in PDF/UA format
+     */
+    public static PdfDocument renderHtmlAsPdfUA(String html, NaturalLanguages naturalLanguages,
+                                                ChromePdfRenderOptions renderOptions) {
+        PdfDocument pdf = renderHtmlAsPdf(html, renderOptions);
+        PdfDocument_Api.toPdfUAForScreenReader(pdf.internalPdfDocument, html, naturalLanguages.getValue());
+        return pdf;
+    }
 
     @Override
     public void close() {
@@ -2340,4 +2708,17 @@ public class PdfDocument implements Printable, AutoCloseable {
         }
     }
     //endregion
+
+    /**
+     * Read all bytes from an {@link InputStream}. Java 8 compatible replacement for {@code InputStream.readAllBytes()}.
+     */
+    private static byte[] readAllBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[8192];
+        int read;
+        while ((read = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, read);
+        }
+        return buffer.toByteArray();
+    }
 }

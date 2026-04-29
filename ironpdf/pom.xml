@@ -134,6 +134,25 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>clean-protoc-temp</id>
+                        <phase>initialize</phase> <!-- Before protobuf-maven-plugin runs in generate-sources -->
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- Workaround: protobuf-maven-plugin 0.6.1 fails on Windows when it cannot
+                                     delete target/protoc-dependencies due to NTFS file locking (JDK-8252883).
+                                     Brief sleep lets Windows release file handles from prior JVM process,
+                                     then we clean stale generated sources and temp dirs. -->
+                                <sleep seconds="2"/>
+                                <delete dir="${project.build.directory}/generated-sources/protobuf" failonerror="false" quiet="true"/>
+                                <delete dir="${project.basedir}/.protoc-deps-compile" failonerror="false" quiet="true"/>
+                                <delete dir="${project.basedir}/.protoc-deps-grpc" failonerror="false" quiet="true"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>update-build-timestamp</id>
                         <phase>generate-sources</phase> <!-- Before compilation -->
                         <goals>
@@ -187,10 +206,29 @@ class BuildInfo {
                     </protocArtifact>
                 </configuration>
                 <executions>
+                    <!-- Separate executions with isolated temp dirs to avoid Windows file-lock
+                         conflicts between compile and compile-custom goals (JDK-8252883). -->
                     <execution>
+                        <id>generate-proto</id>
                         <goals>
                             <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <temporaryProtoFileDirectory>${project.basedir}/.protoc-deps-compile</temporaryProtoFileDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-grpc</id>
+                        <goals>
                             <goal>compile-custom</goal>
+                        </goals>
+                        <configuration>
+                            <temporaryProtoFileDirectory>${project.basedir}/.protoc-deps-grpc</temporaryProtoFileDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-test-proto</id>
+                        <goals>
                             <goal>test-compile</goal>
                         </goals>
                     </execution>
@@ -243,6 +281,7 @@ class BuildInfo {
                     <show>public</show>
                     <excludePackageNames>com.ironsoftware.ironpdf.internal.*,grpc.*</excludePackageNames>
                     <additionalJOptions>-Xdoclint:none</additionalJOptions> <!-- Suppress all warnings -->
+                    <sourcepath>${project.basedir}/src/main/java;${project.build.directory}/generated-sources/protobuf/java;${project.build.directory}/generated-sources/protobuf/grpc-java</sourcepath>
                 </configuration>
             </plugin>
             <plugin>
