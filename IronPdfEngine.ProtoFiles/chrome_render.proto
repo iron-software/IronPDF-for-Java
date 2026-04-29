@@ -143,6 +143,12 @@ message ChromePdfRenderOptionsP {
   optional ChromeTableOfContentsTypesP table_of_contents = 36;
   optional bool enable_mathematical_latex = 37;
   optional string custom_request_headers = 38;
+  // Auto-bookmark generation from HTML headings
+  optional bool auto_bookmarks_from_headings = 39;
+  optional int32 auto_bookmark_min_heading_level = 40;
+  optional int32 auto_bookmark_max_heading_level = 41;
+  optional string auto_bookmark_css_selectors = 42;
+  optional string element_query_selectors = 43;
 }
 
 message ChromeCefRenderSettingsP {

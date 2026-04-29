@@ -159,6 +159,10 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# protobuf-maven-plugin temp directories (Windows file-lock workaround)
+.protoc-deps-compile/
+.protoc-deps-grpc/
+
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,intellij
 /ironpdf/TestOutput
 /*/src/main/resources/

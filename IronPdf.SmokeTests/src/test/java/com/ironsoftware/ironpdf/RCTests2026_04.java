@@ -82,11 +82,52 @@ public class RCTests2026_04 extends TestBase {
                 + Files.size(outputFile) + " bytes");
     }
 
-    // TODO: Re-enable once engine handler fix lands (IronPdfServiceHandler.cs:97-108)
-    // @Test
-    // public final void Test02_PdfUAFormMixedInputTypes() throws IOException {
-    //     ...renderHtmlAsPdfUA disabled — engine produces flat tag trees instead of semantic structure
-    // }
+    /**
+     * Test 02: PDF/UA structure tree tagging for forms with mixed input types (PDF-1986)
+     * Engine fix: IronPdfServiceHandler now calls HtmlHelper.HtmlStructTreeDOM()
+     * and ConvertToPdfUAForScreenReader() to produce proper semantic structure.
+     */
+    @Test
+    public final void Test02_PdfUAFormMixedInputTypes() throws IOException {
+        String html = "<html lang=\"en\"><head>"
+                + "<title>PDF/UA Mixed Forms Test</title>"
+                + "</head><body>"
+                + "<h1>PDF/UA Form Tagging Test</h1>"
+                + "<form>"
+                + "<label for=\"name\">Full Name:</label>"
+                + "<input type=\"text\" id=\"name\" name=\"name\" value=\"Test User\" /><br/><br/>"
+                + "<label for=\"email\">Email Address:</label>"
+                + "<input type=\"email\" id=\"email\" name=\"email\" value=\"test@example.com\" /><br/><br/>"
+                + "<input type=\"hidden\" name=\"csrf_token\" value=\"abc123\" />"
+                + "<fieldset><legend>Preferences:</legend>"
+                + "<input type=\"checkbox\" id=\"opt1\" name=\"pref\" value=\"a\" checked />"
+                + "<label for=\"opt1\">Option A</label><br/>"
+                + "<input type=\"checkbox\" id=\"opt2\" name=\"pref\" value=\"b\" />"
+                + "<label for=\"opt2\">Option B</label><br/>"
+                + "</fieldset><br/>"
+                + "<fieldset><legend>Priority:</legend>"
+                + "<input type=\"radio\" id=\"high\" name=\"priority\" value=\"high\" checked />"
+                + "<label for=\"high\">High</label>"
+                + "<input type=\"radio\" id=\"medium\" name=\"priority\" value=\"medium\" />"
+                + "<label for=\"medium\">Medium</label>"
+                + "</fieldset><br/>"
+                + "<textarea id=\"notes\" name=\"notes\" rows=\"3\" cols=\"30\">Sample notes</textarea><br/>"
+                + "<input type=\"submit\" value=\"Submit Form\" />"
+                + "</form>"
+                + "<h2>Additional Content After Form</h2>"
+                + "<p>This paragraph follows the form.</p>"
+                + "</body></html>";
+
+        PdfDocument pdf = PdfDocument.renderHtmlAsPdfUA(html, NaturalLanguages.English);
+
+        Path outputFile = Paths.get("TestOutput/Test02_PdfUA_MixedForms.pdf");
+        Files.createDirectories(outputFile.getParent());
+        pdf.saveAs(outputFile);
+
+        Assertions.assertTrue(Files.exists(outputFile));
+        Assertions.assertTrue(Files.size(outputFile) > 0, "PDF/UA output should not be empty");
+        System.out.println("Test02 (PDF-1986): " + Files.size(outputFile) + " bytes");
+    }
 
     // ==================== Bug Fix Tests ====================
 
@@ -165,11 +206,39 @@ public class RCTests2026_04 extends TestBase {
         }
     }
 
-    // TODO: Re-enable once engine handler fix lands (IronPdfServiceHandler.cs:97-108)
-    // @Test
-    // public final void Test05_PdfUAOverflowHiddenClipping() throws IOException {
-    //     ...renderHtmlAsPdfUA disabled — engine produces flat tag trees instead of semantic structure
-    // }
+    /**
+     * Test 05: PDF/UA image clipping with CSS overflow:hidden (PDF-2178)
+     * Engine fix: IronPdfServiceHandler now calls HtmlHelper.HtmlStructTreeDOM()
+     * and ConvertToPdfUAForScreenReader() to produce proper semantic structure.
+     */
+    @Test
+    public final void Test05_PdfUAOverflowHiddenClipping() throws IOException {
+        String html = "<html lang=\"en\"><head>"
+                + "<title>PDF/UA Image Clipping Test</title>"
+                + "<style>.clipped { width: 200px; height: 100px; overflow: hidden; border: 1px solid #ccc; }"
+                + ".clipped img { width: 400px; height: 300px; }</style>"
+                + "</head><body>"
+                + "<h1>Image Clipping Test</h1>"
+                + "<p>The image below is clipped by overflow:hidden.</p>"
+                + "<div class=\"clipped\">"
+                + "<img src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E"
+                + "%3Crect fill='%2300f' width='400' height='300'/%3E"
+                + "%3Ctext x='50' y='150' fill='white' font-size='24'%3EClipped Image%3C/text%3E%3C/svg%3E\""
+                + " alt=\"Test clipped image\" />"
+                + "</div>"
+                + "<p>Content after clipped image.</p>"
+                + "</body></html>";
+
+        PdfDocument pdf = PdfDocument.renderHtmlAsPdfUA(html, NaturalLanguages.English);
+
+        Path outputFile = Paths.get("TestOutput/Test05_PdfUA_ImageClipping.pdf");
+        Files.createDirectories(outputFile.getParent());
+        pdf.saveAs(outputFile);
+
+        Assertions.assertTrue(Files.exists(outputFile));
+        Assertions.assertTrue(Files.size(outputFile) > 0, "PDF/UA output should not be empty");
+        System.out.println("Test05 (PDF-2178): " + Files.size(outputFile) + " bytes");
+    }
 
     /**
      * Test 06: SignatureName fix for externally signed PDFs (PDF-2060)
