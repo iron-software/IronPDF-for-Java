@@ -19,7 +19,7 @@ public final class Setting_Api {
 
     public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withSubprocess();
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2026.5.2";
+    public static final String IRON_PDF_ENGINE_VERSION = "2026.6.1";
 
     public static int ironPdfEngineTimeout = 120;
 
@@ -42,6 +42,16 @@ public final class Setting_Api {
     public static int chromeGpuMode = 0;
 
     public static boolean linuxAndDockerAutoConfig = true;
+
+    /**
+     * Watchdog timeout (in seconds) for queued IronPdfEngine Chrome jobs. If a
+     * render does not complete within this window, the queue slot is reclaimed
+     * and the awaiting caller observes a TimeoutException. Prevents a single
+     * hung native call from leaking a slot until the engine deadlocks under
+     * load. Defaults to 300 seconds (5 minutes). Set to {@code 0} to leave the
+     * engine's built-in default in place.</p>
+     */
+    public static int jobQueueWatchdogTimeoutSeconds = 300;
 
     public static String getIronPdfEngineZipName() {
         return getIronPdfEngineFolderName() + ".zip";

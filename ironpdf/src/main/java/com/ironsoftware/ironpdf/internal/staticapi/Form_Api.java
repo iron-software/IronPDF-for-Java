@@ -1,11 +1,15 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
+import com.google.protobuf.ByteString;
 import com.ironsoftware.ironpdf.font.FontTypes;
 import com.ironsoftware.ironpdf.form.FormField;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.page.PageInfo;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 /**
@@ -142,5 +146,95 @@ public final class Form_Api {
         EmptyResultP response = client.GetBlockingStub("setFormFieldIsReadOnly").pdfiumFormSetFormFieldIsReadOnly(
                 request.build());
         Utils_Util.handleEmptyResult(response);
+    }
+
+    /**
+     * Sets the document-wide font for subsequent form-field fills.
+     * <p>
+     * When set, the engine skips its automatic Tahoma/Arial fallback embed for non-ASCII
+     * field values and wires the chosen font into the AcroForm /DR /Font dictionary so
+     * field default-appearance strings resolve correctly at render time.
+     * </p>
+     *
+     * @param internalPdfDocument the internal pdf document
+     * @param fontName            PDF font name to register (e.g. "Poppins-Regular")
+     * @param fontData            Raw TrueType/OpenType bytes; pass null or empty for name-only mode
+     *                            (the font must already be in the document)
+     * @param forceEmbed          When true, embed {@code fontData} even if a font with the same name
+     *                            and usable glyph data is already present. Has no effect in name-only mode.
+     */
+    public static void setFormFont(InternalPdfDocument internalPdfDocument, String fontName,
+                                   byte[] fontData, boolean forceEmbed) {
+        FormFontValidator.validateName(fontName);
+        if (fontData != null && fontData.length > 0) {
+            FormFontValidator.validateData(fontData);
+        }
+
+        RpcClient client = Access.ensureConnection();
+
+        // for checking that the response stream is finished
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        ArrayList<PdfiumSetFormFontResultP> resultChunks = new ArrayList<>();
+
+        io.grpc.stub.StreamObserver<PdfiumSetFormFontRequestStreamP> requestStream =
+                client.GetStub("setFormFont").pdfiumFormSetFormFont(
+                        new Utils_ReceivingCustomStreamObserver<>(finishLatch, resultChunks));
+
+        // Send the Info message first.
+        PdfiumSetFormFontRequestStreamP.InfoP.Builder info = PdfiumSetFormFontRequestStreamP.InfoP.newBuilder();
+        info.setDocument(internalPdfDocument.remoteDocument);
+        info.setFontName(fontName);
+        info.setFontBytesSize(fontData == null ? 0 : fontData.length);
+        info.setForceEmbed(forceEmbed);
+
+        PdfiumSetFormFontRequestStreamP.Builder infoMsg = PdfiumSetFormFontRequestStreamP.newBuilder();
+        infoMsg.setInfo(info);
+        requestStream.onNext(infoMsg.build());
+
+        // Stream the font bytes (if any).
+        if (fontData != null && fontData.length > 0) {
+            for (Iterator<byte[]> it = Utils_Util.chunk(fontData); it.hasNext(); ) {
+                byte[] bytes = it.next();
+                PdfiumSetFormFontRequestStreamP.Builder chunkMsg = PdfiumSetFormFontRequestStreamP.newBuilder();
+                chunkMsg.setFontBytesChunk(ByteString.copyFrom(bytes));
+                requestStream.onNext(chunkMsg.build());
+            }
+        }
+
+        requestStream.onCompleted();
+        Utils_Util.waitAndCheck(finishLatch, resultChunks);
+
+        if (resultChunks.isEmpty()) {
+            throw new RuntimeException("No response from IronPdf.");
+        }
+        // Surface an exception from any result chunk — the engine currently sends a single
+        // result message, but iterating defends against future engine changes that could
+        // split a benign "in-progress" result before a fatal exception in a later chunk.
+        for (PdfiumSetFormFontResultP res : resultChunks) {
+            if (res.getResultOrExceptionCase() == PdfiumSetFormFontResultP.ResultOrExceptionCase.EXCEPTION) {
+                throw Exception_Converter.fromProto(res.getException());
+            }
+        }
+    }
+
+    /**
+     * Suppresses the automatic Tahoma/Arial fallback embed for non-ASCII form values
+     * without registering any replacement font. Use when zero file-size growth is required
+     * and the template's existing font references are sufficient for the values being filled.
+     *
+     * @param internalPdfDocument the internal pdf document
+     */
+    public static void disableFormFontFallback(InternalPdfDocument internalPdfDocument) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumDisableFormFontFallbackRequestP.Builder request = PdfiumDisableFormFontFallbackRequestP.newBuilder();
+        request.setDocument(internalPdfDocument.remoteDocument);
+
+        PdfiumDisableFormFontFallbackResultP response = client.GetBlockingStub("disableFormFontFallback")
+                .pdfiumFormDisableFormFontFallback(request.build());
+
+        if (response.getResultOrExceptionCase() == PdfiumDisableFormFontFallbackResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(response.getException());
+        }
     }
 }

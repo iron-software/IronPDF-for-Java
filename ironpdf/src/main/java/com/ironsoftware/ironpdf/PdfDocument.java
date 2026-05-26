@@ -1551,6 +1551,47 @@ public class PdfDocument implements Printable, AutoCloseable {
         Compress_Api.compressAndSaveAs(internalPdfDocument, outputFilePath, jpegQuality);
     }
 
+    /**
+     * Apply the advanced compression pipeline and save the result to a file.
+     *
+     * <p>Combines pdfium-side image DPI downsampling with qpdf-side structural
+     * optimization in a single call.</p>
+     *
+     * @param outputFilePath the file path to save the compressed PDF
+     * @param options        advanced compression options
+     */
+    public final void compressAndSaveAs(String outputFilePath,
+                                        com.ironsoftware.ironpdf.compression.AdvancedCompressionOptions options) {
+        Compress_Api.compressAndSaveAs(internalPdfDocument, outputFilePath, options);
+    }
+
+    /**
+     * Apply the advanced compression pipeline to byte[] input and save the
+     * result to a file.
+     *
+     * @param pdfBytes       the input PDF bytes
+     * @param outputFilePath the file path to save the compressed PDF
+     * @param password       the PDF password (empty string or null if none)
+     * @param options        advanced compression options
+     */
+    public static void compressAndSaveAs(byte[] pdfBytes,
+                                         String outputFilePath,
+                                         String password,
+                                         com.ironsoftware.ironpdf.compression.AdvancedCompressionOptions options) {
+        Compress_Api.compressAndSaveAs(pdfBytes, outputFilePath, password, options);
+    }
+
+    /**
+     * Apply the advanced compression pipeline to a stream input and save the
+     * result to a file.
+     */
+    public static void compressAndSaveAs(InputStream pdfStream,
+                                         String outputFilePath,
+                                         String password,
+                                         com.ironsoftware.ironpdf.compression.AdvancedCompressionOptions options) throws IOException {
+        Compress_Api.compressAndSaveAs(pdfStream, outputFilePath, password, options);
+    }
+
     //region Linearization
 
     /**

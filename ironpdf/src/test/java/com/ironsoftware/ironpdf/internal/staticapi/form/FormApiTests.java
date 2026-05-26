@@ -62,4 +62,90 @@ public class FormApiTests extends TestBase {
     public final void SetTextFieldFontTest() {
         //todo
     }
+
+    @Test
+    public final void SetFormFont_RejectsNullFontName() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, null, null, false));
+    }
+
+    @Test
+    public final void SetFormFont_RejectsEmptyFontName() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "", null, false));
+    }
+
+    @Test
+    public final void SetFormFont_RejectsInjectionAttempts() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "/Bad", null, false));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "Foo Bar", null, false));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "(parens)", null, false));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "back\\slash", null, false));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "null\0byte", null, false));
+    }
+
+    @Test
+    public final void SetFormFont_RejectsOversizeName() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < 100; i++) b.append('a');
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, b.toString(), null, false));
+    }
+
+    @Test
+    public final void SetFormFont_AllowsSubsetPrefixCharacter() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        // The plus sign is allowed (subset prefix). The font won't actually be in the document,
+        // so the engine throws — but the validator must accept the name.
+        RuntimeException ex = Assertions.assertThrows(RuntimeException.class,
+                () -> Form_Api.setFormFont(doc, "AAAAAA+Poppins-Regular", null, false));
+        Assertions.assertFalse(ex instanceof IllegalArgumentException,
+                "Validator must accept the subset-prefixed name; engine should be the one that throws");
+    }
+
+    @Test
+    public final void SetFormFont_RejectsBogusFontPayload() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+
+        // Too small.
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "Foo", new byte[]{1, 2, 3}, false));
+
+        // 100 bytes of zeros — wrong magic.
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "Foo", new byte[100], false));
+
+        // Plain ASCII text — wrong magic.
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "Foo",
+                        "This is not a font, it is text".getBytes(), false));
+
+        // Over 50 MB.
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> Form_Api.setFormFont(doc, "Foo", new byte[51 * 1024 * 1024], false));
+    }
+
+    @Test
+    public final void SetFormFont_NameOnly_ThrowsWhenFontNotInDocument() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        RuntimeException ex = Assertions.assertThrows(RuntimeException.class,
+                () -> Form_Api.setFormFont(doc, "DefinitelyNotInThisDocument12345", null, false));
+        // Validator passes (name is fine), engine rejects because no such font is embedded.
+        Assertions.assertFalse(ex instanceof IllegalArgumentException);
+    }
+
+    @Test
+    public final void DisableFormFontFallback_DoesNotThrow() throws IOException {
+        InternalPdfDocument doc = Render_Api.renderHtmlFileAsPdf(getTestFile("/Data/basic.html"));
+        Assertions.assertDoesNotThrow(() -> Form_Api.disableFormFontFallback(doc));
+    }
 }

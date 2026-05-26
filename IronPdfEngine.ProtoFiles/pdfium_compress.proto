@@ -10,6 +10,7 @@ message PdfiumCompressImagesRequestP {
   int32 quality = 2;
   bool  scale_to_visible_size = 3;
   bool  use_hq_sampling = 4;
+  int32 target_dpi = 5;
 }
 
 

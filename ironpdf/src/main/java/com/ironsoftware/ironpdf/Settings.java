@@ -271,6 +271,27 @@ public final class Settings {
     }
 
     /**
+     * Watchdog timeout (in seconds) for queued IronPdfEngine Chrome jobs. If a
+     * render does not complete within this window the queue slot is reclaimed
+     * so a single hung native call cannot wedge the engine under load.
+     * Default 300 seconds (5 minutes); set {@code 0} to leave the engine's
+     * built-in default.</p>
+     */
+    public static int getJobQueueWatchdogTimeoutSeconds() {
+        return Setting_Api.jobQueueWatchdogTimeoutSeconds;
+    }
+
+    /**
+     * @see #getJobQueueWatchdogTimeoutSeconds()
+     */
+    public static void setJobQueueWatchdogTimeoutSeconds(int seconds) {
+        if (seconds < 0) {
+            throw new IllegalArgumentException("seconds must be non-negative");
+        }
+        Setting_Api.jobQueueWatchdogTimeoutSeconds = seconds;
+    }
+
+    /**
      * Chrome GPU hardware utilization when rendering HTML to PDF
      */
     public enum ChromeGpuModes {
