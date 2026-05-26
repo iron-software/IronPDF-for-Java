@@ -43,6 +43,15 @@ public final class Setting_Api {
 
     public static boolean linuxAndDockerAutoConfig = true;
 
+    /**
+     * Watchdog timeout (in seconds) for queued IronPdfEngine Chrome jobs.
+     * Forwarded to the engine subprocess as
+     * {@code job_queue_watchdog_timeout_seconds} on start. Has no effect in
+     * the cloud build because no subprocess is launched, but the field must
+     * exist so the shared {@code Access.java} compiles.
+     */
+    public static int jobQueueWatchdogTimeoutSeconds = 300;
+
     public static String getIronPdfEngineZipName() {
         return getIronPdfEngineFolderName() + ".zip";
     }
