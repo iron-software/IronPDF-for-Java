@@ -304,6 +304,10 @@ final class Access {
                     cmdList.add("chrome_cache_path=" + Setting_Api.chromeBrowserCachePath.toAbsolutePath());
                 cmdList.add("chrome_gpu_mode=" + Setting_Api.chromeGpuMode);
 
+                if (Setting_Api.jobQueueWatchdogTimeoutSeconds > 0) {
+                    cmdList.add("job_queue_watchdog_timeout_seconds=" + Setting_Api.jobQueueWatchdogTimeoutSeconds);
+                }
+
                 if (Setting_Api.tempFolderPath != null)
                     cmdList.add("temp_folder_path=" + Setting_Api.tempFolderPath.toAbsolutePath());
 

@@ -268,3 +268,35 @@ message PdfiumIFormFieldP {
 message PdfiumGetFormFieldsRequestP{
     PdfDocumentP document = 1;
 }
+
+message PdfiumSetFormFontRequestStreamP {
+  oneof request {
+    InfoP info = 1;
+    bytes font_bytes_chunk = 2;
+  }
+
+  message InfoP {
+    PdfDocumentP document = 1;
+    string font_name = 2;
+    uint32 font_bytes_size = 3;
+    bool force_embed = 4;
+  }
+}
+
+message PdfiumSetFormFontResultP {
+  oneof result_or_exception {
+    EmptyP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
+
+message PdfiumDisableFormFontFallbackRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumDisableFormFontFallbackResultP {
+  oneof result_or_exception {
+    EmptyP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}

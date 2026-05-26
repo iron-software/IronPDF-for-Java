@@ -75,6 +75,9 @@ service IronPdfService {
   rpc QPdf_Compression_CompressInMemoryFromId(QPdfCompressInMemoryRequestIdP) returns (stream BytesResultStreamP) {}
   rpc QPdf_Compression_CompressInMemory(stream QPdfCompressInMemoryRequestStreamP) returns (stream BytesResultStreamP) {}
 
+  rpc QPdf_Compression_CompressAndSaveAsAdvanced(QPdfCompressAndSaveAsAdvancedRequestP) returns (stream BytesResultStreamP) {}
+  rpc QPdf_Compression_CompressAndSaveAsAdvancedFromBytes(stream QPdfCompressAndSaveAsAdvancedFromBytesRequestStreamP) returns (stream BytesResultStreamP) {}
+
   // QPdf_json
   rpc QPdf_Json_ToJson(stream QPdfToJsonRequestStreamP) returns (StringResultP) {}
   rpc QPdf_Json_SaveAsJson(stream QPdfSaveAsJsonRequestStreamP) returns (stream BytesResultStreamP) {}
@@ -130,6 +133,8 @@ service IronPdfService {
   rpc Pdfium_Form_UpdateFormField(PdfiumUpdateFormFieldRequestP) returns (EmptyResultP){} 
   rpc Pdfium_Form_UpdateFormFieldAnnotation(PdfiumUpdateFormFieldAnnotationRequestP) returns (EmptyResultP){}
   rpc Pdfium_Form_GetFormFields(PdfiumGetFormFieldsRequestP) returns (PdfiumGetFormFieldsResultP){}
+  rpc Pdfium_Form_SetFormFont(stream PdfiumSetFormFontRequestStreamP) returns(PdfiumSetFormFontResultP){}
+  rpc Pdfium_Form_DisableFormFontFallback(PdfiumDisableFormFontFallbackRequestP) returns(PdfiumDisableFormFontFallbackResultP){}
 
   //PDFIUM_Font
   rpc Pdfium_Font_ResolveStandardFontName(PdfiumResolveStandardFontNameRequestP) returns(PdfiumResolveStandardFontNameResultP){}
