@@ -26,6 +26,7 @@ import "pdfium_stamp.proto";
 import "pdfium_font.proto";
 import "qpdf.proto";
 import "cleaner.proto";
+import "pdfium_ocg.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -205,6 +206,9 @@ service IronPdfService {
   rpc Pdfium_Form_GetImageObjectCollection(PdfiumGetImageObjectCollectionRequestP) returns(stream PdfiumGetImageObjectCollectionResultP){}
   rpc Pdfium_Form_GetPathObjectCollection(PdfiumGetPathObjectCollectionRequestP) returns(PdfiumGetPathObjectCollectionResultP){}
   rpc Pdfium_Form_GetCharObjectCollection(PdfiumGetCharObjectCollectionRequestP) returns(PdfiumGetCharObjectCollectionResultP){}
+  // Document-level: retrieve the Optional Content Group (PDF layer) tree.
+  // Returns an empty collection for documents without /OCProperties.
+  rpc Pdfium_Document_GetOcgCollection(PdfiumGetOcgCollectionRequestP) returns(PdfiumGetOcgCollectionResultP){}
   rpc Pdfium_Form_PagenateDocument(PdfiumPagenateDocumentRequestP) returns(PdfDocumentResultP){}
   rpc Pdfium_OpenNewDocument(stream PdfiumOpenNewDocumentRequestP)returns (PdfDocumentResultP){}
   rpc Pdfium_EmbedFileToPdfA(stream PdfiumEmbedFileToPdfARequestStreamP) returns (PdfDocumentResultP){}

@@ -414,9 +414,16 @@ final class Access {
     }
 
     /**
-     * Stop IronPdfEngine process
+     * Stop IronPdfEngine process.
+     *
+     * <p>{@code synchronized} on the same {@code Access} monitor as
+     * {@link #ensureConnection()} so a watchdog thread stopping the engine
+     * cannot interleave with a worker thread mid-connect and leave a live
+     * client over a torn-down channel. The JVM shutdown hook does not call this
+     * method (it invokes {@link #shutdownChanel()}/{@code proc.destroy()}
+     * directly), so this introduces no shutdown deadlock.</p>
      */
-    public static void stopIronPdfEngine() {
+    public static synchronized void stopIronPdfEngine() {
         shutdownChanel();
 
         if (ironPdfProcess != null) {
@@ -425,6 +432,73 @@ final class Access {
         ironPdfProcess = null;
 
         client = null;
+    }
+
+    /**
+     * Checks whether IronPdfEngine is currently reachable and responsive.
+     *
+     * <p>Unlike {@link #ensureConnection()} this never starts a subprocess and
+     * never blocks on the long retry loops. It performs a single, short-deadline
+     * handshake against the existing connection. This makes it safe to poll as a
+     * lightweight health check.</p>
+     *
+     * <p>Liveness is decided by the handshake, not by the launched process
+     * handle: depending on the IronPdfEngine version the locally launched
+     * process can be a short-lived launcher that exits while the engine keeps
+     * serving, so {@code ironPdfProcess.isAlive()} is not a reliable signal.</p>
+     *
+     * @return {@code true} if a connection exists and the engine answers a
+     * handshake within the deadline; {@code false} otherwise (never connected,
+     * channel closed, or engine unresponsive).
+     */
+    static synchronized boolean isIronPdfEngineActive() {
+        // Never connected yet -> not active. Do not auto-connect here.
+        if (client == null) {
+            return false;
+        }
+
+        if (channel == null || channel.isShutdown() || channel.isTerminated()) {
+            return false;
+        }
+
+        try {
+            HandshakeRequestP.Builder handshakeRequest = HandshakeRequestP.newBuilder();
+            handshakeRequest.setExpectedVersion(Setting_Api.IRON_PDF_ENGINE_VERSION);
+            handshakeRequest.setProgLang("java");
+
+            client.GetBlockingStub("handshake")
+                    .withDeadlineAfter(5, TimeUnit.SECONDS)
+                    .handshake(handshakeRequest.build());
+            return true;
+        } catch (Exception e) {
+            logger.debug("IronPdfEngine active check failed", e);
+            return false;
+        }
+    }
+
+    /**
+     * Stops IronPdfEngine (if running) and establishes a fresh connection.
+     *
+     * <p>This is the recovery path for an engine that has been interrupted by an
+     * external event (host restart, OS {@code kill}, VM crash). After such an
+     * event the cached client is stale and {@link #ensureConnection()} alone
+     * would keep returning the dead client, so the state is fully reset first.</p>
+     *
+     * <ul>
+     *   <li>In {@code SUBPROCESS} mode a new IronPdfEngine subprocess is launched.</li>
+     *   <li>In remote modes ({@code HOST_PORT}, {@code TARGET}, {@code OFFICIAL_CLOUD})
+     *       the channel is rebuilt and a new handshake is performed against the
+     *       (re)started server.</li>
+     * </ul>
+     *
+     * <p>{@code CUSTOM} mode is not supported here: the gRPC channel is owned by
+     * the caller and cannot be rebuilt once shut down. Callers are guarded against
+     * this in {@link Engine_Api#restartEngine()}.</p>
+     */
+    static synchronized void restartIronPdfEngine() {
+        logInfoOrSystemOut(logger, "Restarting IronPdfEngine");
+        stopIronPdfEngine();
+        ensureConnection();
     }
 
     private static void setPermission(File file) {

@@ -65,6 +65,9 @@ message PdfiumTextObjectP
   double MatrixD = 11;
   double MatrixE = 12;
   double MatrixF = 13;
+  // Optional Content Group (PDF layer) id, -1 if outside any layer.
+  // Join against PdfiumOcgP.id returned by Pdfium_Document_GetOcgCollection.
+  optional int32 ocg_id = 14;
 }
 
 message PdfiumTextObjectCollectionP
@@ -110,6 +113,17 @@ message PdfiumPathObjectP
   repeated PdfiumPathSegmentObjectP points = 14;
   int32 FillMode = 15;
   bool IsStroked = 16;
+  // Optional Content Group (PDF layer) id, -1 if outside any layer.
+  optional int32 ocg_id = 17;
+
+  // Stroke-style attributes (PDF graphics-state, captured per object).
+  // CAD / engineering-plan importers use these to distinguish features
+  // when the source has no /OCProperties.
+  optional float stroke_width = 18;     // PDF `w` operator
+  optional int32 line_cap     = 19;     // PDF `J` (0=Butt, 1=Round, 2=ProjectingSquare)
+  optional int32 line_join    = 20;     // PDF `j` (0=Miter, 1=Round, 2=Bevel)
+  repeated float dash_array   = 21;     // PDF `d` first arg (alternating dash/gap)
+  optional float dash_phase   = 22;     // PDF `d` second arg
 }
 
 message PdfiumPathObjectCollectionP
