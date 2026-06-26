@@ -93,6 +93,49 @@ By default `IronPdf for Java` will download `IronPdfEngine` binaries on the firs
 > Note: For macOS, `IronPdfEngine` binaries that download on the first run might not work in your system (Gatekeeper on macOS).
 Please use `IronPdfEngine` as a maven dependency instead (next section)
 
+### Managing the IronPdfEngine lifecycle (restart / health check)
+
+For most applications the engine lifecycle is fully automatic and you never need
+to manage it. Long-running services, however, may need to recover when the engine
+is interrupted by something outside IronPDF's control, e.g. a remote IronPdfEngine
+host restart, an OS `kill`, or a native crash. After such an event the cached
+connection becomes stale and further calls can hang or fail.
+
+`com.ironsoftware.ironpdf.IronPdfEngineManager` provides a small, thread-safe API
+for this:
+
+| Method | Description |
+| --- | --- |
+| `IronPdfEngineManager.isEngineActive()` | Health check. Returns `true` only if the engine is connected and answers a handshake. Never starts the engine. Non-blocking against a running engine (a single 5s-deadline handshake); if a connect/restart is in progress on another thread, it waits for that to finish. |
+| `IronPdfEngineManager.startEngine()` | Starts/connects the engine (same as the implicit first-call behaviour). No-op if already healthy. |
+| `IronPdfEngineManager.stopEngine()` | Stops the local subprocess (or closes the channel in remote modes). |
+| `IronPdfEngineManager.restartEngine()` | Stops then re-establishes a fresh connection. The recommended recovery action. It resets the stale state that a plain call would not. |
+
+A typical watchdog pattern:
+
+```java
+import com.ironsoftware.ironpdf.IronPdfEngineManager;
+import com.ironsoftware.ironpdf.PdfDocument;
+
+// Recover automatically if the engine was interrupted (host restart, crash, kill).
+if (!IronPdfEngineManager.isEngineActive()) {
+    IronPdfEngineManager.restartEngine();
+}
+
+PdfDocument pdf = PdfDocument.renderHtmlAsPdf("<h1>Hello World</h1>");
+pdf.saveAs("output.pdf");
+```
+
+> Note: `isEngineActive()` reports the connection IronPDF holds, regardless of
+> connection mode (subprocess or remote). It does not depend on inspecting OS
+> processes, so it works the same way for local and remote engines.
+
+> Note: `stopEngine()` and `restartEngine()` are **not** supported in `CUSTOM`
+> connection mode (`withCustomGrpcConnection`) and throw
+> `UnsupportedOperationException`. In that mode the gRPC channel is supplied by
+> you and IronPDF cannot rebuild it once shut down, so you are responsible for
+> its lifecycle. `isEngineActive()` and `startEngine()` work in all modes.
+
 ### Install IronPDF Engine as a Maven Dependency
 
 By adding IronPdfEngine as a Maven dependency, the binaries will be downloaded during the loading of dependencies:

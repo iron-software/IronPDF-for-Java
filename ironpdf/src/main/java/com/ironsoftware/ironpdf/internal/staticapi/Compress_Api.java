@@ -208,13 +208,14 @@ public final class Compress_Api {
             throw new IllegalArgumentException("options must not be null");
         }
 
-        // Step 1 — optional pdfium image re-encoding. The engine only applies it when
-        // both a target DPI > 0 and a JPEG quality are present, mirroring the .NET
-        // ToQPdfFlags() gating in AdvancedCompressionOptions.
-        if (options.pdfiumWillReEncode() && options.getJpegQuality() != null) {
+        // Step 1: Optional pdfium image downsampling + re-encode. When a target DPI is
+        // set, every image is downsampled and re-encoded, with JpegQuality defaulting to
+        // 85 when unset.
+        if (options.pdfiumWillReEncode()) {
+            int jpegQuality = options.getJpegQuality() != null ? options.getJpegQuality() : 85;
             compressImages(internalPdfDocument,
-                    options.getJpegQuality(),
-                    false,
+                    jpegQuality,
+                    true, // scaleToVisibleSize — matches .NET useVisible: true
                     options.isHighQualityImageSubsampling(),
                     options.getTargetImageDpi());
         }
@@ -268,7 +269,37 @@ public final class Compress_Api {
         if (options == null) {
             throw new IllegalArgumentException("options must not be null");
         }
+        // Validate the output path once, up front, so this overload behaves consistently
+        // regardless of options: the delegate path below writes via the instance overload
+        // (Files.write + protobuf setOutputPath, both of which reject null/empty), so a
+        // null/empty path must be rejected for the fast path too rather than silently
+        // diverging.
+        if (outputFilePath == null || outputFilePath.isEmpty()) {
+            throw new IllegalArgumentException("outputFilePath must not be null or empty");
+        }
 
+        String pwd = password == null ? "" : password;
+
+        // Image DPI downsampling and struct-tree removal require a loaded document. Open
+        // the bytes into a temporary document (decrypting with the password) and delegate
+        // to the instance overload so the image -> struct-tree -> qpdf orchestration
+        // (Steps 1-3) lives in a single place, and the temporary document is released
+        // deterministically via try-with-resources.
+        //
+        // This assumes the loaded-document qpdf RPC (used by the instance overload) and
+        // the from-bytes qpdf RPC (fast path below) behave identically — both receive the
+        // same toFlagsProto(options). The static-vs-instance parity test guards against
+        // any gross divergence between the two engine RPCs.
+        if (options.pdfiumWillReEncode() || options.isRemoveStructureTree()) {
+            try (InternalPdfDocument doc = PdfDocument_Api.fromBytes(pdfBytes, pwd)) {
+                // The document is already decrypted in the engine, so no password here.
+                compressAndSaveAs(doc, outputFilePath, "", options);
+            }
+            return;
+        }
+
+        // Fast path: nothing to do pdfium-side — stream the raw bytes straight to the
+        // qpdf from-bytes RPC (this also lets the engine decrypt encrypted input).
         RpcClient client = Access.ensureConnection();
 
         final CountDownLatch finishLatch = new CountDownLatch(1);
@@ -283,7 +314,7 @@ public final class Compress_Api {
         QPdfCompressAndSaveAsAdvancedFromBytesRequestStreamP.InfoP info =
                 QPdfCompressAndSaveAsAdvancedFromBytesRequestStreamP.InfoP.newBuilder()
                         .setOutputPath(outputFilePath == null ? "" : outputFilePath)
-                        .setPassword(password == null ? "" : password)
+                        .setPassword(pwd)
                         .setFlags(toFlagsProto(options))
                         .build();
         requestStream.onNext(QPdfCompressAndSaveAsAdvancedFromBytesRequestStreamP.newBuilder()

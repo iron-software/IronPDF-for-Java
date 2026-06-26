@@ -42,11 +42,41 @@ public final class Signature_Api {
         return Signature_Converter.fromProto(res);
     }
 
+    /**
+     * Returns the number of signature fields already present in the document (including signature
+     * placeholders and signatures from a previously signed PDF loaded via fromFile).
+     */
+    public static int getSignatureCount(InternalPdfDocument internalPdfDocument) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumGetSignatureCountRequestP.Builder req = PdfiumGetSignatureCountRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+
+        PdfiumGetSignatureCountResultP res = client.GetBlockingStub("getSignatureCount")
+                .pdfiumSignatureGetSignatureCount(req.build());
+
+        if (res.getResultOrExceptionCase() == PdfiumGetSignatureCountResultP.ResultOrExceptionCase.EXCEPTION) {
+            throw Exception_Converter.fromProto(res.getException());
+        }
+
+        return res.getResult();
+    }
+
     public static int signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumSignRequestStreamP.InfoP.Builder info = PdfiumSignRequestStreamP.InfoP.newBuilder();
         info.setDocument(internalPdfDocument.remoteDocument);
+
+        // The signature field requires a non-empty internal name; the engine writes it as the
+        // AcroForm field name (/T entry). Without it the field name is "" and Adobe/Foxit do not
+        // recognize the signature (only Edge does).
+        // Seed the counter from the signatures already present in the document (e.g. a PDF loaded
+        // via fromFile that was signed previously) in addition to those added in this session, so
+        // each field gets a unique name and we don't collide with an existing /T (which viewers
+        // treat as one field, masking/invalidating a signature). Mirrors IronPdf (C#) Sign().
+        int existingSignatureCount = getSignatureCount(internalPdfDocument);
+        info.setInternalName("Signature" + (existingSignatureCount + internalPdfDocument.signatures.size() + 1));
 
         if (signature.getSigningContact() != null) {
             info.setSigningContact(signature.getSigningContact());

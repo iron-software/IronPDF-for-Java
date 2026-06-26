@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package ironpdfengineproto;
+
+import "basic.proto";
+import "pdfium_pdf_document.proto";
+
+option java_package = "com.ironsoftware.ironpdf.internal.proto";
+option java_multiple_files = true;
+
+// A single Optional Content Group entry. One per /OCProperties/OCGs array
+// element. ids are stable for the document's lifetime and match the value
+// carried on PdfiumTextObjectP.ocg_id / PdfiumPathObjectP.ocg_id.
+message PdfiumOcgP {
+  int32 id = 1;
+  // /Name entry from the OCG dictionary. May be empty (legal per spec).
+  string name = 2;
+  // Visibility in the document's default configuration (/OCProperties/D).
+  bool default_visible = 3;
+  // Effective visibility under PDFium's View OCContext. Distinct from
+  // default_visible when intent / OCMD expressions override.
+  bool is_visible = 4;
+  // id of the parent OCG when nested inside /D/Order, or -1 if root.
+  int32 parent_id = 5;
+}
+
+message PdfiumOcgCollectionP {
+  repeated PdfiumOcgP value = 1;
+}
+
+message PdfiumGetOcgCollectionRequestP {
+  PdfDocumentP document = 1;
+}
+
+message PdfiumGetOcgCollectionResultP {
+  oneof result_or_exception {
+    PdfiumOcgCollectionP result = 1;
+    RemoteExceptionP exception = 2;
+  }
+}
