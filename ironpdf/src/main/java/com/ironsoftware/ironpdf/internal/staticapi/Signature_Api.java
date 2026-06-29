@@ -71,12 +71,8 @@ public final class Signature_Api {
         // The signature field requires a non-empty internal name; the engine writes it as the
         // AcroForm field name (/T entry). Without it the field name is "" and Adobe/Foxit do not
         // recognize the signature (only Edge does).
-        // Seed the counter from the signatures already present in the document (e.g. a PDF loaded
-        // via fromFile that was signed previously) in addition to those added in this session, so
-        // each field gets a unique name and we don't collide with an existing /T (which viewers
-        // treat as one field, masking/invalidating a signature). Mirrors IronPdf (C#) Sign().
         int existingSignatureCount = getSignatureCount(internalPdfDocument);
-        info.setInternalName("Signature" + (existingSignatureCount + internalPdfDocument.signatures.size() + 1));
+        info.setInternalName("Signature" + (existingSignatureCount + 1));
 
         if (signature.getSigningContact() != null) {
             info.setSigningContact(signature.getSigningContact());
