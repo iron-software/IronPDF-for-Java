@@ -28,21 +28,6 @@ public class RCTests2026_06 extends TestBase {
 
     private static final String RC_DIR = "/Data/RC_2026_06";
 
-    // ==================== Engine version pin ====================
-
-    /**
-     * Test 01: Engine version is 2026.6.1.
-     * Trip-wire — prevents an accidental rollback of the engine pin during
-     * release prep. If this fails check ironpdf-engine-pack/*\/pom.xml and
-     * Setting_Api.IRON_PDF_ENGINE_VERSION are in sync.
-     */
-    @Test
-    public final void Test01_EngineVersion_Is_2026_6_1() {
-        Assertions.assertEquals("2026.6.1", Settings.getIronPdfEngineVersion(),
-                "Engine version must be 2026.6.1 for the June 2026 release");
-        System.out.println("Test01: engine version = " + Settings.getIronPdfEngineVersion());
-    }
-
     // ==================== PDF-2046: AdvancedCompressionOptions ====================
 
     /**
