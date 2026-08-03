@@ -11,9 +11,19 @@ message PdfiumRemovePasswordsAndEncryptionRequestP {
 
 message PdfiumPdfSecuritySettingsP
 {
+  enum EncryptionAlgorithm {
+    RC4_128 = 0; // 128-bit RC4 (PDF 1.4, V=2/R=3)
+    AES_128 = 1; // 128-bit AES (PDF 1.5+, V=4/R=4, AESV2)
+    AES_256 = 2; // 256-bit AES (PDF 2.0, V=5/R=6, AESV3)
+  }
+
   PdfiumPdfDocumentPermissionsP permissions = 1;
   string owner_password = 2;
   string user_password = 3;
+  EncryptionAlgorithm encryption_algorithm = 4;
+  // Whether document metadata is encrypted (PDF 1.5+, V>=4 only).
+  // Optional so an unset value (older clients) is treated as the PDF default (true).
+  optional bool encrypt_metadata = 5;
 }
 
 message PdfiumSetPdfSecuritySettingsRequestP {

@@ -4,6 +4,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumPdfDocumentPermissionsP;
 import com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSecuritySettingsP;
 import com.ironsoftware.ironpdf.security.PdfEditSecurity;
+import com.ironsoftware.ironpdf.security.PdfEncryptionType;
 import com.ironsoftware.ironpdf.security.PdfPrintSecurity;
 import com.ironsoftware.ironpdf.security.SecurityOptions;
 
@@ -148,7 +149,40 @@ final class Security_Converter {
         proto.setUserPassword(iron.getUserPassword());
         proto.setPermissions(permission);
 
+        // Map explicitly rather than casting the ordinal into the proto enum, so a future
+        // reordering of either enum cannot silently select the wrong cipher.
+        PdfiumPdfSecuritySettingsP.EncryptionAlgorithm algorithm;
+        switch (iron.getEncryptionType() != null ? iron.getEncryptionType() : PdfEncryptionType.RC4_128) {
+            case AES_128:
+                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_128;
+                break;
+            case AES_256:
+                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_256;
+                break;
+            default:
+                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.RC4_128;
+                break;
+        }
+        proto.setEncryptionAlgorithm(algorithm);
+        // Only write the optional field when the caller has an explicit value. Leaving it unset lets
+        // the engine apply the PDF default (metadata encrypted), matching the proto's presence semantics.
+        if (iron.isEncryptMetadata() != null) {
+            proto.setEncryptMetadata(iron.isEncryptMetadata());
+        }
+
         return proto.build();
+    }
+
+    private static PdfEncryptionType fromProto(PdfiumPdfSecuritySettingsP.EncryptionAlgorithm input) {
+        // Map explicitly (not by ordinal) so a future reordering of either enum can't mis-map the cipher.
+        switch (input) {
+            case AES_128:
+                return PdfEncryptionType.AES_128;
+            case AES_256:
+                return PdfEncryptionType.AES_256;
+            default:
+                return PdfEncryptionType.RC4_128;
+        }
     }
 
     static com.ironsoftware.ironpdf.internal.proto.PdfiumPdfEditSecurityP toProto(PdfEditSecurity input) {
@@ -174,6 +208,13 @@ final class Security_Converter {
         if (!Utils_StringHelper.isNullOrWhiteSpace(proto.getOwnerPassword())) {
             iron.setOwnerPassword(proto.getOwnerPassword());
         }
+
+        // Round-trip the encryption settings so a read-modify-write (e.g. getSecurityOptions() ->
+        // setSecurityOptions()) does not silently downgrade an AES document to the RC4-128 default.
+        // Safe even against an engine that doesn't populate these yet: proto3 default 0 is RC4_128
+        // and unset encrypt_metadata falls back to the PDF default (true), which is the prior behavior.
+        iron.setEncryptionType(fromProto(proto.getEncryptionAlgorithm()));
+        iron.setEncryptMetadata(proto.hasEncryptMetadata() ? proto.getEncryptMetadata() : true);
 
         return iron;
     }
