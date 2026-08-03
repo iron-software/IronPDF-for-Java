@@ -54,7 +54,7 @@ public class SecurityOptions {
      */
     private PdfPrintSecurity allowUserPrinting = PdfPrintSecurity.values()[0];
     /**
-     * Sets the owner password and enables 128Bit encryption of PDF content. An owner password is one
+     * Sets the owner password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). An owner password is one
      * used to enable and disable all other security settings. <p>OwnerPassword must be set to a non
      * empty string value for {@link SecurityOptions#setAllowUserCopyPasteContent(Boolean)},
      * {@link SecurityOptions#setAllowUserAnnotations(Boolean)},
@@ -63,10 +63,23 @@ public class SecurityOptions {
      */
     private String ownerPassword = "";
     /**
-     * Sets the user password and enables 128Bit encryption of PDF content. <p>A user password is a
+     * Sets the user password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      */
     private String userPassword = "";
+    /**
+     * The encryption algorithm used when the document is secured with a password. <p>Defaults to
+     * {@link PdfEncryptionType#RC4_128}. Set to {@link PdfEncryptionType#AES_128} or 
+     * {@link PdfEncryptionType#AES_256} for stronger, modern encryption.</p>
+     */
+    private PdfEncryptionType encryptionType = PdfEncryptionType.RC4_128;
+    /**
+     * Whether the document's metadata is encrypted along with its content. <p>Defaults to true (the
+     * PDF default). Only honored for AES encryption; it has no effect for
+     * {@link PdfEncryptionType#RC4_128}. Set to false to keep metadata readable/indexable while the
+     * rest of the document remains encrypted.</p>
+     */
+    private Boolean encryptMetadata = true;
 
     /**
      * Instantiates a new Security options. A class defining user security settings for a PDF document. <p>Allows the developer to control
@@ -222,7 +235,7 @@ public class SecurityOptions {
     }
 
     /**
-     * Gets owner password. The owner password and enables 128Bit encryption of PDF content. An owner password is one
+     * Gets owner password. The owner password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). An owner password is one
      * used to enable and disable all other security settings. <p>OwnerPassword must be set to a non
      * empty string value for {@link SecurityOptions#setAllowUserCopyPasteContent(Boolean)},
      * {@link SecurityOptions#setAllowUserAnnotations(Boolean)},
@@ -236,7 +249,7 @@ public class SecurityOptions {
     }
 
     /**
-     * Sets owner password. The owner password and enables 128Bit encryption of PDF content. An owner password is one
+     * Sets owner password. The owner password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). An owner password is one
      * used to enable and disable all other security settings. <p>OwnerPassword must be set to a non
      * empty string value for {@link SecurityOptions#setAllowUserCopyPasteContent(Boolean)},
      * {@link SecurityOptions#setAllowUserAnnotations(Boolean)},
@@ -250,7 +263,7 @@ public class SecurityOptions {
     }
 
     /**
-     * Gets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password is a
+     * Gets user password. The user password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      *
      * @return the user password
@@ -260,12 +273,56 @@ public class SecurityOptions {
     }
 
     /**
-     * Sets user password. The user password and enables 128Bit encryption of PDF content. <p>A user password is a
+     * Sets user password. The user password and enables encryption of PDF content (algorithm per setEncryptionType, RC4 128-bit by default). <p>A user password is a
      * password that each user must enter to open or print the PDF document.</p>
      *
      * @param value the value
      */
     public final void setUserPassword(String value) {
         userPassword = value;
+    }
+
+    /**
+     * Gets the encryption algorithm used when the document is secured with a password. <p>Defaults to
+     * {@link PdfEncryptionType#RC4_128}.</p>
+     *
+     * @return the encryption type
+     */
+    public final PdfEncryptionType getEncryptionType() {
+        return encryptionType;
+    }
+
+    /**
+     * Sets the encryption algorithm used when the document is secured with a password. <p>Defaults to
+     * {@link PdfEncryptionType#RC4_128}. Set to {@link PdfEncryptionType#AES_128} or
+     * {@link PdfEncryptionType#AES_256} for stronger, modern encryption.</p>
+     *
+     * @param value the value
+     */
+    public final void setEncryptionType(PdfEncryptionType value) {
+        encryptionType = value;
+    }
+
+    /**
+     * Gets whether the document's metadata is encrypted along with its content. <p>Defaults to true
+     * (the PDF default). Only honored for AES encryption; it has no effect for
+     * {@link PdfEncryptionType#RC4_128}.</p>
+     *
+     * @return the encrypt metadata value
+     */
+    public final Boolean isEncryptMetadata() {
+        return encryptMetadata;
+    }
+
+    /**
+     * Sets whether the document's metadata is encrypted along with its content. <p>Defaults to true
+     * (the PDF default). Only honored for AES encryption; it has no effect for
+     * {@link PdfEncryptionType#RC4_128}. Set to false to keep metadata readable/indexable while the
+     * rest of the document remains encrypted.</p>
+     *
+     * @param value the value
+     */
+    public final void setEncryptMetadata(Boolean value) {
+        encryptMetadata = value;
     }
 }
