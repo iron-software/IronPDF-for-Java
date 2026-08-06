@@ -56,6 +56,9 @@ public final class Security_Api {
         SecurityOptions opt = Security_Converter.fromProto(res.getSecuritySettings());
         opt.setOwnerPassword(internalPdfDocument.ownerPassword);
         opt.setUserPassword(internalPdfDocument.userPassword);
+        // The engine does not echo the cipher/metadata flag back, so report the last-applied values
+        opt.setEncryptionType(internalPdfDocument.encryptionType);
+        opt.setEncryptMetadata(internalPdfDocument.encryptMetadata);
         return opt;
     }
 
@@ -110,6 +113,27 @@ public final class Security_Api {
      */
     public static void setPdfSecuritySettings(InternalPdfDocument internalPdfDocument,
                                               SecurityOptions securityOptions) {
+        // Cache the requested settings up front. The engine echoes back neither the passwords nor the
+        // cipher on read, so getCurrentSecurityOptions() reports these cached values, and a later
+        // password assignment re-applies the cached cipher.
+        internalPdfDocument.userPassword =
+                securityOptions.getUserPassword() == null ? "" : securityOptions.getUserPassword();
+        internalPdfDocument.ownerPassword =
+                securityOptions.getOwnerPassword() == null ? "" : securityOptions.getOwnerPassword();
+        if (securityOptions.getEncryptionType() != null) {
+            internalPdfDocument.encryptionType = securityOptions.getEncryptionType();
+        }
+        if (securityOptions.isEncryptMetadata() != null) {
+            internalPdfDocument.encryptMetadata = securityOptions.isEncryptMetadata();
+        }
+
+        // Defer applying to the engine until a password is present. Permissions and encryption are only
+        // enforceable with a password.
+        if (Utils_StringHelper.isNullOrWhiteSpace(internalPdfDocument.ownerPassword)
+                && Utils_StringHelper.isNullOrWhiteSpace(internalPdfDocument.userPassword)) {
+            return;
+        }
+
         RpcClient client = Access.ensureConnection();
         PdfiumSetPdfSecuritySettingsRequestP.Builder req = PdfiumSetPdfSecuritySettingsRequestP.newBuilder();
         req.setDocument(internalPdfDocument.remoteDocument);
@@ -121,8 +145,5 @@ public final class Security_Api {
         if (res.getResultOrExceptionCase() == PdfDocumentResultP.ResultOrExceptionCase.EXCEPTION) {
             throw Exception_Converter.fromProto(res.getException());
         }
-
-        internalPdfDocument.userPassword = securityOptions.getUserPassword();
-        internalPdfDocument.ownerPassword = securityOptions.getOwnerPassword();
     }
 }
