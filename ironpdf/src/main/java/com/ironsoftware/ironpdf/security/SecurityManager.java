@@ -41,6 +41,7 @@ public class SecurityManager {
      */
     public final void setOwnerPassword(String ownerPassword) {
         internalPdfDocument.ownerPassword = ownerPassword;
+        applyPasswordChange();
     }
 
     /**
@@ -60,6 +61,20 @@ public class SecurityManager {
      */
     public final void setPassword(String password) {
         internalPdfDocument.userPassword = password;
+        applyPasswordChange();
+    }
+
+    /**
+     * Applies the current owner/user passwords to the document via the engine, so a password set
+     * through {@link #setPassword(String)} / {@link #setOwnerPassword(String)} actually encrypts the
+     * content (previously these setters only stored the value locally, so the saved document was left
+     * unencrypted and any password would open it). Current permissions and the configured encryption
+     * type are preserved. When neither password is set, {@code Security_Api.setPdfSecuritySettings}
+     * defers and this is a no-op; use {@link #removePasswordsAndEncryption()} to remove protection.
+     */
+    private void applyPasswordChange() {
+        SecurityOptions current = Security_Api.getPdfSecurityOptions(internalPdfDocument);
+        Security_Api.setPdfSecuritySettings(internalPdfDocument, current);
     }
 
     /**

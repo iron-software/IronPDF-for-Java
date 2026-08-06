@@ -149,25 +149,34 @@ final class Security_Converter {
         proto.setUserPassword(iron.getUserPassword());
         proto.setPermissions(permission);
 
-        // Map explicitly rather than casting the ordinal into the proto enum, so a future
-        // reordering of either enum cannot silently select the wrong cipher.
-        PdfiumPdfSecuritySettingsP.EncryptionAlgorithm algorithm;
-        switch (iron.getEncryptionType() != null ? iron.getEncryptionType() : PdfEncryptionType.RC4_128) {
-            case AES_128:
-                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_128;
-                break;
-            case AES_256:
-                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_256;
-                break;
-            default:
-                algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.RC4_128;
-                break;
-        }
-        proto.setEncryptionAlgorithm(algorithm);
-        // Only write the optional field when the caller has an explicit value. Leaving it unset lets
-        // the engine apply the PDF default (metadata encrypted), matching the proto's presence semantics.
-        if (iron.isEncryptMetadata() != null) {
-            proto.setEncryptMetadata(iron.isEncryptMetadata());
+        // Only carry the encryption settings on the wire when a password is actually present.
+        // Encryption without a password would write an /Encrypt dictionary keyed on an empty
+        // password (a no-op protection and a format change), so we defer it until a password is set,
+        // preserving the pre-AES behaviour and the order-independence contract (setEncryptionType
+        // before the password must not encrypt).
+        boolean hasPassword = !Utils_StringHelper.isNullOrWhiteSpace(iron.getOwnerPassword())
+                || !Utils_StringHelper.isNullOrWhiteSpace(iron.getUserPassword());
+        if (hasPassword) {
+            // Map explicitly rather than casting the ordinal into the proto enum, so a future
+            // reordering of either enum cannot silently select the wrong cipher.
+            PdfiumPdfSecuritySettingsP.EncryptionAlgorithm algorithm;
+            switch (iron.getEncryptionType() != null ? iron.getEncryptionType() : PdfEncryptionType.RC4_128) {
+                case AES_128:
+                    algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_128;
+                    break;
+                case AES_256:
+                    algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.AES_256;
+                    break;
+                default:
+                    algorithm = PdfiumPdfSecuritySettingsP.EncryptionAlgorithm.RC4_128;
+                    break;
+            }
+            proto.setEncryptionAlgorithm(algorithm);
+            // Only write the optional field when the caller has an explicit value. Leaving it unset
+            // lets the engine apply the PDF default (metadata encrypted), matching presence semantics.
+            if (iron.isEncryptMetadata() != null) {
+                proto.setEncryptMetadata(iron.isEncryptMetadata());
+            }
         }
 
         return proto.build();

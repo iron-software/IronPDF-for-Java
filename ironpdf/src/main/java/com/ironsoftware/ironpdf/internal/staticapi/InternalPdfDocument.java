@@ -40,6 +40,13 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
     public String userPassword = "";
     public String ownerPassword = "";
 
+    // Locally cached encryption settings. The engine's GetPdfSecuritySettings does not echo the
+    // cipher back (nor the passwords, which is why those are cached above), so getCurrentSecurityOptions
+    // reports these last-applied values instead of the proto default.
+    public com.ironsoftware.ironpdf.security.PdfEncryptionType encryptionType =
+            com.ironsoftware.ironpdf.security.PdfEncryptionType.RC4_128;
+    public Boolean encryptMetadata = Boolean.TRUE;
+
     /**
      * Instantiates a new Internal pdf document.
      *
