@@ -1,6 +1,7 @@
 ﻿syntax = "proto3";
 package ironpdfengineproto;
 import "basic.proto";
+import "google/protobuf/timestamp.proto";
 
 option java_package = "com.ironsoftware.ironpdf.internal.proto";
 option java_multiple_files = true;
@@ -254,6 +255,13 @@ message PdfiumConvertToPdfUAForScreenReaderRequestP {
     int32 lang = 3;
 }
 
+message PdfiumSetImageAltTextRequestP {
+  PdfDocumentP document = 1;
+  int32 page_index = 2;
+  int32 image_index = 3;
+  string alt_text = 4;
+}
+
 message PdfiumGetPaperSizePresetRequestP {
   string name = 1;
 }
@@ -279,6 +287,15 @@ message PdfiumPdfSignatureP {
   int32 index = 1;
   string timestamp_url = 2;
   string password = 3;
+  // The save path rebuilds PdfSignature server-side, so these must be carried here too or
+  // the final CMS falls back to engine defaults regardless of what the sign request selected.
+  // Ordinals match the C# enums: signature 0=SHA-256,1=SHA-384,2=SHA-512,3=SHA-1(legacy);
+  // timestamp 0=SHA-1,1=SHA-256,2=SHA-512. Read only when present; unset means the engine default.
+  optional int32 signature_hash_algorithm = 4;
+  optional int32 timestamp_hash_algorithm = 5;
+  // Resolved signing instant, so the CMS signingTime authenticated attribute matches the /M the
+  // sign request wrote. Unset lets the engine resolve it at save time, as before.
+  optional google.protobuf.Timestamp signature_date = 6;
 }
 
 message PdfiumPdfSignatureCollectionP {

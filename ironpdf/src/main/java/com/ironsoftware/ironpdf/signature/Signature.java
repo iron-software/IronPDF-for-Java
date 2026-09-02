@@ -18,10 +18,23 @@ public class Signature {
     private byte[] certificateRawData;
 
     /**
-     * The date and time of the digital signature. If left null, the signature will be timestamped at the
-     * millisecond that the PdfDocument is saved to Disk or Stream.
+     * The date and time of the digital signature. If left null, the current time is captured when the
+     * signature is applied (via {@code SignatureManager.SignPdfWithSignature}) and used as the signing
+     * date; the same instant is written to both the signature dictionary and the CMS signing time.
      */
     private Instant signatureDate = null;
+
+    /**
+     * The hashing algorithm used to compute the PKCS#7/CMS signature digest. Defaults to
+     * {@link SignatureHashAlgorithms#SHA256}.
+     */
+    private SignatureHashAlgorithms signatureHashAlgorithm = SignatureHashAlgorithms.SHA256;
+
+    /**
+     * The algorithm requested from the RFC 3161 time-stamping server for the message imprint.
+     * Defaults to {@link TimestampHashAlgorithms#SHA256}.
+     */
+    private TimestampHashAlgorithms timestampHashAlgorithm = TimestampHashAlgorithms.SHA256;
 
     /**
      * A visual image for the sign, often a PNG of a human signature or company stamp (optional). <p>This
@@ -94,8 +107,8 @@ public class Signature {
      *
      * @param certificateRawData the certificate as a binary data (byte array).
      * @param password           the certificate's password.
-     * @param signatureDate      the date and time of the digital signature. If left null, the signature will be timestamped at the
-     *                           millisecond that the PdfDocument is saved to Disk or Stream.
+     * @param signatureDate      the date and time of the digital signature. If left null, the current time is captured
+     *                           when the signature is applied and used as the signing date.
      * @param signatureImage     a visual image for the sign, often a PNG of a human signature or company stamp (optional). <p>This
      *                           appends a visual signature in addition to  cryptographic signing.</p>
      * @param signingContact     the contact person or email address for signing related inquiries (optional).
@@ -134,8 +147,8 @@ public class Signature {
     }
 
     /**
-     * Gets signature date. The date and time of the digital signature. If left null, the signature will be timestamped at the
-     * millisecond that the PdfDocument is saved to Disk or Stream.
+     * Gets signature date. The date and time of the digital signature. If left null, the current time is
+     * captured when the signature is applied and used as the signing date.
      *
      * @return the signature date
      */
@@ -144,8 +157,8 @@ public class Signature {
     }
 
     /**
-     * Sets signature date. The date and time of the digital signature. If left null, the signature will be timestamped at the
-     * millisecond that the PdfDocument is saved to Disk or Stream.
+     * Sets signature date. The date and time of the digital signature. If left null, the current time is
+     * captured when the signature is applied and used as the signing date.
      *
      * @param signatureDate the signature date
      */
@@ -282,6 +295,54 @@ public class Signature {
      */
     public void setTimeStampUrl(String timeStampUrl) {
         this.timeStampUrl = timeStampUrl;
+    }
+
+    /**
+     * Gets the hashing algorithm used to compute the PKCS#7/CMS signature digest.
+     *
+     * @return the signature hash algorithm
+     */
+    public SignatureHashAlgorithms getSignatureHashAlgorithm() {
+        return signatureHashAlgorithm;
+    }
+
+    /**
+     * Sets the hashing algorithm used to compute the PKCS#7/CMS signature digest. Defaults to
+     * {@link SignatureHashAlgorithms#SHA256}. Must not be null: the sign and save paths dereference it
+     * unconditionally, and a null would otherwise surface as a delayed NullPointerException.
+     *
+     * @param signatureHashAlgorithm the signature hash algorithm (non-null)
+     * @throws IllegalArgumentException if {@code signatureHashAlgorithm} is null
+     */
+    public void setSignatureHashAlgorithm(SignatureHashAlgorithms signatureHashAlgorithm) {
+        if (signatureHashAlgorithm == null) {
+            throw new IllegalArgumentException("signatureHashAlgorithm must not be null.");
+        }
+        this.signatureHashAlgorithm = signatureHashAlgorithm;
+    }
+
+    /**
+     * Gets the algorithm requested from the RFC 3161 time-stamping server for the message imprint.
+     *
+     * @return the timestamp hash algorithm
+     */
+    public TimestampHashAlgorithms getTimestampHashAlgorithm() {
+        return timestampHashAlgorithm;
+    }
+
+    /**
+     * Sets the algorithm requested from the RFC 3161 time-stamping server for the message imprint.
+     * Defaults to {@link TimestampHashAlgorithms#SHA256}. Must not be null: the sign and save paths
+     * dereference it unconditionally, and a null would otherwise surface as a delayed NullPointerException.
+     *
+     * @param timestampHashAlgorithm the timestamp hash algorithm (non-null)
+     * @throws IllegalArgumentException if {@code timestampHashAlgorithm} is null
+     */
+    public void setTimestampHashAlgorithm(TimestampHashAlgorithms timestampHashAlgorithm) {
+        if (timestampHashAlgorithm == null) {
+            throw new IllegalArgumentException("timestampHashAlgorithm must not be null.");
+        }
+        this.timestampHashAlgorithm = timestampHashAlgorithm;
     }
 
     /**

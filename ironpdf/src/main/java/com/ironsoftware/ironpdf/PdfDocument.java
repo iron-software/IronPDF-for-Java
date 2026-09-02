@@ -2703,6 +2703,36 @@ public class PdfDocument implements Printable, AutoCloseable {
     }
 
     /**
+     * Sets (or overwrites) the accessibility alternate text on a single image in this PDF. The image
+     * is tagged immediately with a Figure structure element carrying the alternate text, so the tag
+     * is present as soon as this call returns. A later {@link #convertToPdfUA(NaturalLanguages)}
+     * preserves the tag and is required for full PDF/UA compliance, but is not needed for the tag
+     * itself to exist.
+     * <p>The image is addressed by page index and image index, using the same ordering as
+     * {@link #extractAllRawImagesFromPages}.</p>
+     * <p>This method only sets or overwrites alternate text; it cannot clear it. The alternate text
+     * must be a non-empty string, and there is no companion getter to read it back.</p>
+     *
+     * @param pageIndex  Zero-based page index of the image. Must be zero or greater.
+     * @param imageIndex Zero-based image index within the page. Must be zero or greater.
+     * @param altText    Alternate text describing the image. Must be a non-empty string.
+     * @return this {@link PdfDocument}, to allow chaining.
+     */
+    public PdfDocument setImageAltText(int pageIndex, int imageIndex, String altText) {
+        if (pageIndex < 0) {
+            throw new IllegalArgumentException("Page index must be zero or greater.");
+        }
+        if (imageIndex < 0) {
+            throw new IllegalArgumentException("Image index must be zero or greater.");
+        }
+        if (altText == null || altText.trim().isEmpty()) {
+            throw new IllegalArgumentException("Alt text must be a non-empty string.");
+        }
+        PdfDocument_Api.setImageAltText(internalPdfDocument, pageIndex, imageIndex, altText);
+        return this;
+    }
+
+    /**
      * Render HTML to PDF and convert to PDF/UA format with screen reader support.
      * Produces a proper semantic structure tree for accessibility.
      * @param html The HTML string to render

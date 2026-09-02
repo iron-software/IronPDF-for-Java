@@ -8,6 +8,7 @@ import com.ironsoftware.ironpdf.signature.SignaturePermissions;
 import com.ironsoftware.ironpdf.signature.VerifiedSignature;
 import io.grpc.stub.StreamObserver;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +63,7 @@ public final class Signature_Api {
         return res.getResult();
     }
 
-    public static int signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions) {
+    public static int signPdfWithSignatureFile(InternalPdfDocument internalPdfDocument, Signature signature, SignaturePermissions permissions, Instant signingInstant) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumSignRequestStreamP.InfoP.Builder info = PdfiumSignRequestStreamP.InfoP.newBuilder();
@@ -90,10 +91,15 @@ public final class Signature_Api {
             info.setSigningReason(signature.getSigningReason());
         }
 
-        if (signature.getSignatureDate() != null) {
-            info.setSignatureDate(Timestamp.newBuilder().setSeconds(signature.getSignatureDate().getEpochSecond())
-                    .setNanos(signature.getSignatureDate().getNano()));
-        }
+        // Write the resolved signing instant (supplied by the caller, defaulting to now) into /M, so
+        // it matches the CMS signingTime that getBytes writes later from the same instant.
+        info.setSignatureDate(Timestamp.newBuilder().setSeconds(signingInstant.getEpochSecond())
+                .setNanos(signingInstant.getNano()));
+
+        // Forward the signature digest (and timestamp imprint) algorithm so engine/Docker mode
+        // honours them instead of falling back to the engine's defaults.
+        info.setSignatureHashAlgorithm(signature.getSignatureHashAlgorithm().getValue());
+        info.setTimestampHashAlgorithm(signature.getTimestampHashAlgorithm().getValue());
 
         info.setSignaturePermission(Signature_Converter.toProto(permissions));
 

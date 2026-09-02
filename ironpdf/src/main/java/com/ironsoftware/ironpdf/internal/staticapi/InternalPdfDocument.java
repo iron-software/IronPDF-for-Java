@@ -14,6 +14,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,29 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
     List<PageInfo> tempPagesInfo = Collections.emptyList();
     private boolean disposed = false;
 
-    public List<Signature> signatures = new ArrayList<>();
+    // Each applied signature paired with the signing instant resolved when its placeholder was
+    // reserved. One list (not two parallel ones) so the signature and its instant cannot drift out of
+    // alignment; the instant is kept here rather than on the caller-owned Signature so that reusing one
+    // Signature instance across documents cannot overwrite an earlier document's instant.
+    private final List<AppliedSignature> appliedSignatures = new ArrayList<>();
+
+    /**
+     * Records a signature and the signing instant resolved for it, together, so they stay aligned.
+     */
+    public void addAppliedSignature(Signature signature, Instant signingInstant) {
+        appliedSignatures.add(new AppliedSignature(signature, signingInstant));
+    }
+
+    /**
+     * Clears all recorded applied signatures (used when signatures are removed from the document).
+     */
+    public void clearAppliedSignatures() {
+        appliedSignatures.clear();
+    }
+
+    List<AppliedSignature> getAppliedSignatures() {
+        return appliedSignatures;
+    }
 
     public String userPassword = "";
     public String ownerPassword = "";

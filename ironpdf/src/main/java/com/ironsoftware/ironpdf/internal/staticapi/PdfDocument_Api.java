@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * The type Pdf document api.
@@ -196,9 +195,12 @@ public final class PdfDocument_Api {
         requestStream.onNext(PdfiumGetBinaryDataRequestStreamP.newBuilder().setInfo(infoP).build());
         PdfiumPdfSignatureCollectionP.Builder collectionP = PdfiumPdfSignatureCollectionP.newBuilder();
 
-        // sigObjIndex != Signature.InternalIndex
-        for (int sigObjIndex : IntStream.range(0, internalPdfDocument.signatures.size()).toArray()) {
-            Signature sigObj = internalPdfDocument.signatures.get(sigObjIndex);
+        // sigObjIndex != Signature.InternalIndex. Each element pairs the signature with the signing
+        // instant resolved when its placeholder was reserved, so the two cannot drift out of alignment.
+        List<AppliedSignature> appliedSignatures = internalPdfDocument.getAppliedSignatures();
+        for (int sigObjIndex = 0; sigObjIndex < appliedSignatures.size(); sigObjIndex++) {
+            AppliedSignature applied = appliedSignatures.get(sigObjIndex);
+            Signature sigObj = applied.signature;
 
             for (Iterator<byte[]> it = Utils_Util.chunk(sigObj.getCertificateRawData()); it.hasNext(); ) {
                 byte[] chunk = it.next();
@@ -209,7 +211,8 @@ public final class PdfDocument_Api {
                 requestStream.onNext(msg.build());
             }
 
-            PdfiumPdfSignatureP signatureP = Signature_Converter.toProto(sigObj);
+            // Signing instant re-sent so the CMS signingTime matches the /M written at sign time.
+            PdfiumPdfSignatureP signatureP = Signature_Converter.toProto(sigObj, applied.signingInstant);
             collectionP.addSignature(signatureP);
         }
 
@@ -394,6 +397,23 @@ public final class PdfDocument_Api {
         req.setLang(naturalLanguages);
 
         EmptyResultP res = client.GetBlockingStub("toPdfUAForScreenReader").pdfiumConvertToPdfUAForScreenReader(req.build());
+
+        Utils_Util.handleEmptyResult(res);
+
+        return internalPdfDocument;
+    }
+
+    public static InternalPdfDocument setImageAltText(InternalPdfDocument internalPdfDocument, int pageIndex,
+                                                      int imageIndex, String altText) {
+        RpcClient client = Access.ensureConnection();
+
+        PdfiumSetImageAltTextRequestP.Builder req = PdfiumSetImageAltTextRequestP.newBuilder();
+        req.setDocument(internalPdfDocument.remoteDocument);
+        req.setPageIndex(pageIndex);
+        req.setImageIndex(imageIndex);
+        req.setAltText(altText);
+
+        EmptyResultP res = client.GetBlockingStub("setImageAltText").pdfiumSetImageAltText(req.build());
 
         Utils_Util.handleEmptyResult(res);
 
