@@ -28,6 +28,17 @@ message PdfiumSignRequestStreamP {
     optional int32 signature_image_w = 13;
     optional int32 signature_image_h = 14;
     optional string contact_information = 15;
+    // Signature message digest algorithm, as the SignatureHashAlgorithms ordinal:
+    // 0 = SHA-256 (default), 1 = SHA-384, 2 = SHA-512, 3 = SHA-1 (legacy, cryptographically weak).
+    // Unset means the engine default (SHA-256), so read this field only when present.
+    optional int32 signature_hash_algorithm = 16;
+    // Timestamp imprint hash algorithm, as the TimestampHashAlgorithms ordinal:
+    // 0 = SHA-1, 1 = SHA-256, 2 = SHA-512. The two enums disagree on what 0 means, so read this
+    // field only when present. Unset means the engine default (SHA-256), NOT SHA-1. The 'optional'
+    // presence bit is load-bearing: it distinguishes an explicit SHA-1 request (value 0) from an
+    // absent field that should fall back to the engine default. An engine built before PDF-2257 has
+    // no reader for these fields and silently uses its own defaults.
+    optional int32 timestamp_hash_algorithm = 17;
   }
 }
 

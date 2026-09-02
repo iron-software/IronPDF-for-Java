@@ -5,7 +5,7 @@ import com.ironsoftware.ironpdf.internal.staticapi.InternalPdfDocument;
 import com.ironsoftware.ironpdf.internal.staticapi.Signature_Api;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 
 
@@ -54,9 +54,16 @@ public class SignatureManager {
      */
     public void SignPdfWithSignature(Signature signature, SignaturePermissions permissions){
 
-        int index = Signature_Api.signPdfWithSignatureFile(internalPdfDocument, signature, permissions);
+        // Resolve the signing instant now (defaulting to the current time when the caller left the
+        // signature date null) so the /M entry written by the sign request and the CMS signingTime
+        // written later at save time denote the same moment. It is recorded on the document, not on
+        // the caller-owned Signature, so reusing one Signature across documents is safe.
+        Instant signingInstant = signature.getSignatureDate() != null
+                ? signature.getSignatureDate() : Instant.now();
+
+        int index = Signature_Api.signPdfWithSignatureFile(internalPdfDocument, signature, permissions, signingInstant);
         signature.internalIndex = index;
-        internalPdfDocument.signatures.add(signature);
+        internalPdfDocument.addAppliedSignature(signature, signingInstant);
     }
 
     /**
@@ -73,7 +80,7 @@ public class SignatureManager {
      * Removes all signature from the PDF document.
      */
     public void RemoveSignature(){
-        internalPdfDocument.signatures = new ArrayList<>();
+        internalPdfDocument.clearAppliedSignatures();
         Signature_Api.removeSignature(internalPdfDocument);
     }
 }

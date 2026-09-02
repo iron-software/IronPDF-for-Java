@@ -25,7 +25,7 @@ final class Signature_Converter {
         return tempVar.build();
     }
 
-    static com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSignatureP toProto(Signature input) {
+    static com.ironsoftware.ironpdf.internal.proto.PdfiumPdfSignatureP toProto(Signature input, Instant signingInstant) {
         PdfiumPdfSignatureP.Builder proto = PdfiumPdfSignatureP.newBuilder();
         proto.setIndex(input.getInternalIndex());
         if(input.getPassword() != null){
@@ -33,6 +33,17 @@ final class Signature_Converter {
         }
         if(input.getTimeStampUrl() != null){
             proto.setTimestampUrl(input.getTimeStampUrl());
+        }
+        // Carry the digest choices and signing instant so the engine's save-path rebuild honours
+        // them, since getBytes reconstructs the signature server-side from this descriptor.
+        proto.setSignatureHashAlgorithm(input.getSignatureHashAlgorithm().getValue());
+        proto.setTimestampHashAlgorithm(input.getTimestampHashAlgorithm().getValue());
+        // The instant was resolved and recorded on the document when the placeholder was reserved,
+        // so the save request names the same moment the sign request wrote into /M.
+        if (signingInstant != null) {
+            proto.setSignatureDate(com.google.protobuf.Timestamp.newBuilder()
+                    .setSeconds(signingInstant.getEpochSecond())
+                    .setNanos(signingInstant.getNano()));
         }
         return proto.build();
     }
