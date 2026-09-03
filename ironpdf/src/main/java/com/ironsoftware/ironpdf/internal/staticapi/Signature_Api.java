@@ -19,6 +19,8 @@ public final class Signature_Api {
     public static List<VerifiedSignature> getVerifiedSignatures(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
+        byte[] documentBytes = PdfDocument_Api.getBytes(internalPdfDocument, false);
+
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<PdfiumGetVerifySignatureResultP> resultChunks = new ArrayList<>();
 
@@ -28,7 +30,10 @@ public final class Signature_Api {
 
         requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder().setInfo(infoP).build());
 
-        //don't send DataChunk (pdf byte[]) and let Server get the pdf byte[] inside the server to prevent too much grpc call
+        for (Iterator<byte[]> it = Utils_Util.chunk(documentBytes); it.hasNext(); ) {
+            requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder()
+                    .setDataChunk(ByteString.copyFrom(it.next())).build());
+        }
 
         requestStream.onCompleted();
 
