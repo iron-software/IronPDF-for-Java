@@ -67,6 +67,11 @@ public class Signature {
     private String timeStampUrl = null;
 
     /**
+     * Name (/T) of an existing, unsigned signature field to sign into, instead of appending a new one.
+     */
+    private String signatureFieldName = null;
+
+    /**
      * Initializes a new instance of the {@link Signature} class using a .pfx or .p12 digital signature
      * file.
      *
@@ -295,6 +300,29 @@ public class Signature {
      */
     public void setTimeStampUrl(String timeStampUrl) {
         this.timeStampUrl = timeStampUrl;
+    }
+
+    /**
+     * Gets the name (/T) of the existing signature field this signature is applied into.
+     *
+     * @return the field name, or {@code null} (default) to append a new signature field
+     */
+    public String getSignatureFieldName() {
+        return signatureFieldName;
+    }
+
+    /**
+     * Sets the name (/T) of an existing, unsigned signature field to sign into, instead of appending
+     * a new signature field. Useful for forms with pre-placed signature blocks. Signing throws if no
+     * unsigned field with that name exists (or every field with that name is already signed).
+     * {@code null}, empty or whitespace-only means the default behavior of appending a new field.
+     * <p>Cannot be combined with a signature image: applying an image rewrites the field's rectangle
+     * and page, which would move the pre-placed signature block.</p>
+     *
+     * @param signatureFieldName the field name, or {@code null}
+     */
+    public void setSignatureFieldName(String signatureFieldName) {
+        this.signatureFieldName = signatureFieldName;
     }
 
     /**

@@ -40,6 +40,9 @@ public class SignatureManager {
      * Note that the PDF will not be fully signed until Saved using {@link PdfDocument#saveAs(Path)}"
      * or {@link PdfDocument#getBinaryData()}
      * @param signature the PdfSignature
+     * @throws UnsupportedOperationException if this document already carries a signature applied in this
+     *         session (sign, save, re-open the saved PDF, then sign again), or if a signature field name is
+     *         combined with a signature image
      */
     public void SignPdfWithSignature(Signature signature){
         SignPdfWithSignature(signature,SignaturePermissions.NoChangesAllowed);
@@ -51,8 +54,29 @@ public class SignatureManager {
      * or {@link PdfDocument#getBinaryData()}
      * @param signature the PdfSignature
      * @param permissions Permissions regarding modifications to the document after the digital signature is applied
+     * @throws UnsupportedOperationException if this document already carries a signature applied in this
+     *         session (sign, save, re-open the saved PDF, then sign again), or if a signature field name is
+     *         combined with a signature image
      */
     public void SignPdfWithSignature(Signature signature, SignaturePermissions permissions){
+
+        // Signing into a named field keeps the pre-placed block; an image would rewrite its rectangle
+        // and page. Reject the combination before anything is sent (mirrors .NET and the engine).
+        String fieldName = signature.getSignatureFieldName();
+        if (fieldName != null && !fieldName.trim().isEmpty() && signature.getSignatureImage() != null) {
+            throw new UnsupportedOperationException(
+                    "A signature image cannot be combined with signatureFieldName. Applying a signature image rewrites the field's rectangle and page, which would move the pre-placed signature block. Sign the named field without an image, or leave signatureFieldName unset to append a new field.");
+        }
+
+        // One new signature per document (mirrors .NET and the engine): a second signature on the same
+        // document, whether or not it was saved in between, would leave only the last one verifying,
+        // because each covers the other's contents. Fail here, before the certificate is streamed,
+        // rather than surfacing the engine's remote exception. The supported flow is sign, save,
+        // re-open the saved PDF, then sign again.
+        if (internalPdfDocument.hasAppliedSignature()) {
+            throw new UnsupportedOperationException(
+                    "Applying more than one digital signature to a single document is not supported: only the last signature would verify, because each signature covers the other signatures' contents. Sign, save, re-open the saved PDF, then sign the next.");
+        }
 
         // Resolve the signing instant now (defaulting to the current time when the caller left the
         // signature date null) so the /M entry written by the sign request and the CMS signingTime

@@ -39,6 +39,11 @@ message PdfiumSignRequestStreamP {
     // absent field that should fall back to the engine default. An engine built before PDF-2257 has
     // no reader for these fields and silently uses its own defaults.
     optional int32 timestamp_hash_algorithm = 17;
+    // Name (/T) of an existing, unsigned signature field to sign into. When set, the engine
+    // fills that pre-placed field instead of appending a new one. Unset or empty means the default
+    // behavior of creating a new signature field; a whitespace-only name is treated the same way (the
+    // client normalizes it to unset rather than sending it as an error).
+    optional string signature_field_name = 18;
   }
 }
 

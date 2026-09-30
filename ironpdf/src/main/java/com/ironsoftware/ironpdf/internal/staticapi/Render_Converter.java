@@ -84,6 +84,13 @@ final class Render_Converter {
 
         proto.setTableOfContents(Render_Converter.toProto(Options.getTableOfContents()));
 
+        // Optional TOC heading. Sent only when it has non-whitespace text (the same "blank means unset"
+        // rule as the signature field name), so an unset title keeps the previous no-heading output.
+        if (Options.getTableOfContentsTitle() != null && !Options.getTableOfContentsTitle().trim().isEmpty()) {
+            proto.setTableOfContentsTitle(Options.getTableOfContentsTitle());
+        }
+        proto.setTableOfContentsIncludesTitleEntry(Options.isTableOfContentsIncludesTitleEntry());
+
         // Auto-bookmark generation from HTML headings (optional proto fields).
         // Only emit when explicitly enabled so existing engine defaults remain untouched.
         if (Options.isAutoBookmarksFromHeadings()) {

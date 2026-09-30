@@ -51,23 +51,49 @@ public class SignatureTests extends TestBase {
     }
 
     @Test
-    public final void SequentialSignatureFieldNamingTest() throws IOException {
-        // Signing the same document twice must produce sequentially named fields
-        // (Signature1, Signature2) without skipping a number.
-        PdfDocument pdf = PdfDocument.renderHtmlAsPdf("<h1>Sequential signature field naming</h1>");
+    public final void SecondSignatureOnSameDocumentThrowsTest() throws IOException {
+        // Breaking change (2026.10): a PdfDocument carries one new signature at a time. A second
+        // signature on the same document throws, before or after a save; the supported multi-signature
+        // flow is sign, save, re-open, sign (see ReSigningLoadedSignedDocumentDoesNotReuseFieldNameTest,
+        // which also covers sequential Signature1 / Signature2 field naming).
+        PdfDocument pdf = PdfDocument.renderHtmlAsPdf("<h1>One signature per document</h1>");
 
         SignatureManager signatureManager = pdf.getSignature();
         signatureManager.SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456"));
-        signatureManager.SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456"));
 
+        Assertions.assertThrows(UnsupportedOperationException.class, () ->
+                signatureManager.SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456")));
+
+        // Saving does not reset it: the same document still refuses a second signature.
         String pdfText = new String(pdf.getBinaryData(), java.nio.charset.StandardCharsets.ISO_8859_1);
+        Assertions.assertThrows(UnsupportedOperationException.class, () ->
+                signatureManager.SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456")));
 
-        Assertions.assertTrue(pdfText.contains("/T(Signature1)"),
-                "First signature field must be named Signature1");
-        Assertions.assertTrue(pdfText.contains("/T(Signature2)"),
-                "Second signature field must be named Signature2 (sequential)");
-        Assertions.assertFalse(pdfText.contains("/T(Signature3)"),
-                "Signature numbering must not skip (no Signature3 after two signings)");
+        // The rejected attempts left only the first field behind. Re-read after the post-save rejection
+        // so this covers both rejected attempts, not just the first.
+        String afterRejected = new String(pdf.getBinaryData(), java.nio.charset.StandardCharsets.ISO_8859_1);
+        Assertions.assertTrue(pdfText.contains("/T(Signature1)"), "First signature field must be named Signature1");
+        Assertions.assertTrue(afterRejected.contains("/T(Signature1)"), "First signature field must survive the rejections");
+        Assertions.assertFalse(afterRejected.contains("/T(Signature2)"), "A rejected second signature must not add a field");
+    }
+
+    @Test
+    public final void SignSaveReopenSignKeepsBothSignaturesValidTest() throws IOException {
+        // The supported multi-signature flow under the one-signature-per-document rule: sign, save,
+        // re-open the saved bytes as a new document, sign again. Both signatures must verify.
+        PdfDocument first = PdfDocument.renderHtmlAsPdf("<h1>Two signatures, two revisions</h1>");
+        first.getSignature().SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456"));
+        byte[] signedOnce = first.getBinaryData();
+
+        PdfDocument reopened = new PdfDocument(signedOnce, (String) null);
+        reopened.getSignature().SignPdfWithSignature(new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456"));
+        byte[] signedTwice = reopened.getBinaryData();
+
+        java.util.List<com.ironsoftware.ironpdf.signature.VerifiedSignature> verified =
+                new PdfDocument(signedTwice, (String) null).getSignature().getVerifiedSignature();
+        Assertions.assertEquals(2, verified.size());
+        Assertions.assertTrue(verified.stream().allMatch(com.ironsoftware.ironpdf.signature.VerifiedSignature::isValid),
+                "Both signatures must verify after sign, save, re-open, sign");
     }
 
     @Test

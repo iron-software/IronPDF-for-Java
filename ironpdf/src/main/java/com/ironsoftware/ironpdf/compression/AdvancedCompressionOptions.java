@@ -36,6 +36,9 @@ public class AdvancedCompressionOptions {
     private int optimizeImagesMinWidth = 0;
     private int optimizeImagesMinHeight = 0;
     private int optimizeImagesMinArea = 0;
+    private BitonalCompressionMode bitonalMode = BitonalCompressionMode.OFF;
+    private Integer bitonalResolutionDpi = null;
+    private Integer bitonalThreshold = null;
 
     /**
      * JPEG quality used when re-encoding images during optimization (1-100).
@@ -186,11 +189,97 @@ public class AdvancedCompressionOptions {
     }
 
     /**
+     * Bitonal (1-bit CCITT Group 4) compression mode for scanned / black-and-white content.
+     *
+     * @return the bitonal mode; {@link BitonalCompressionMode#OFF} by default
+     */
+    public BitonalCompressionMode getBitonalMode() { return bitonalMode; }
+
+    /**
+     * Opt-in bitonal (1-bit CCITT Group 4) compression. When not {@link BitonalCompressionMode#OFF},
+     * eligible images are thresholded to pure black/white and CCITT Group 4 encoded, which is far
+     * smaller than JPEG on scanned text (and sharper). The bitonal result is only kept when it is
+     * actually smaller than the original; images that are already bitonal are left untouched.
+     *
+     * <p>Note: when {@link #getBitonalResolutionDpi()} is unset the bitonal pass falls back to
+     * {@link #getTargetImageDpi()} (default 150), so setting only this resamples a 300 DPI scan to
+     * 150 DPI before thresholding. Set a bitonal resolution, or set {@code targetImageDpi} to
+     * {@code null}, to threshold at the source resolution.</p>
+     *
+     * <p>Enabling bitonal also runs the image pass for images that do not qualify (or whose CCITT
+     * encoding is not smaller): those go through the normal JPEG pass at {@link #getJpegQuality()}
+     * (85 when unset), and a re-encode is kept only when it is smaller than the original. This matches
+     * .NET. Use it on documents that are mostly black-and-white scans.</p>
+     *
+     * @param bitonalMode the bitonal mode (non-null)
+     * @return this instance
+     * @throws IllegalArgumentException if {@code bitonalMode} is null
+     */
+    public AdvancedCompressionOptions setBitonalMode(BitonalCompressionMode bitonalMode) {
+        if (bitonalMode == null) {
+            throw new IllegalArgumentException("bitonalMode must not be null.");
+        }
+        this.bitonalMode = bitonalMode;
+        return this;
+    }
+
+    /**
+     * Target DPI for bitonal images when bitonal mode is enabled.
+     *
+     * @return the bitonal DPI, or {@code null} (default) to fall back to {@link #getTargetImageDpi()}
+     */
+    public Integer getBitonalResolutionDpi() { return bitonalResolutionDpi; }
+
+    /**
+     * Target DPI for bitonal images when bitonal mode is enabled; images above it are downsampled
+     * before thresholding. Wins over {@link #getTargetImageDpi()} when set; when {@code null} the
+     * bitonal pass falls back to {@code targetImageDpi}, and when both are {@code null} the source
+     * resolution is kept. A value {@code <= 0} is treated as unset. No effect when bitonal is off.
+     *
+     * @param bitonalResolutionDpi the DPI, or {@code null}
+     * @return this instance
+     */
+    public AdvancedCompressionOptions setBitonalResolutionDpi(Integer bitonalResolutionDpi) {
+        this.bitonalResolutionDpi = bitonalResolutionDpi;
+        return this;
+    }
+
+    /**
+     * Luminance threshold used to split pixels into black/white when bitonal mode is enabled.
+     *
+     * @return the threshold, or {@code null} (default) for the automatic (Otsu) threshold
+     */
+    public Integer getBitonalThreshold() { return bitonalThreshold; }
+
+    /**
+     * Luminance threshold (1-255) splitting pixels into black/white when bitonal mode is enabled.
+     * {@code null} (default) auto-computes an optimal per-image threshold (Otsu's method,
+     * recommended). A value of 0 or outside 1-255 falls back to auto, since a cutoff of 0 would make
+     * every pixel white.
+     *
+     * @param bitonalThreshold the threshold, or {@code null}
+     * @return this instance
+     */
+    public AdvancedCompressionOptions setBitonalThreshold(Integer bitonalThreshold) {
+        this.bitonalThreshold = bitonalThreshold;
+        return this;
+    }
+
+    /**
      * Returns true if pdfium-side image re-encoding is engaged (because a
      * positive {@code targetImageDpi} was set). The qpdf {@code optimizeImages}
      * step is skipped in that case to avoid double JPEG encoding.
      */
     public boolean pdfiumWillReEncode() {
         return targetImageDpi != null && targetImageDpi > 0;
+    }
+
+    /**
+     * Returns true if the pdfium image pass runs at all: a positive {@code targetImageDpi}, or
+     * bitonal mode on. (Mirrors .NET, which widened only this run condition for bitonal; the qpdf
+     * flags still key off {@link #pdfiumWillReEncode()}.)
+     */
+    public boolean pdfiumImagePassWillRun() {
+        return pdfiumWillReEncode() || bitonalMode != BitonalCompressionMode.OFF;
     }
 }

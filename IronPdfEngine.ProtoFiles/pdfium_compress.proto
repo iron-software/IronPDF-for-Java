@@ -11,6 +11,13 @@ message PdfiumCompressImagesRequestP {
   bool  scale_to_visible_size = 3;
   bool  use_hq_sampling = 4;
   int32 target_dpi = 5;
+  // opt-in bitonal (CCITT Group 4) compression for scanned/1-bit images.
+  int32 bitonal_mode = 6;            // 0 = off, 1 = force
+  int32 bitonal_resolution_dpi = 7;  // <= 0 keeps source resolution
+  // 0 is defined as auto (Otsu), not a cutoff, so proto3's zero-default is the safe
+  // default in every language: a client that omits the field gets auto, not an
+  // all-white page. A luminance cutoff of 0 would be degenerate anyway.
+  int32 bitonal_threshold = 8;       // <= 0 = auto (Otsu), else 1-255 luminance cutoff
 }
 
 
