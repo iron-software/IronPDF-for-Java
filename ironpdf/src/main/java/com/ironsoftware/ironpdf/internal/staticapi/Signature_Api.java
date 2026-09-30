@@ -19,6 +19,8 @@ public final class Signature_Api {
     public static List<VerifiedSignature> getVerifiedSignatures(InternalPdfDocument internalPdfDocument) {
         RpcClient client = Access.ensureConnection();
 
+        byte[] documentBytes = PdfDocument_Api.getBytes(internalPdfDocument, false);
+
         final CountDownLatch finishLatch = new CountDownLatch(1);
         ArrayList<PdfiumGetVerifySignatureResultP> resultChunks = new ArrayList<>();
 
@@ -28,7 +30,10 @@ public final class Signature_Api {
 
         requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder().setInfo(infoP).build());
 
-        //don't send DataChunk (pdf byte[]) and let Server get the pdf byte[] inside the server to prevent too much grpc call
+        for (Iterator<byte[]> it = Utils_Util.chunk(documentBytes); it.hasNext(); ) {
+            requestStream.onNext(PdfiumGetVerifiedSignatureRequestStreamP.newBuilder()
+                    .setDataChunk(ByteString.copyFrom(it.next())).build());
+        }
 
         requestStream.onCompleted();
 
@@ -101,9 +106,20 @@ public final class Signature_Api {
         info.setSignatureHashAlgorithm(signature.getSignatureHashAlgorithm().getValue());
         info.setTimestampHashAlgorithm(signature.getTimestampHashAlgorithm().getValue());
 
+        // Sign into an existing named field. Whitespace-only is normalized to unset (append a new
+        // field), matching the .NET client, rather than being sent as an unknown field name.
+        String signatureFieldName = signature.getSignatureFieldName();
+        if (signatureFieldName != null && !signatureFieldName.trim().isEmpty()) {
+            info.setSignatureFieldName(signatureFieldName);
+        }
+
         info.setSignaturePermission(Signature_Converter.toProto(permissions));
 
-        if(signature.getSignatureImageRectangle() != null){
+        // A pre-placed named field supplies its own page and rectangle, so placement is only sent when
+        // appending a new field (a rectangle can be set without an image, so gate on the field name too).
+        boolean signIntoExistingField = signature.getSignatureFieldName() != null
+                && !signature.getSignatureFieldName().trim().isEmpty();
+        if(signature.getSignatureImageRectangle() != null && !signIntoExistingField){
             info.setSignatureImageW(signature.getSignatureImageRectangle().width);
             info.setSignatureImageH(signature.getSignatureImageRectangle().height);
             info.setSignatureImageX(signature.getSignatureImageRectangle().x);

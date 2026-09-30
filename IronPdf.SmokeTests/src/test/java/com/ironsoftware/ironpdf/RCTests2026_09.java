@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -73,6 +75,40 @@ public class RCTests2026_09 extends TestBase {
                 "Expected the SHA-256 digest OID in the signed output");
         Assertions.assertFalse(raw.contains(SHA512_OID_HEX),
                 "Did not expect the SHA-512 digest OID when the default is used");
+    }
+
+    // ==================== PDF-2253: cold-session DigiCert-timestamped verify ====================
+
+    // Reproduces PDF-2253: sign with a DigiCert RFC3161 timestamp, save, reload, and verify. The
+    // defect only surfaces when this is the first document operation in a fresh engine session, so
+    // run this method IN ISOLATION (its own JVM) to exercise the cold-session path. VerifyPdfSignatures
+    // must return true; the escalation saw it silently return false on the first attempts.
+    @Test
+    public final void Test06_PDF2253_DigicertTimestamp_ColdSessionVerifies() throws IOException {
+        final String DIGICERT_TSA = "http://timestamp.digicert.com";
+        final int attempts = 3;
+        java.util.List<String> failures = new java.util.ArrayList<>();
+
+        for (int i = 0; i < attempts; i++) {
+            PdfDocument pdf = PdfDocument.renderHtmlAsPdf(
+                    "<h1>PDF-2253 DigiCert</h1><p>Attempt " + (i + 1) + "</p>");
+            Signature signature = new Signature(getTestFile("/Data/IronSoftware.pfx"), "123456");
+            signature.setTimeStampUrl(DIGICERT_TSA);
+            pdf.getSignature().SignPdfWithSignature(signature);
+
+            Path pdfPath = Files.createTempFile("pdf2253_digicert_" + i + "_", ".pdf");
+            try {
+                pdf.saveAs(pdfPath);
+                PdfDocument reloaded = PdfDocument.fromFile(pdfPath);
+                if (!reloaded.getSignature().VerifyPdfSignatures()) {
+                    failures.add("Attempt " + (i + 1) + ": signature failed to verify after save+reload");
+                }
+            } finally {
+                Files.deleteIfExists(pdfPath);
+            }
+        }
+
+        Assertions.assertTrue(failures.isEmpty(), "PDF-2253 verification failures: " + failures);
     }
 
     // ==================== SetImageAltText ====================

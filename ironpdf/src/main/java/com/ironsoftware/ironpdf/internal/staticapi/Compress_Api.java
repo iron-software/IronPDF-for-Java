@@ -50,6 +50,24 @@ public final class Compress_Api {
      */
     public static void compressImages(InternalPdfDocument internalPdfDocument, int quality,
                                       boolean scaleToVisibleSize, boolean useHqSampling, int targetDpi) {
+        compressImages(internalPdfDocument, quality, scaleToVisibleSize, useHqSampling, targetDpi, 0, 0, 0);
+    }
+
+    /**
+     * Compress images with optional DPI downsampling and an optional bitonal (CCITT Group 4) pass.
+     *
+     * @param internalPdfDocument  the internal pdf document
+     * @param quality              JPEG quality (1-100), or 0 to skip quality recompression
+     * @param scaleToVisibleSize   scale images down to their visible rendered size
+     * @param useHqSampling        use 4:4:4 chroma subsampling when true; 4:1:1 when false
+     * @param targetDpi            downsample images above this DPI; {@code 0} disables downsampling
+     * @param bitonalMode          0 = off, 1 = force bitonal CCITT Group 4 encoding
+     * @param bitonalResolutionDpi bitonal target DPI; {@code <= 0} keeps the source resolution
+     * @param bitonalThreshold     1-255 fixed luminance cutoff; {@code <= 0} = auto (Otsu)
+     */
+    public static void compressImages(InternalPdfDocument internalPdfDocument, int quality,
+                                      boolean scaleToVisibleSize, boolean useHqSampling, int targetDpi,
+                                      int bitonalMode, int bitonalResolutionDpi, int bitonalThreshold) {
         RpcClient client = Access.ensureConnection();
 
         PdfiumCompressImagesRequestP.Builder req = PdfiumCompressImagesRequestP.newBuilder();
@@ -60,10 +78,24 @@ public final class Compress_Api {
         if (targetDpi > 0) {
             req.setTargetDpi(targetDpi);
         }
+        // All three are proto3 zero-default-safe (0 = off / keep source / auto threshold).
+        req.setBitonalMode(bitonalMode);
+        req.setBitonalResolutionDpi(bitonalResolutionDpi);
+        req.setBitonalThreshold(bitonalThreshold);
 
         EmptyResultP res = client.GetBlockingStub("compressImages").pdfiumCompressCompressImages(req.build());
 
         Utils_Util.handleEmptyResult(res);
+    }
+
+    /** A DPI clamped to the native sentinel: {@code null} or {@code <= 0} becomes 0 (no downsampling / keep source). */
+    static int dpiValue(Integer dpi) {
+        return dpi != null && dpi > 0 ? dpi : 0;
+    }
+
+    /** 1-255 is a fixed cutoff; anything else (null, 0, negative, > 255) maps to 0, the auto (Otsu) sentinel. */
+    static int bitonalThresholdValue(Integer threshold) {
+        return threshold != null && threshold >= 1 && threshold <= 255 ? threshold : 0;
     }
 
     /**
@@ -208,16 +240,19 @@ public final class Compress_Api {
             throw new IllegalArgumentException("options must not be null");
         }
 
-        // Step 1: Optional pdfium image downsampling + re-encode. When a target DPI is
-        // set, every image is downsampled and re-encoded, with JpegQuality defaulting to
-        // 85 when unset.
-        if (options.pdfiumWillReEncode()) {
+        // Step 1: Optional pdfium image downsampling + re-encode and/or bitonal (CCITT G4) pass.
+        // When a target DPI is set, every image is downsampled and re-encoded, with JpegQuality
+        // defaulting to 85 when unset.
+        if (options.pdfiumImagePassWillRun()) {
             int jpegQuality = options.getJpegQuality() != null ? options.getJpegQuality() : 85;
             compressImages(internalPdfDocument,
                     jpegQuality,
                     true, // scaleToVisibleSize — matches .NET useVisible: true
                     options.isHighQualityImageSubsampling(),
-                    options.getTargetImageDpi());
+                    dpiValue(options.getTargetImageDpi()),
+                    options.getBitonalMode().getValue(),
+                    dpiValue(options.getBitonalResolutionDpi()),
+                    bitonalThresholdValue(options.getBitonalThreshold()));
         }
 
         // Step 2 — optional struct-tree removal before qpdf passes.
@@ -290,7 +325,7 @@ public final class Compress_Api {
         // the from-bytes qpdf RPC (fast path below) behave identically — both receive the
         // same toFlagsProto(options). The static-vs-instance parity test guards against
         // any gross divergence between the two engine RPCs.
-        if (options.pdfiumWillReEncode() || options.isRemoveStructureTree()) {
+        if (options.pdfiumImagePassWillRun() || options.isRemoveStructureTree()) {
             try (InternalPdfDocument doc = PdfDocument_Api.fromBytes(pdfBytes, pwd)) {
                 // The document is already decrypted in the engine, so no password here.
                 compressAndSaveAs(doc, outputFilePath, "", options);

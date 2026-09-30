@@ -60,6 +60,16 @@ public final class InternalPdfDocument implements AutoCloseable , Printable {
         return appliedSignatures;
     }
 
+    /**
+     * Whether a new signature has already been applied to this document. Saving does not clear it,
+     * so this also reports true after a save; only removing signatures resets it.
+     *
+     * @return true if a signature has been applied to this document
+     */
+    public boolean hasAppliedSignature() {
+        return !appliedSignatures.isEmpty();
+    }
+
     public String userPassword = "";
     public String ownerPassword = "";
 

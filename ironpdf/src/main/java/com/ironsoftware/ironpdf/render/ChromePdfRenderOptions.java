@@ -100,6 +100,16 @@ public class ChromePdfRenderOptions implements Cloneable {
     private TableOfContentsTypes tableOfContents = TableOfContentsTypes.None;
 
     /**
+     * Optional heading rendered at the top of the generated table of contents.
+     */
+    private String tableOfContentsTitle = null;
+
+    /**
+     * When true, the table-of-contents title is also listed as the first TOC entry.
+     */
+    private boolean tableOfContentsIncludesTitleEntry = false;
+
+    /**
      * If true, auto-generate PDF outline (bookmarks) from the HTML heading structure.
      * Use {@link #autoBookmarkMinHeadingLevel} and {@link #autoBookmarkMaxHeadingLevel} to
      * control which heading levels are included (1 = h1, 6 = h6).
@@ -735,6 +745,49 @@ public class ChromePdfRenderOptions implements Cloneable {
      */
     public void setTableOfContents(TableOfContentsTypes value) {
         tableOfContents = value;
+    }
+
+    /**
+     * Gets the optional heading rendered at the top of the generated table of contents.
+     *
+     * @return the title, or {@code null} (default) for no heading
+     */
+    public String getTableOfContentsTitle() {
+        return tableOfContentsTitle;
+    }
+
+    /**
+     * Sets an optional heading rendered at the top of the generated table of contents (for example
+     * "Table of Contents"). When {@code null} or empty (the default) no heading is drawn and the table
+     * of contents renders exactly as before. Style it with the {@code #ironpdf-toc .toc-heading}
+     * selector. Only applies when {@link #getTableOfContents()} is not {@link TableOfContentsTypes#None}.
+     *
+     * @param value the title, or {@code null}
+     */
+    public void setTableOfContentsTitle(String value) {
+        tableOfContentsTitle = value;
+    }
+
+    /**
+     * Gets whether the table-of-contents title is also listed as the first TOC entry.
+     *
+     * @return true if the title entry is included; false by default
+     */
+    public boolean isTableOfContentsIncludesTitleEntry() {
+        return tableOfContentsIncludesTitleEntry;
+    }
+
+    /**
+     * When true, {@link #getTableOfContentsTitle()} is also listed as the first entry of the table of
+     * contents (on the {@link TableOfContentsTypes#WithPageNumbers} path, with the page number of the
+     * table of contents itself), in addition to the heading. Style it with the
+     * {@code #ironpdf-toc .toc-heading-entry} selector. Default false. Has no effect unless a title is
+     * set and {@link #getTableOfContents()} is not {@link TableOfContentsTypes#None}.
+     *
+     * @param value whether to include the title entry
+     */
+    public void setTableOfContentsIncludesTitleEntry(boolean value) {
+        tableOfContentsIncludesTitleEntry = value;
     }
 
     /**

@@ -149,6 +149,10 @@ message ChromePdfRenderOptionsP {
   optional int32 auto_bookmark_max_heading_level = 41;
   optional string auto_bookmark_css_selectors = 42;
   optional string element_query_selectors = 43;
+  // Optional heading text for the generated table of contents (see ChromePdfRenderOptions.TableOfContentsTitle)
+  optional string table_of_contents_title = 44;
+  // When true, the table-of-contents title is also listed as the first TOC entry (see ChromePdfRenderOptions.TableOfContentsIncludesTitleEntry)
+  optional bool table_of_contents_includes_title_entry = 45;
 }
 
 message ChromeCefRenderSettingsP {
