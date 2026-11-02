@@ -69,6 +69,11 @@ message PdfiumTextObjectP
   // Optional Content Group (PDF layer) id, -1 if outside any layer.
   // Join against PdfiumOcgP.id returned by Pdfium_Document_GetOcgCollection.
   optional int32 ocg_id = 14;
+  // Font size from the text state, before the text matrix is applied.
+  optional float font_size = 15;
+  // Object number of the font used by this text object; join against PdfiumFontInfoP.obj_num.
+  // 0 means the text object has no font (0 is never a valid PDF object number).
+  optional uint32 font_obj_num = 16;
 }
 
 message PdfiumTextObjectCollectionP
@@ -251,8 +256,15 @@ message PdfiumConvertToPdfUARequestP {
 
 message PdfiumConvertToPdfUAForScreenReaderRequestP {
     PdfDocumentP document = 1;
+    // The structure-tree DOM built by the caller with HtmlHelper.HtmlStructTreeDOM, or the source
+    // HTML itself when html_dom_is_raw_html is true.
     string html_dom = 2;
     int32 lang = 3;
+    // True when html_dom holds the source HTML rather than a structure-tree DOM. The engine then
+    // builds the DOM itself. Clients without HtmlStructTreeDOM (Node, Java) set this; the .NET
+    // client builds the DOM and leaves it unset. The transform is not idempotent, so a DOM must
+    // never be sent with this set.
+    optional bool html_dom_is_raw_html = 4;
 }
 
 message PdfiumSetImageAltTextRequestP {

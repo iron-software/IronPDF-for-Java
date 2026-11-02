@@ -7,6 +7,7 @@ import com.ironsoftware.ironpdf.form.FormManager;
 import com.ironsoftware.ironpdf.form.ComboBoxField;
 import com.ironsoftware.ironpdf.form.TextField;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -313,6 +314,7 @@ public class FormTests extends TestBase {
      * {@link FormManager#setFormFont(String, byte[])} with their custom font bytes, then
      * filling with non-ASCII should produce a file smaller than the Tahoma+Arial baseline.
      */
+    @Disabled("PDF-2237: engine 2026.11.1 embeds Tahoma/Arial for non-ASCII fills on forms without /DA, so setFormFont does not shrink the file; enable again with the engine release that includes IronPdf.Core#338")
     @Test
     public final void SetFormFont_BytesMode_NonAsciiFill_ProducesSmallerFileThanBaseline() throws IOException {
         final String nonAscii = "FONT TEST: € ş ğ ü";
