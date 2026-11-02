@@ -2,6 +2,7 @@ package com.ironsoftware.ironpdf.internal.staticapi;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public final class Setting_Api {
 
     public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withOfficialCloud();
 
-    public static final String IRON_PDF_ENGINE_VERSION = "2026.10.1";
+    public static final String IRON_PDF_ENGINE_VERSION = "2026.11.1";
 
     public static int ironPdfEngineTimeout = 120;
 
@@ -112,11 +113,25 @@ public final class Setting_Api {
         } else if (SystemUtils.IS_OS_LINUX) {
             return "x64";
         } else if (SystemUtils.IS_OS_MAC) {
-            if(System.getProperty("os.arch").toLowerCase().contains("arm") )
-                return "arm64";
-            return "x64";
+            return isArm64(System.getProperty("os.arch")) ? "arm64" : "x64";
         }
         throw new RuntimeException("unknown OS:" + SystemUtils.OS_NAME);
+    }
+
+    /**
+     * Whether the given os.arch value is a 64-bit ARM architecture.
+     * JVMs on Apple Silicon report os.arch as "aarch64", not "arm64".
+     * 32-bit ARM values such as "arm" or "armv7l" are not matched.
+     *
+     * @param osArch the os.arch system property value
+     * @return true if ARM 64-bit
+     */
+    static boolean isArm64(String osArch) {
+        if (osArch == null) {
+            return false;
+        }
+        String arch = osArch.toLowerCase(Locale.ROOT);
+        return arch.equals("aarch64") || arch.equals("arm64");
     }
 
     public static String getIronPdfEngineFolderName() {

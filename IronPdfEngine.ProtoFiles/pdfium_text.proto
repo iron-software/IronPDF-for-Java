@@ -51,6 +51,24 @@ message PdfiumRedactRegionsRequestP {
 	bool is_draw_boxes = 4;
 }
 
+message PdfiumRedactRegionsDataP {
+	// images overlapping a region that could not be safely redacted; their image data
+	// remains recoverable
+	int32 skipped_image_count = 1;
+	// redacted images whose stream other placements also draw but could not be copied, so
+	// those placements show the redaction too
+	int32 shared_images_redacted_in_place = 2;
+}
+
+// Wire-compatible with EmptyResultP. An older engine never sets result, so an unset
+// result means the engine cannot report image redaction.
+message PdfiumRedactRegionsResultP {
+	oneof result_or_exception {
+		PdfiumRedactRegionsDataP result = 1;
+		RemoteExceptionP exception = 2;
+	}
+}
+
 // DrawTexts batch operation proto definitions
 message PdfiumDrawTextObjectP {
   string text = 1;

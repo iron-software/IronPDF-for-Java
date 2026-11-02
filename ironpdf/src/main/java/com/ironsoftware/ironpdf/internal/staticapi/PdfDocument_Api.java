@@ -388,15 +388,28 @@ public final class PdfDocument_Api {
         return internalPdfDocument;
     }
 
-    public static InternalPdfDocument toPdfUAForScreenReader(InternalPdfDocument internalPdfDocument, String htmlDom, int naturalLanguages) {
+    /**
+     * Builds the screen-reader PDF/UA request.
+     * <p>The engine tags the page from a structure-tree DOM that the .NET client builds with its
+     * {@code HtmlHelper.HtmlStructTreeDOM}. Java has no port of that transform, so it sends the source
+     * HTML and sets {@code html_dom_is_raw_html}, and the engine builds the DOM itself. Without the flag
+     * the engine would treat the raw HTML as a DOM, match nothing, and tag every text run on the page as
+     * {@code /Artifact} (PDF-2302).</p>
+     */
+    static PdfiumConvertToPdfUAForScreenReaderRequestP buildScreenReaderRequest(PdfDocumentP document, String html, int naturalLanguages) {
+        return PdfiumConvertToPdfUAForScreenReaderRequestP.newBuilder()
+                .setDocument(document)
+                .setHtmlDom(html)
+                .setLang(naturalLanguages)
+                .setHtmlDomIsRawHtml(true)
+                .build();
+    }
+
+    public static InternalPdfDocument toPdfUAForScreenReader(InternalPdfDocument internalPdfDocument, String html, int naturalLanguages) {
         RpcClient client = Access.ensureConnection();
 
-        PdfiumConvertToPdfUAForScreenReaderRequestP.Builder req = PdfiumConvertToPdfUAForScreenReaderRequestP.newBuilder();
-        req.setDocument(internalPdfDocument.remoteDocument);
-        req.setHtmlDom(htmlDom);
-        req.setLang(naturalLanguages);
-
-        EmptyResultP res = client.GetBlockingStub("toPdfUAForScreenReader").pdfiumConvertToPdfUAForScreenReader(req.build());
+        EmptyResultP res = client.GetBlockingStub("toPdfUAForScreenReader").pdfiumConvertToPdfUAForScreenReader(
+                buildScreenReaderRequest(internalPdfDocument.remoteDocument, html, naturalLanguages));
 
         Utils_Util.handleEmptyResult(res);
 

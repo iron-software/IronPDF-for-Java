@@ -146,8 +146,15 @@ public class FormManager {
      * fills contains non-ASCII characters.
      * </p>
      * <p>
-     * If your form fields reference more than one font variant (e.g. Poppins-Regular and
-     * Poppins-Bold), call this method once per variant.
+     * <b>Known limitation (engine 2026.11.1).</b> Fields that define no default appearance ({@code /DA}), as in forms rendered from HTML, are not yet bound to this font, so a non-ASCII fill on them still embeds the Tahoma/Arial fallback and enlarges the file. This is fixed in the next engine release.
+     * </p>
+     * <p>
+     * <b>One form font per document.</b> The form font applies to the whole document, so this
+     * method cannot give different fields different font variants. Each call registers the font
+     * under {@code fontName} and also under every font name the fields' default appearances
+     * already use (such as "Helv"), replacing whatever an earlier call registered. Calling it
+     * again for a second font (e.g. Poppins-Regular and then Poppins-Bold) therefore draws every
+     * field in the second font. Call it once with the font the fields should use.
      * </p>
      * <p>
      * <b>File-size impact</b>
