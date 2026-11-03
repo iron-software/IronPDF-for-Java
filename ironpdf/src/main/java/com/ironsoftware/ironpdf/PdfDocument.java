@@ -2270,6 +2270,12 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
      *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
+     *
      * @param htmlFilePath Path to a Html to be rendered as a PDF.
      * @return A {@link PdfDocument}
      * @throws IOException the io exception
@@ -2280,6 +2286,12 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
      *
      * @param htmlFilePath Path to a Html to be rendered as a PDF.
      * @param baseUrl      Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
@@ -2293,6 +2305,12 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
      *
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param renderOptions    Rendering options
@@ -2308,6 +2326,12 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
      *
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
@@ -2326,6 +2350,12 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
      *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
+     *
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param loginCredentials Http login credentials
      * @return A {@link PdfDocument}
@@ -2339,6 +2369,12 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
      *
      * @param htmlFilePath     Path to a Html to be rendered as a PDF.
      * @param baseUrl          Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.
@@ -2356,6 +2392,12 @@ public class PdfDocument implements Printable, AutoCloseable {
     /**
      * Creates a PDF file from a local HTML file and returns it as a {@link PdfDocument}.
      *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
+     *
      * <p>------------------------------------------------</p>
      *
      * <p><b>Usage:</b></p>
@@ -2372,15 +2414,11 @@ public class PdfDocument implements Printable, AutoCloseable {
      *
      * <p><b>Important Notes:</b></p>
      *
-     * <p>🐳 <b>Docker Limitation:</b>
-     * This method does <b>not</b> work when the application is running inside a Docker environment
-     * due to rendering engine limitations.
-     * In such cases, use <code>renderZipAsPdf()</code> instead.</p>
-     *
      * <p>📄 <b>Input:</b> Requires access to a local HTML file on disk.</p>
      *
      * <p><b>Related Methods:</b></p>
-     * <p>📌 <code>renderZipAsPdf()</code> — Recommended alternative when running inside Docker.</p>
+     * <p>📌 <code>renderZipAsPdf()</code> — Use it for IronPdfEngine in Docker or on a remote server
+     * when the page uses local files.</p>
      */
 
     public static PdfDocument renderHtmlFileAsPdf(String htmlFilePath,
@@ -2391,6 +2429,12 @@ public class PdfDocument implements Printable, AutoCloseable {
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link PdfDocument}.
+     *
+     * <p><b>IronPdfEngine in Docker or on a remote server:</b> renderHtmlFileAsPdf sends only the content of the
+     * HTML file. The engine does not receive the CSS, image, font or script files that the page references with
+     * relative paths. If the page uses local files, put the HTML file and its files in a .zip and use
+     * {@code renderZipAsPdf}. Keep the same relative paths in the zip. When the client starts IronPdfEngine
+     * on the same machine (the default), renderHtmlFileAsPdf reads the page and its local files as before.</p>
      *
      * @param htmlFilePath  Path to a Html to be rendered as a PDF.
      * @param baseUrl       Optional. Setting the BaseURL property gives the relative file path or URL context for hyperlinks, images, CSS and JavaScript files.

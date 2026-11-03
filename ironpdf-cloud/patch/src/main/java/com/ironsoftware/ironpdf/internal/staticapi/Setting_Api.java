@@ -53,6 +53,12 @@ public final class Setting_Api {
      */
     public static int jobQueueWatchdogTimeoutSeconds = 300;
 
+    /**
+     * Whether the client may run an engine download that it cannot verify. Not used in the cloud build because no
+     * engine is downloaded, but the field must exist so the shared {@code EngineDownloadIntegrity} compiles.
+     */
+    public static Boolean allowUnverifiedEngineDownload = null;
+
     public static String getIronPdfEngineZipName() {
         return getIronPdfEngineFolderName() + ".zip";
     }

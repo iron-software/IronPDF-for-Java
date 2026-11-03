@@ -142,6 +142,29 @@ public final class Settings {
     }
 
     /**
+     * Allows IronPDF to run an IronPdfEngine download that it cannot verify.
+     *
+     * <p>When IronPDF downloads the engine (no {@code ironpdf-engine-<platform>} Maven dependency), it compares the
+     * SHA-256 of the zip with the value that this IronPDF release contains for that engine version and platform. It does
+     * not unzip or run a zip that differs, and it refuses a version or platform without a known value.
+     * Set this to {@code true} only when you must use an engine version or platform that this release does not
+     * know. IronPDF then logs a warning and skips the check. This covers only a version or platform without a known
+     * SHA-256: a zip that differs from a known SHA-256 (for example a patched or re-published zip) is always refused.
+     * A mirror must serve byte-identical zips. To run a different engine build, add the
+     * {@code ironpdf-engine-<platform>} Maven dependency.</p>
+     *
+     * <p>The system property {@code ironpdf.engine.allowUnverifiedDownload=true} or the environment variable
+     * {@code IRONPDF_ENGINE_ALLOW_UNVERIFIED_DOWNLOAD=true} has the same effect. This setting has priority over both.
+     * Adding the {@code ironpdf-engine-<platform>} Maven dependency avoids the download.</p>
+     *
+     * @param allow {@code true} to skip the check, {@code false} to enforce it, {@code null} to let the system property
+     *              and the environment variable decide
+     */
+    public static void setAllowUnverifiedEngineDownload(Boolean allow) {
+        Setting_Api.allowUnverifiedEngineDownload = allow;
+    }
+
+    /**
      * Set temp folder path.
      * <p>***Only works with {@link IronPdfEngineConnection#withSubprocess()}</p>
      * @param tempFolderPath the temp folder path

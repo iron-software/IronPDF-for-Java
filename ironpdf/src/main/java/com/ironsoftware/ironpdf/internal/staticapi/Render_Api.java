@@ -1,6 +1,7 @@
 package com.ironsoftware.ironpdf.internal.staticapi;
 
 import com.google.protobuf.ByteString;
+import com.ironsoftware.ironpdf.IronPdfEngineConnection;
 import com.ironsoftware.ironpdf.internal.proto.*;
 import com.ironsoftware.ironpdf.render.ChromeHttpLoginCredentials;
 import com.ironsoftware.ironpdf.render.ChromePdfRenderOptions;
@@ -25,6 +26,12 @@ import java.util.concurrent.CountDownLatch;
 public final class Render_Api {
 
     static final Logger logger = LoggerFactory.getLogger(Render_Api.class);
+
+    /**
+     * Text in the error that IronPdfEngine 2026.11 and later return when the engine refuses
+     * to read a local file by path.
+     */
+    static final String LOCAL_FILE_ACCESS_DISABLED_MARKER = "allow_local_file_access=false";
 
     /**
      * Creates a PDF file from a local Html file, and returns it as a {@link InternalPdfDocument}.
@@ -88,8 +95,84 @@ public final class Render_Api {
 
         RpcClient client = Access.ensureConnection();
 
-        if(!isIronPdfProcessRunning()) {
-            return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
+        // Send the path only to an IronPdfEngine on the same machine: a subprocess that this client started,
+        // or a HOST_PORT connection to a loopback address. Any other engine (Docker, a remote host and port,
+        // cloud, custom channel) gets the HTML content.
+        // Send the absolute path, as the .NET client does. IronPdfEngine can have a different working directory.
+        boolean sendPath = sendsPath(isIronPdfProcessRunning());
+        return renderHtmlFileByPathOrContent(client, absoluteFilePath, String.join(System.lineSeparator(), htmlList),
+                renderOptions, loginCredentials, sendPath);
+    }
+
+    /**
+     * Tells if the connection goes to an IronPdfEngine subprocess that this client starts on the same machine.
+     *
+     * <p>The result is {@code false} for IronPdfEngine in Docker ({@code useIronPdfEngineDocker}),
+     * and for the {@code HOST_PORT}, {@code TARGET}, {@code OFFICIAL_CLOUD} and {@code CUSTOM} modes.
+     * Such an engine cannot read the files of the client machine.</p>
+     *
+     * @return {@code true} only for the {@code SUBPROCESS} mode.
+     */
+    static boolean isClientStartedSubprocess() {
+        if (Setting_Api.useDeprecatedConnectionSettings) {
+            return !Setting_Api.isIronPdfEngineDocker;
+        }
+        return Setting_Api.connectionMode != null
+                && Setting_Api.connectionMode.getMode() == IronPdfEngineConnection.ConnectionMode.SUBPROCESS;
+    }
+
+    /**
+     * Tells if the file path goes to IronPdfEngine: the engine is on this machine and a local engine process runs.
+     */
+    static boolean sendsPath(boolean localEngineProcessRunning) {
+        return (isClientStartedSubprocess() || isLoopbackHostPort()) && localEngineProcessRunning;
+    }
+
+    /**
+     * Tells if the connection is a {@code HOST_PORT} connection to a loopback address ({@code 127.0.0.1},
+     * {@code localhost} or {@code ::1}): an IronPdfEngine that the user started on the same machine.
+     * If that engine cannot read the file, the render falls back to the HTML content.
+     */
+    static boolean isLoopbackHostPort() {
+        if (Setting_Api.useDeprecatedConnectionSettings || Setting_Api.connectionMode == null
+                || Setting_Api.connectionMode.getMode() != IronPdfEngineConnection.ConnectionMode.HOST_PORT) {
+            return false;
+        }
+        String host = Setting_Api.connectionMode.getHost();
+        return host != null && (host.equals("localhost") || host.equals("::1") || host.equals("[::1]")
+                || host.startsWith("127."));
+    }
+
+    /**
+     * Renders an HTML file. This method sends the file path to IronPdfEngine, or it sends the HTML content.
+     *
+     * <p>This method has the same behaviour as the .NET client ({@code GrpcChromeClient.RenderPDFFromFile}):</p>
+     * <ul>
+     *   <li>If IronPdfEngine is not on this machine (IronPdfEngine in Docker, on a remote host, in the cloud,
+     *       or on a custom channel; a {@code HOST_PORT} connection to a loopback address counts as this machine),
+     *       or if no local IronPdfEngine process runs,
+     *       this method sends only the HTML content. It does not send the path.</li>
+     *   <li>Otherwise, this method sends the path. If IronPdfEngine returns an error, this method sends
+     *       the HTML content. IronPdfEngine 2026.11 and later return an error that contains
+     *       {@value #LOCAL_FILE_ACCESS_DISABLED_MARKER} when the engine operator disabled local file access.</li>
+     * </ul>
+     *
+     * @param client           the connection to IronPdfEngine.
+     * @param htmlFilePath     the path of the HTML file.
+     * @param htmlContent      the content of the HTML file.
+     * @param renderOptions    rendering options.
+     * @param loginCredentials HTTP login credentials.
+     * @param sendPath         {@code true} to send the path first.
+     * @return the rendered document.
+     */
+    static InternalPdfDocument renderHtmlFileByPathOrContent(RpcClient client,
+                                                            String htmlFilePath,
+                                                            String htmlContent,
+                                                            ChromePdfRenderOptions renderOptions,
+                                                            ChromeHttpLoginCredentials loginCredentials,
+                                                            boolean sendPath) {
+        if (!sendPath) {
+            return renderHtmlAsPdf(htmlContent, renderOptions, loginCredentials);
         }
 
         try {
@@ -127,8 +210,13 @@ public final class Render_Api {
 
             return Utils_Util.handlePdfDocumentChunks(resultChunks);
         } catch(Exception ex) {
-            logger.info(ex.getMessage());
-            return renderHtmlAsPdf(String.join(System.lineSeparator(), htmlList), renderOptions, loginCredentials);
+            if (ex.getMessage() != null && ex.getMessage().contains(LOCAL_FILE_ACCESS_DISABLED_MARKER)) {
+                logger.info("IronPdfEngine does not render HTML files by path ("
+                        + LOCAL_FILE_ACCESS_DISABLED_MARKER + "). Sending the HTML content instead.");
+            } else {
+                logger.info(ex.getMessage());
+            }
+            return renderHtmlAsPdf(htmlContent, renderOptions, loginCredentials);
         }
     }
 
