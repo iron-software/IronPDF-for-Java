@@ -18,6 +18,12 @@ public final class Setting_Api {
 
     public static String licenseKey = "";
 
+    /**
+     * Whether the client may run an engine download that it cannot verify. {@code null}: not set by the user,
+     * so the system property and the environment variable decide.
+     */
+    public static Boolean allowUnverifiedEngineDownload = null;
+
     public static IronPdfEngineConnection connectionMode = IronPdfEngineConnection.configure().withSubprocess();
 
     public static final String IRON_PDF_ENGINE_VERSION = "2026.11.1";
